@@ -1,10 +1,16 @@
-let express = require('express');
-let app = express();
+const express = require("express");
 
-app.get('/', function (req, res) {
-  res.send('Hello World!');
+const app = express();
+
+app.set("views", "./src/web/views");
+app.set("view engine", "pug");
+
+app.use(express.static("./dist"));
+
+app.get("/", function(req, res) {
+  res.render("index", { title: "Hey", message: "Hello there!" });
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+app.listen(80, function() {
+  console.log("TVPP log parser is running on port 80!");
 });

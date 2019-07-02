@@ -11,7 +11,9 @@
     "flowtype-errors"
   ],
   "env": {
-    "jest": true
+    "jest": true,
+    "browser": true,
+    "node": true
   },
   "rules": {
     "flowtype-errors/show-errors": "error"

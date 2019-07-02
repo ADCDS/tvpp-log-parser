@@ -1,0 +1,19 @@
+doctype html  
+html(lang='pt')
+  head
+    title TVPP Log View
+    style(type="text/css").
+      #container {
+        width: 100%;
+        height: 500px;
+        margin: 30px;
+      }
+
+  body
+    h1 TVPP Log viewer
+    div#toolbar
+      input#logfile(type='file')
+
+    div#container
+  script(src='/js/bundle.js')
+
