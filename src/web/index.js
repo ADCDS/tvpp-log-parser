@@ -11,6 +11,6 @@ app.get("/", function(req, res) {
   res.render("index", { title: "Hey", message: "Hello there!" });
 });
 
-app.listen(80, function() {
+app.listen(3000, function() {
   console.log("TVPP log parser is running on port 80!");
 });
