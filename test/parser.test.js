@@ -1,4 +1,4 @@
-import LogParserOverlay from "../src/parserLib/overlay/LogParserOverlay";
+import LogParserOverlay from "../src/parserLib/Log/Overlay/LogParserOverlay";
 import TVPPLog from "../src/parserLib/TVPPLog";
 
 test("syncParseTest", () => {

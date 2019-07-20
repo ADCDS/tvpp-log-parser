@@ -1,4 +1,4 @@
-import Event from "../Event";
+import Event from "../../Event";
 
 class LogEntryOverlay {
   constructor(machine, port, timestamp, partnersIn, partnersOut) {
