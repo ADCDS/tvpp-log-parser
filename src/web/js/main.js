@@ -1,12 +1,17 @@
 // Create a graph object
 import "babel-polyfill";
-import LogParser from "../../parserLib/LogParser";
+import LogParserOverlay from "../../parserLib/overlay/LogParserOverlay";
 import TVPPLog from "../../parserLib/TVPPLog";
 
 const Sigma = require("sigma");
 
 window.logEntity = new TVPPLog();
 window.currentEvent = 0;
+
+const arrowChar = {
+  in: "<",
+  out: ">"
+};
 
 function nextState() {
   const currState = window.logEntity.eventList[window.currentEvent];
@@ -28,32 +33,36 @@ function nextState() {
     console.log(e);
   }
 
-  if (currState.added.length > 0) {
-    currState.added.forEach(el => {
-      try {
-        window.sigma.graph.addNode({
-          id: el,
-          label: el,
-          x:
-            100 *
-            Math.cos((2 * window.sigma.graph.nodes().length * Math.PI) / N),
-          y:
-            100 *
-            Math.sin((2 * window.sigma.graph.nodes().length * Math.PI) / N),
-          size: 3,
-          color: `#${Math.floor(Math.random() * 16777215).toString(16)}`
-        });
-        window.sigma.graph.addEdge({
-          id: `${currentMachine}_${el}`,
-          source: currentMachine,
-          target: el
-        });
-      } catch (e) {
-        // Silence is gold
-        console.log(e);
-      }
-    });
-  }
+  ["in", "out"].forEach(type => {
+    if (currState.added[type].length > 0) {
+      currState.added[type].forEach(el => {
+        try {
+          window.sigma.graph.addNode({
+            id: el,
+            label: el,
+            x:
+              100 *
+              Math.cos((2 * window.sigma.graph.nodes().length * Math.PI) / N),
+            y:
+              100 *
+              Math.sin((2 * window.sigma.graph.nodes().length * Math.PI) / N),
+            size: 3,
+            color: `#${Math.floor(Math.random() * 16777215).toString(16)}`
+          });
+          window.sigma.graph.addEdge({
+            id: `${currentMachine}_${arrowChar[type]}_${el}`,
+            source: currentMachine,
+            target: el,
+            type: "arrow"
+          });
+        } catch (e) {
+          // Silence is gold
+          console.log(e);
+        }
+      });
+    }
+  });
+
   if (currState.removed.length > 0) {
     currState.removed.forEach(el => {
       window.sigma.graph.dropEdge(`${currentMachine}_${el}`);
@@ -144,10 +153,12 @@ function handleFileSelect(evt) {
 
   reader.onload = function(e) {
     console.log("File read.");
-    LogParser.parse(e.currentTarget.result.split("\n")).then(entryArray => {
-      console.log(`Parsed ${entryArray.length} lines`);
-      window.logEntity.addEntries(entryArray);
-    });
+    LogParserOverlay.parse(e.currentTarget.result.split("\n")).then(
+      entryArray => {
+        console.log(`Parsed ${entryArray.length} lines`);
+        window.logEntity.addEntries(entryArray);
+      }
+    );
   };
   reader.readAsBinaryString(files[0]);
 }

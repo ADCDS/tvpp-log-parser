@@ -2,9 +2,9 @@ class Event {
   constructor(machine, port, state, added, removed) {
     this.machine = machine;
     this.port = port;
-    this.state = state || [];
-    this.added = added || [];
-    this.removed = removed || [];
+    this.state = state || { in: [], out: [] };
+    this.added = added || { in: [], out: [] };
+    this.removed = removed || { in: [], out: [] };
   }
 
   /**
@@ -14,24 +14,27 @@ class Event {
    */
   compareWithOldEvent(event) {
     // Calculates the intersection between event states
-    event.state.forEach(value => {
-      if (!this.state.includes(value)) {
-        /**
-         * If the new states doesn't have an node that was present on the last event,
-         * we should add it to the removed array
-         */
-        this.removed.push(value);
-      }
-    });
 
-    this.state.forEach(value => {
-      if (!event.state.includes(value)) {
-        /**
-         * If the new states have an node that wasn't present on the last event,
-         * we should add it to the added array
-         */
-        this.added.push(value);
-      }
+    ["in", "out"].forEach(el => {
+      event.state[el].forEach(value => {
+        if (!this.state[el].includes(value)) {
+          /**
+           * If the new states doesn't have an node that was present on the last event,
+           * we should add it to the removed array
+           */
+          this.removed[el].push(value);
+        }
+      });
+
+      this.state[el].forEach(value => {
+        if (!event.state[el].includes(value)) {
+          /**
+           * If the new states have an node that wasn't present on the last event,
+           * we should add it to the added array
+           */
+          this.added[el].push(value);
+        }
+      });
     });
   }
 }
