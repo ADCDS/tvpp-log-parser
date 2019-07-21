@@ -1,3 +1,5 @@
+import Machine from "./Machine";
+
 class TVPPLog {
   constructor() {
     this.eventList = [];
@@ -8,7 +10,7 @@ class TVPPLog {
    *
    * @param entries
    */
-  addEntries(entries) {
+  addOverlayEntries(entries) {
     entries.forEach(logEntry => {
       // Check if machine already exists in this log
       const currEvent = logEntry.toEvent();
@@ -19,9 +21,9 @@ class TVPPLog {
         const machineRef = this.machines[logEntry.machine];
 
         // If we do, lets check the latest event state
-        const latestEvent = machineRef[machineRef.length - 1];
+        const latestEvent = machineRef.events[machineRef.events.length - 1];
         currEvent.compareWithOldEvent(latestEvent);
-        machineRef.push(currEvent);
+        machineRef.addEvent(currEvent);
       } else {
         // No entry, this the first time we are seeing this machine on the logs
         // This is the first event, no need to remove nodes
@@ -31,9 +33,23 @@ class TVPPLog {
         };
 
         // Create the machine reference with the first event
-        this.machines[`${logEntry.machine}:${logEntry.port}`] = [currEvent];
+        this.machines[`${logEntry.machine}:${logEntry.port}`] = new Machine(
+          `${logEntry.machine}:${logEntry.port}`,
+          currEvent
+        );
       }
       this.eventList.push(currEvent);
+    });
+  }
+
+  addPerfomanceEntries(entries) {
+    entries.foreach(el => {
+      if (!Object.prototype.hasOwnProperty.call(this.machines, el.machine)) {
+        throw new Error("Machine in perfomance log wasn't found.");
+      }
+
+      const machineObj = this.machines[el.machine];
+      machineObj.perfomance = {};
     });
   }
 }

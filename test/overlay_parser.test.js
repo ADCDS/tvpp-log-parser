@@ -8,7 +8,7 @@ test("syncParseTest", () => {
       LogParserOverlay.parse(data).then(entryArray => {
         console.log(`Parsed ${entryArray.length} lines`);
         const logEntity = new TVPPLog();
-        logEntity.addEntries(entryArray);
+        logEntity.addOverlayEntries(entryArray);
       });
     },
     reason => {
