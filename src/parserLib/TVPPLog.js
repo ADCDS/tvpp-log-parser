@@ -43,13 +43,13 @@ class TVPPLog {
   }
 
   addPerfomanceEntries(entries) {
-    entries.foreach(el => {
+    entries.forEach(el => {
       if (!Object.prototype.hasOwnProperty.call(this.machines, el.machine)) {
         throw new Error("Machine in perfomance log wasn't found.");
       }
 
       const machineObj = this.machines[el.machine];
-      machineObj.perfomance = {};
+      machineObj.addStatus(el);
     });
   }
 }

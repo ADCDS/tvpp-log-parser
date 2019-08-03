@@ -26,10 +26,7 @@ class Machine {
 
     Object.keys(this.statusesOrdered).forEach(key => {
       this.statusesOrdered[key].push(status);
-      this.statusesOrdered[key] = this.sortStatuses(
-        key,
-        this.statusesOrdered[key]
-      );
+      this.statusesOrdered[key] = sortStatuses(key, this.statusesOrdered[key]);
     });
   }
 }

@@ -9,7 +9,7 @@ test("graphManagerTest", () => {
       LogParserOverlay.parse(data).then(entryArray => {
         console.log(`Parsed ${entryArray.length} lines`);
         const logEntity = new TVPPLog();
-        logEntity.addEntries(entryArray);
+        logEntity.addOverlayEntries(entryArray);
         const graphHolder = new GraphManager(logEntity);
         for (let i = 0; i < 160; i += 1) {
           graphHolder.nextState();

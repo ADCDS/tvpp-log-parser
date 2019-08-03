@@ -13,7 +13,8 @@ class LogEntryPerformance {
     hopMedio,
     triesMedio,
     triesPerRequestMedio,
-    media,
+    media1,
+    media2,
     mediaHop,
     mediaTries,
     mediaTime,
@@ -30,8 +31,8 @@ class LogEntryPerformance {
     this.machine = machine;
     this.pkGen = pkGen;
     this.pkSent = pkSent;
-    this.pkSent = pkSent;
-    this.pkSent = pkSent;
+    this.pkRecv = pkRecv;
+    this.pkOver = pkOver;
     this.requestSent = requestSent;
     this.requestRecv = requestRecv;
     this.requestRetries = requestRetries;
@@ -40,7 +41,8 @@ class LogEntryPerformance {
     this.hopMedio = hopMedio;
     this.triesMedio = triesMedio;
     this.triesPerRequestMedio = triesPerRequestMedio;
-    this.media = media;
+    this.media1 = media1;
+    this.media2 = media2;
     this.mediaHop = mediaHop;
     this.mediaTries = mediaTries;
     this.mediaTime = mediaTime;

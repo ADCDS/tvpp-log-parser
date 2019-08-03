@@ -63,7 +63,8 @@ class LogParserPerformance {
       pieces[21],
       pieces[22],
       pieces[23],
-      pieces[24]
+      pieces[24],
+      pieces[25]
     );
   }
 }
