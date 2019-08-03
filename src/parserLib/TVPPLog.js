@@ -15,10 +15,15 @@ class TVPPLog {
       // Check if machine already exists in this log
       const currEvent = logEntry.toEvent();
       if (
-        Object.prototype.hasOwnProperty.call(this.machines, logEntry.machine)
+        Object.prototype.hasOwnProperty.call(
+          this.machines,
+          `${logEntry.machine}:${logEntry.port}`
+        )
       ) {
         // If it exists, we need to check its latest state
-        const machineRef = this.machines[logEntry.machine];
+        const machineRef = this.machines[
+          `${logEntry.machine}:${logEntry.port}`
+        ];
 
         // If we do, lets check the latest event state
         const latestEvent = machineRef.events[machineRef.events.length - 1];
@@ -43,13 +48,20 @@ class TVPPLog {
   }
 
   addPerfomanceEntries(entries) {
-    entries.forEach(el => {
-      if (!Object.prototype.hasOwnProperty.call(this.machines, el.machine)) {
-        throw new Error("Machine in perfomance log wasn't found.");
+    entries.forEach(logEntry => {
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          this.machines,
+          `${logEntry.machine}:${logEntry.port}`
+        )
+      ) {
+        this.machines[`${logEntry.machine}:${logEntry.port}`] = new Machine(
+          `${logEntry.machine}:${logEntry.port}`
+        );
       }
 
-      const machineObj = this.machines[el.machine];
-      machineObj.addStatus(el);
+      const machineObj = this.machines[`${logEntry.machine}:${logEntry.port}`];
+      machineObj.addStatus(logEntry);
     });
   }
 }

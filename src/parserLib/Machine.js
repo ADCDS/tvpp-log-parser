@@ -24,10 +24,10 @@ class Machine {
   addStatus(status) {
     this.statuses.push(status);
 
-    Object.keys(this.statusesOrdered).forEach(key => {
+    /* Object.keys(this.statusesOrdered).forEach(key => {
       this.statusesOrdered[key].push(status);
       this.statusesOrdered[key] = sortStatuses(key, this.statusesOrdered[key]);
-    });
+    }); */
   }
 }
 

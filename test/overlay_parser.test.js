@@ -9,6 +9,7 @@ test("syncParseTest", () => {
         console.log(`Parsed ${entryArray.length} lines`);
         const logEntity = new TVPPLog();
         logEntity.addOverlayEntries(entryArray);
+        console.log("Done");
       });
     },
     reason => {

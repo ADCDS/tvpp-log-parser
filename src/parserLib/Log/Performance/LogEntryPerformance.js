@@ -1,6 +1,7 @@
 class LogEntryPerformance {
   constructor(
     machine,
+    port,
     pkGen,
     pkSent,
     pkRecv,
@@ -29,6 +30,7 @@ class LogEntryPerformance {
     ingressRequest
   ) {
     this.machine = machine;
+    this.port = port;
     this.pkGen = pkGen;
     this.pkSent = pkSent;
     this.pkRecv = pkRecv;

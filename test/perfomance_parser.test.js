@@ -9,6 +9,7 @@ test("performanceParseTest", () => {
         console.log(`Parsed ${entryArray.length} lines`);
         const logEntity = new TVPPLog();
         logEntity.addPerfomanceEntries(entryArray);
+        console.log("Done");
       });
     },
     reason => {

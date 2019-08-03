@@ -37,9 +37,12 @@ class LogParserPerformance {
      */
 
     const pieces = line.split(" ");
+    const machine = pieces[0];
+    const split = machine.split(":");
 
     return new LogEntryPerformance(
-      pieces[0],
+      split[0],
+      split[1],
       pieces[1],
       pieces[2],
       pieces[3],
