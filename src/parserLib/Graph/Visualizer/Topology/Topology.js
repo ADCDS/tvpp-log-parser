@@ -22,36 +22,34 @@ class Topology {
     this.graphHolder = graphHolder;
   }
 
-  updatePositions() {
-  }
+  updatePositions() {}
 
   synchronizeSigma(sigma) {
     sigma.graph.clear();
 
-    //Add nodes
+    // Add nodes
     Object.keys(this.nodeHolder).forEach(machineKey => {
-      const node = {...this.nodeHolder[machineKey]};
+      const node = { ...this.nodeHolder[machineKey] };
       node.id = machineKey;
       sigma.graph.addNode(node);
     });
 
-    //Add edges
+    // Add edges
     Object.keys(this.nodeHolder).forEach(machineKey => {
-      let edgesTo = this.graphHolder.getOutgoingEdges(machineKey);
+      const edgesTo = this.graphHolder.getOutgoingEdges(machineKey);
       edgesTo.forEach(machineDest => {
-        try{
+        try {
           sigma.graph.addEdge({
             id: `${machineKey}_>_${machineDest}`,
             source: machineKey,
             target: machineDest,
             size: 2,
-            type: "arrow",
+            type: "arrow"
           });
-        }catch (e) {
+        } catch (e) {
           console.log("Something bad happnd");
         }
       });
-
     });
   }
 }

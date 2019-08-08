@@ -2,7 +2,7 @@ import Machine from "./Machine";
 
 class TVPPLog {
   constructor(options) {
-    let defaultOptions = {
+    const defaultOptions = {
       discriminateByPort: false
     };
 
@@ -10,8 +10,6 @@ class TVPPLog {
 
     this.eventList = [];
     this.machines = {};
-
-
   }
 
   /**
@@ -22,12 +20,12 @@ class TVPPLog {
     entries.forEach(logEntry => {
       // Check if machine already exists in this log
       const currEvent = logEntry.toEvent();
-      let machineName = logEntry.machine + (this.options.discriminateByPort ? ":" + logEntry.port : "");
+      const machineName =
+        logEntry.machine +
+        (this.options.discriminateByPort ? `:${logEntry.port}` : "");
       if (Object.prototype.hasOwnProperty.call(this.machines, machineName)) {
         // If it exists, we need to check its latest state
-        const machineRef = this.machines[
-          machineName
-          ];
+        const machineRef = this.machines[machineName];
 
         // If we do, lets check the latest event state
         const latestEvent = machineRef.events[machineRef.events.length - 1];
@@ -42,10 +40,7 @@ class TVPPLog {
         };
 
         // Create the machine reference with the first event
-        this.machines[machineName] = new Machine(
-          machineName,
-          [currEvent]
-        );
+        this.machines[machineName] = new Machine(machineName, [currEvent]);
       }
       this.eventList.push(currEvent);
     });
@@ -53,16 +48,11 @@ class TVPPLog {
 
   addPerfomanceEntries(entries) {
     entries.forEach(logEntry => {
-      let machineName = logEntry.machine + (this.options.discriminateByPort ? ":" + logEntry.port : "");
-      if (
-        !Object.prototype.hasOwnProperty.call(
-          this.machines,
-          machineName
-        )
-      ) {
-        this.machines[machineName] = new Machine(
-          machineName
-        );
+      const machineName =
+        logEntry.machine +
+        (this.options.discriminateByPort ? `:${logEntry.port}` : "");
+      if (!Object.prototype.hasOwnProperty.call(this.machines, machineName)) {
+        this.machines[machineName] = new Machine(machineName);
       }
 
       const machineObj = this.machines[machineName];

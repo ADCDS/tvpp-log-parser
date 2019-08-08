@@ -57,14 +57,13 @@ class LogParserOverlay {
 
     if (!discriminateByPort) {
       partnersIn = partnersIn.map(el => {
-        return el.split(":")[0]
+        return el.split(":")[0];
       });
 
       partnersOut = partnersOut.map(el => {
-        return el.split(":")[0]
+        return el.split(":")[0];
       });
     }
-
 
     return new LogEntryOverlay(
       hostAddress[0],

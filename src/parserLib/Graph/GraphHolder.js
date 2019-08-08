@@ -20,10 +20,10 @@ class GraphHolder {
     this.graph[from][to] = null;
   }
 
-  getOutgoingEdges(machine){
-    let ret = [];
+  getOutgoingEdges(machine) {
+    const ret = [];
     Object.keys(this.graph[machine]).forEach(machineDest => {
-      if(this.graph[machine][machineDest]){
+      if (this.graph[machine][machineDest]) {
         ret.push(machineDest);
       }
     });

@@ -22,7 +22,9 @@ class GraphManager {
     if (this.currentState >= this.logEntity.eventList.length) return;
     this.currentState += 1;
 
-    const currentMachine = currState.machine + (this.logEntity.options.discriminateByPort ? ":" + currState.port : "");
+    const currentMachine =
+      currState.machine +
+      (this.logEntity.options.discriminateByPort ? `:${currState.port}` : "");
 
     ["in", "out"].forEach(type => {
       if (currState.added[type].length > 0) {
