@@ -19,6 +19,6 @@
     "flowtype-errors/show-errors": "error",
     "no-plusplus": "off",
     "no-param-reassign": "off",
-    "class-methods-use-this": "off",
+    "class-methods-use-this": "off"
   }
 }
