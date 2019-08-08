@@ -40,7 +40,7 @@ class TVPPLog {
         // Create the machine reference with the first event
         this.machines[`${logEntry.machine}:${logEntry.port}`] = new Machine(
           `${logEntry.machine}:${logEntry.port}`,
-          currEvent
+          [currEvent]
         );
       }
       this.eventList.push(currEvent);

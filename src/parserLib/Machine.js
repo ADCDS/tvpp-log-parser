@@ -10,6 +10,7 @@ class Machine {
     this.events = events || [];
     this.statuses = statuses || [];
 
+    // Not used yet
     this.statusesOrdered = {
       mediaTime: sortStatuses("mediaTime", this.statuses),
       msgTime: sortStatuses("msgTime", this.statuses),
