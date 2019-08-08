@@ -29,12 +29,16 @@ class LogParserOverlay {
     return ret;
   }
 
-  static lineToEntry(line) {
+  static lineToEntry(line, discriminateByPort) {
     /**
      *  0.0.0.0:0 works as an separator,
      *  to the left are the servers which our 'hostAddress' sends chunks to,
      *  to the right are the servers which 'hostAddress' receives packets from.
      */
+
+    if (discriminateByPort == null) {
+      discriminateByPort = false;
+    }
 
     const pieces = line.split("0.0.0.0:0");
     const firstHalf = pieces[0].split(" ");
@@ -43,13 +47,24 @@ class LogParserOverlay {
     const timestamp = firstHalf[1];
     firstHalf.splice(0, 2);
 
-    const partnersIn = firstHalf.filter(value => {
+    let partnersIn = firstHalf.filter(value => {
       return !(value === "" || value === "\r");
     });
 
-    const partnersOut = secondHalf.filter(value => {
+    let partnersOut = secondHalf.filter(value => {
       return !(value === "" || value === "\r");
     });
+
+    if (!discriminateByPort) {
+      partnersIn = partnersIn.map(el => {
+        return el.split(":")[0]
+      });
+
+      partnersOut = partnersOut.map(el => {
+        return el.split(":")[0]
+      });
+    }
+
 
     return new LogEntryOverlay(
       hostAddress[0],

@@ -1,9 +1,17 @@
 import Machine from "./Machine";
 
 class TVPPLog {
-  constructor() {
+  constructor(options) {
+    let defaultOptions = {
+      discriminateByPort: false
+    };
+
+    this.options = options || defaultOptions;
+
     this.eventList = [];
     this.machines = {};
+
+
   }
 
   /**
@@ -14,16 +22,12 @@ class TVPPLog {
     entries.forEach(logEntry => {
       // Check if machine already exists in this log
       const currEvent = logEntry.toEvent();
-      if (
-        Object.prototype.hasOwnProperty.call(
-          this.machines,
-          `${logEntry.machine}:${logEntry.port}`
-        )
-      ) {
+      let machineName = logEntry.machine + (this.options.discriminateByPort ? ":" + logEntry.port : "");
+      if (Object.prototype.hasOwnProperty.call(this.machines, machineName)) {
         // If it exists, we need to check its latest state
         const machineRef = this.machines[
-          `${logEntry.machine}:${logEntry.port}`
-        ];
+          machineName
+          ];
 
         // If we do, lets check the latest event state
         const latestEvent = machineRef.events[machineRef.events.length - 1];
@@ -38,8 +42,8 @@ class TVPPLog {
         };
 
         // Create the machine reference with the first event
-        this.machines[`${logEntry.machine}:${logEntry.port}`] = new Machine(
-          `${logEntry.machine}:${logEntry.port}`,
+        this.machines[machineName] = new Machine(
+          machineName,
           [currEvent]
         );
       }
@@ -49,18 +53,19 @@ class TVPPLog {
 
   addPerfomanceEntries(entries) {
     entries.forEach(logEntry => {
+      let machineName = logEntry.machine + (this.options.discriminateByPort ? ":" + logEntry.port : "");
       if (
         !Object.prototype.hasOwnProperty.call(
           this.machines,
-          `${logEntry.machine}:${logEntry.port}`
+          machineName
         )
       ) {
-        this.machines[`${logEntry.machine}:${logEntry.port}`] = new Machine(
-          `${logEntry.machine}:${logEntry.port}`
+        this.machines[machineName] = new Machine(
+          machineName
         );
       }
 
-      const machineObj = this.machines[`${logEntry.machine}:${logEntry.port}`];
+      const machineObj = this.machines[machineName];
       machineObj.addStatus(logEntry);
     });
   }

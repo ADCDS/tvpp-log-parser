@@ -7,6 +7,10 @@ class GraphManager {
     this.graphHolder = new GraphHolder(Object.keys(this.logEntity.machines));
   }
 
+  syncMachines() {
+    this.graphHolder = new GraphHolder(Object.keys(this.logEntity.machines));
+  }
+
   // TODO THIS
   prevState() {
     if (this.currentState === 0) return;
@@ -18,7 +22,7 @@ class GraphManager {
     if (this.currentState >= this.logEntity.eventList.length) return;
     this.currentState += 1;
 
-    const currentMachine = `${currState.machine}:${currState.port}`;
+    const currentMachine = currState.machine + (this.logEntity.options.discriminateByPort ? ":" + currState.port : "");
 
     ["in", "out"].forEach(type => {
       if (currState.added[type].length > 0) {

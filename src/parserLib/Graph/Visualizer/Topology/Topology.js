@@ -22,7 +22,38 @@ class Topology {
     this.graphHolder = graphHolder;
   }
 
-  updatePositions() {}
+  updatePositions() {
+  }
+
+  synchronizeSigma(sigma) {
+    sigma.graph.clear();
+
+    //Add nodes
+    Object.keys(this.nodeHolder).forEach(machineKey => {
+      const node = {...this.nodeHolder[machineKey]};
+      node.id = machineKey;
+      sigma.graph.addNode(node);
+    });
+
+    //Add edges
+    Object.keys(this.nodeHolder).forEach(machineKey => {
+      let edgesTo = this.graphHolder.getOutgoingEdges(machineKey);
+      edgesTo.forEach(machineDest => {
+        try{
+          sigma.graph.addEdge({
+            id: `${machineKey}_>_${machineDest}`,
+            source: machineKey,
+            target: machineDest,
+            size: 2,
+            type: "arrow",
+          });
+        }catch (e) {
+          console.log("Something bad happnd");
+        }
+      });
+
+    });
+  }
 }
 
 export default Topology;

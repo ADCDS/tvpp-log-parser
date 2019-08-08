@@ -1,171 +1,103 @@
 // Create a graph object
 import "babel-polyfill";
-import LogParserOverlay from "../../parserLib/overlay/LogParserOverlay";
 import TVPPLog from "../../parserLib/TVPPLog";
+import LogParserOverlay from "../../parserLib/Log/Overlay/LogParserOverlay";
+import LogParserPerformance from "../../parserLib/Log/Performance/LogParserPerformance";
+import GraphManager from "../../parserLib/Graph/GraphManager";
+import RingTopology from "../../parserLib/Graph/Visualizer/Topology/RingTopology";
 
 const Sigma = require("sigma");
 
+let loadedPerformance = false;
+let loadedOverlay = false;
+
 window.logEntity = new TVPPLog();
+window.graphManager = null;
 window.currentEvent = 0;
 
-const arrowChar = {
-  in: "<",
-  out: ">"
+function prevState() {}
+
+function nextState() {}
+
+function startGraph() {
+  window.graphManager = new GraphManager(window.logEntity);
+  window.graphManager.goToLastState();
+  const ringTopology = new RingTopology(
+    window.graphManager.graphHolder,
+    window.logEntity.machines,
+    100
+  );
+  ringTopology.updatePositions();
+  ringTopology.synchronizeSigma(window.sigma);
+  window.sigma.refresh();
+}
+
+const parseOverlayLog = function(e) {
+  console.log("Overlay log read.");
+  LogParserOverlay.parse(e.currentTarget.result.split("\n")).then(
+    entryArray => {
+      console.log(`Parsed ${entryArray.length} lines from overlay log`);
+      window.logEntity.addOverlayEntries(entryArray);
+      loadedOverlay = true;
+      startGraph();
+    }
+  );
 };
 
-function nextState() {
-  const currState = window.logEntity.eventList[window.currentEvent];
-  window.currentEvent += 1;
-  const N = Object.keys(window.logEntity.machines).length + 1;
-  const currentMachine = `${currState.machine}:${currState.port}`;
-
-  try {
-    window.sigma.graph.addNode({
-      id: currentMachine,
-      label: currentMachine,
-      x: 100 * Math.cos((2 * window.sigma.graph.nodes().length * Math.PI) / N),
-      y: 100 * Math.sin((2 * window.sigma.graph.nodes().length * Math.PI) / N),
-      size: 3,
-      color: `#${Math.floor(Math.random() * 16777215).toString(16)}`
-    });
-  } catch (e) {
-    // Silence is gold
-    console.log(e);
-  }
-
-  ["in", "out"].forEach(type => {
-    if (currState.added[type].length > 0) {
-      currState.added[type].forEach(el => {
-        try {
-          window.sigma.graph.addNode({
-            id: el,
-            label: el,
-            x:
-              100 *
-              Math.cos((2 * window.sigma.graph.nodes().length * Math.PI) / N),
-            y:
-              100 *
-              Math.sin((2 * window.sigma.graph.nodes().length * Math.PI) / N),
-            size: 3,
-            color: `#${Math.floor(Math.random() * 16777215).toString(16)}`
-          });
-          window.sigma.graph.addEdge({
-            id: `${currentMachine}_${arrowChar[type]}_${el}`,
-            source: currentMachine,
-            target: el,
-            type: "arrow"
-          });
-        } catch (e) {
-          // Silence is gold
-          console.log(e);
-        }
-      });
+const parsePerformanceLog = function(e) {
+  console.log("Performance log read.");
+  LogParserPerformance.parse(e.currentTarget.result.split("\n")).then(
+    entryArray => {
+      console.log(`Parsed ${entryArray.length} lines from performance log`);
+      window.logEntity.addPerfomanceEntries(entryArray);
+      loadedPerformance = true;
+      if (loadedOverlay) {
+        // Do the thing
+      }
     }
-  });
+  );
+};
 
-  if (currState.removed.length > 0) {
-    currState.removed.forEach(el => {
-      window.sigma.graph.dropEdge(`${currentMachine}_${el}`);
+function createHandler(onLoadCb) {
+  return function(evt) {
+    const { files } = evt.target; // FileList object
+
+    // files is a FileList of File objects. List some properties.
+    const output = [];
+
+    Object.keys(files).forEach(fileKey => {
+      const f = files[fileKey];
+      output.push(
+        "<li><strong>",
+        escape(f.name),
+        "</strong> (",
+        f.type || "n/a",
+        ") - ",
+        f.size,
+        " bytes, last modified: ",
+        f.lastModifiedDate.toLocaleDateString(),
+        "</li>"
+      );
     });
-  }
-  window.sigma.refresh();
-}
 
-function prevState() {
-  const currState = window.logEntity.eventList[window.currentEvent];
-  window.currentEvent -= 1;
-  const N = Object.keys(window.logEntity.machines).length + 1;
-  const currentMachine = `${currState.machine}:${currState.port}`;
+    document.getElementById("list").innerHTML = `<ul>${output.join("")}</ul>`;
 
-  try {
-    window.sigma.graph.addNode({
-      id: currentMachine,
-      label: currentMachine,
-      x: 100 * Math.cos((2 * window.sigma.graph.nodes().length * Math.PI) / N),
-      y: 100 * Math.sin((2 * window.sigma.graph.nodes().length * Math.PI) / N),
-      size: 3,
-      color: `#${Math.floor(Math.random() * 16777215).toString(16)}`
-    });
-  } catch (e) {
-    // Silence is gold
-    console.log(e);
-  }
+    console.log("Reading file...");
+    const reader = new FileReader();
 
-  if (currState.added.length > 0) {
-    currState.added.forEach(el => {
-      window.sigma.graph.dropEdge(`${currentMachine}_${el}`);
-    });
-  }
-  if (currState.removed.length > 0) {
-    currState.removed.forEach(el => {
-      try {
-        window.sigma.graph.addNode({
-          id: el,
-          label: el,
-          x:
-            100 *
-            Math.cos((2 * window.sigma.graph.nodes().length * Math.PI) / N),
-          y:
-            100 *
-            Math.sin((2 * window.sigma.graph.nodes().length * Math.PI) / N),
-          size: 3,
-          color: `#${Math.floor(Math.random() * 16777215).toString(16)}`
-        });
-        window.sigma.graph.addEdge({
-          id: `${currentMachine}_${el}`,
-          source: currentMachine,
-          target: el
-        });
-      } catch (e) {
-        // Silence is gold
-        console.log(e);
-      }
-    });
-  }
-  window.sigma.refresh();
-}
+    reader.onload = onLoadCb;
 
-function handleFileSelect(evt) {
-  const { files } = evt.target; // FileList object
-
-  // files is a FileList of File objects. List some properties.
-  const output = [];
-
-  Object.keys(files).forEach(fileKey => {
-    const f = files[fileKey];
-    output.push(
-      "<li><strong>",
-      escape(f.name),
-      "</strong> (",
-      f.type || "n/a",
-      ") - ",
-      f.size,
-      " bytes, last modified: ",
-      f.lastModifiedDate.toLocaleDateString(),
-      "</li>"
-    );
-  });
-
-  document.getElementById("list").innerHTML = `<ul>${output.join("")}</ul>`;
-
-  console.log("Reading file...");
-  const reader = new FileReader();
-
-  reader.onload = function(e) {
-    console.log("File read.");
-    LogParserOverlay.parse(e.currentTarget.result.split("\n")).then(
-      entryArray => {
-        console.log(`Parsed ${entryArray.length} lines`);
-        window.logEntity.addEntries(entryArray);
-      }
-    );
+    reader.readAsBinaryString(files[0]);
   };
-  reader.readAsBinaryString(files[0]);
 }
 
 document
-  .getElementById("logfile")
-  .addEventListener("change", handleFileSelect, false);
+  .getElementById("logOverlayFile")
+  .addEventListener("change", createHandler(parseOverlayLog), false);
+
+document
+  .getElementById("logPerformanceFile")
+  .addEventListener("change", createHandler(parsePerformanceLog), false);
 
 document.addEventListener("keydown", e => {
   switch (e.keyCode) {

@@ -1,4 +1,4 @@
-doctype html  
+doctype html
 html(lang='pt')
   head
     title TVPP Log View
@@ -12,9 +12,12 @@ html(lang='pt')
   body
     h1 TVPP Log viewer
     div#toolbar
-      input#logfile(type='file')
-      input#prev(type='button',value='<')
-      input#next(type='button',value='>')
+      input#logOverlayFile(type='file')
+      br
+      input#logPerformanceFile(type='file')
+      br
+      input#prev(type='button', value='<')
+      input#next(type='button', value='>')
     div#container
 
     ul#list
