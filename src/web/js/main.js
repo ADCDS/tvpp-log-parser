@@ -5,6 +5,8 @@ import LogParserOverlay from "../../parserLib/Log/Overlay/LogParserOverlay";
 import LogParserPerformance from "../../parserLib/Log/Performance/LogParserPerformance";
 import GraphManager from "../../parserLib/Graph/GraphManager";
 import RingTopology from "../../parserLib/Graph/Visualizer/Topology/RingTopology";
+import StarTopology from "../../parserLib/Graph/Visualizer/Topology/StarTopology";
+import DijkstraFilter from "../../parserLib/Graph/Filter/DijkstraFilter";
 
 const Sigma = require("sigma");
 
@@ -14,10 +16,40 @@ let loadedOverlay = false;
 window.logEntity = new TVPPLog();
 window.graphManager = null;
 window.currentEvent = 0;
+window.filterType = null;
+window.topologyType = null;
 
 function prevState() {}
 
 function nextState() {}
+
+function handleTopologyTypeChange(e) {
+	const { value } = e;
+
+	switch (value) {
+		default:
+		case "RingToplogy":
+			window.typeTopology = RingTopology;
+			break;
+		case "StarTopology":
+			window.typeTopology = StarTopology;
+			break;
+	}
+}
+
+function handleFilterTypeChange(e) {
+	const { value } = e;
+
+	switch (value) {
+		default:
+		case "NoFilter":
+			window.filterType = null;
+			break;
+		case "DijkstraFilter":
+			window.filterType = DijkstraFilter;
+			break;
+	}
+}
 
 function startGraph() {
 	window.graphManager = new GraphManager(window.logEntity);
@@ -98,6 +130,8 @@ document
 document
 	.getElementById("logPerformanceFile")
 	.addEventListener("change", createHandler(parsePerformanceLog), false);
+
+document.getElementById("topologyType").addEventListener("change");
 
 document.addEventListener("keydown", e => {
 	switch (e.keyCode) {

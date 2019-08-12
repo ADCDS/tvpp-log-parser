@@ -15,9 +15,29 @@ html(lang='pt')
 			input#logOverlayFile(type='file')
 			br
 			input#logPerformanceFile(type='file')
+
+			br
+			label(for='filterType') Filter Type
+				- const filterTypeOptions = [{name: 'No Filter', value: 'NoFilter', selected: true}, {name: 'Dijkstra Shortest Path', value: 'DijkstraFilter'}]
+				select#filterType(name='filterType' size='3' required)
+					each filterType in filterTypeOptions
+						if(filterType.selected != null && filterType.selected)
+							option(value=(filterType.value) selected) #{filterType.name}
+						else
+							option(value=(filterType.value)) #{filterType.name}
+			br
+			label(for='topologyType') Topology Type
+				- const topologyTypeOptions = [{name: 'Ring Topology', value: 'RingTopology', selected: true}]
+				select#topologyType(name='topologyType' size='3' required)
+					each topologyType in topologyTypeOptions
+						if(topologyType.selected != null && topologyType.selected)
+							option(value=(topologyType.value) selected) #{topologyType.name}
+						else
+							option(value=(topologyType.value)) #{topologyType.name}
 			br
 			input#prev(type='button', value='<')
 			input#next(type='button', value='>')
+			br
 		div#container
 
 		ul#list
