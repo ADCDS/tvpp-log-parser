@@ -1,0 +1,175 @@
+diff a/src/web/js/main.js b/src/web/js/main.js	(rejected hunks)
+@@ -18,2 +18 @@ window.currentEvent = 0;
+-function prevState() {
+-}
++function prevState() {}
+@@ -21,2 +20 @@ function prevState() {
+-function nextState() {
+-}
++function nextState() {}
+@@ -37,10 +35,10 @@ function startGraph() {
+-const parseOverlayLog = function (e) {
+-	console.log("Overlay log read.");
+-	LogParserOverlay.parse(e.currentTarget.result.split("\n")).then(
+-		entryArray => {
+-			console.log(`Parsed ${entryArray.length} lines from overlay log`);
+-			window.logEntity.addOverlayEntries(entryArray);
+-			loadedOverlay = true;
+-			startGraph();
+-		}
+-	);
++const parseOverlayLog = function(e) {
++  console.log("Overlay log read.");
++  LogParserOverlay.parse(e.currentTarget.result.split("\n")).then(
++    entryArray => {
++      console.log(`Parsed ${entryArray.length} lines from overlay log`);
++      window.logEntity.addOverlayEntries(entryArray);
++      loadedOverlay = true;
++      startGraph();
++    }
++  );
+@@ -49,12 +47,12 @@ const parseOverlayLog = function (e) {
+-const parsePerformanceLog = function (e) {
+-	console.log("Performance log read.");
+-	LogParserPerformance.parse(e.currentTarget.result.split("\n")).then(
+-		entryArray => {
+-			console.log(`Parsed ${entryArray.length} lines from performance log`);
+-			window.logEntity.addPerfomanceEntries(entryArray);
+-			loadedPerformance = true;
+-			if (loadedOverlay) {
+-				// Do the thing
+-			}
+-		}
+-	);
++const parsePerformanceLog = function(e) {
++  console.log("Performance log read.");
++  LogParserPerformance.parse(e.currentTarget.result.split("\n")).then(
++    entryArray => {
++      console.log(`Parsed ${entryArray.length} lines from performance log`);
++      window.logEntity.addPerfomanceEntries(entryArray);
++      loadedPerformance = true;
++      if (loadedOverlay) {
++        // Do the thing
++      }
++    }
++  );
+@@ -64,30 +62,30 @@ function createHandler(onLoadCb) {
+-	return function (evt) {
+-		const {files} = evt.target; // FileList object
+-
+-		// files is a FileList of File objects. List some properties.
+-		const output = [];
+-
+-		Object.keys(files).forEach(fileKey => {
+-			const f = files[fileKey];
+-			output.push(
+-				"<li><strong>",
+-				escape(f.name),
+-				"</strong> (",
+-				f.type || "n/a",
+-				") - ",
+-				f.size,
+-				" bytes, last modified: ",
+-				f.lastModifiedDate.toLocaleDateString(),
+-				"</li>"
+-			);
+-		});
+-
+-		document.getElementById("list").innerHTML = `<ul>${output.join("")}</ul>`;
+-
+-		console.log("Reading file...");
+-		const reader = new FileReader();
+-
+-		reader.onload = onLoadCb;
+-
+-		reader.readAsBinaryString(files[0]);
+-	};
++  return function(evt) {
++    const { files } = evt.target; // FileList object
++
++    // files is a FileList of File objects. List some properties.
++    const output = [];
++
++    Object.keys(files).forEach(fileKey => {
++      const f = files[fileKey];
++      output.push(
++        "<li><strong>",
++        escape(f.name),
++        "</strong> (",
++        f.type || "n/a",
++        ") - ",
++        f.size,
++        " bytes, last modified: ",
++        f.lastModifiedDate.toLocaleDateString(),
++        "</li>"
++      );
++    });
++
++    document.getElementById("list").innerHTML = `<ul>${output.join("")}</ul>`;
++
++    console.log("Reading file...");
++    const reader = new FileReader();
++
++    reader.onload = onLoadCb;
++
++    reader.readAsBinaryString(files[0]);
++  };
+@@ -118,29 +116,29 @@ document.addEventListener("keydown", e => {
+-(function () {
+-	window.sigma = new Sigma({
+-		renderer: {
+-			container: document.getElementById("container"),
+-			type: "canvas"
+-		},
+-		settings: {
+-			minEdgeSize: 0.1,
+-			maxEdgeSize: 2,
+-			minNodeSize: 1,
+-			maxNodeSize: 8
+-		}
+-	});
+-	document.getElementById("prev").addEventListener(
+-		"click",
+-		() => {
+-			prevState();
+-		},
+-		false
+-	);
+-	document.getElementById("next").addEventListener(
+-		"click",
+-		() => {
+-			nextState();
+-		},
+-		false
+-	);
+-
+-	console.log("Hello world");
++(function() {
++  window.sigma = new Sigma({
++    renderer: {
++      container: document.getElementById("container"),
++      type: "canvas"
++    },
++    settings: {
++      minEdgeSize: 0.1,
++      maxEdgeSize: 2,
++      minNodeSize: 1,
++      maxNodeSize: 8
++    }
++  });
++  document.getElementById("prev").addEventListener(
++    "click",
++    () => {
++      prevState();
++    },
++    false
++  );
++  document.getElementById("next").addEventListener(
++    "click",
++    () => {
++      nextState();
++    },
++    false
++  );
++
++  console.log("Hello world");

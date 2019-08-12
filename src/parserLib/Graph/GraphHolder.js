@@ -1,34 +1,34 @@
 class GraphHolder {
-  constructor(machines) {
-    // Preallocate graph
-    const machinesObj = {};
-    machines.forEach(el => {
-      machinesObj[el] = null;
-    });
+	constructor(machines) {
+		// Preallocate graph
+		const machinesObj = {};
+		machines.forEach(el => {
+			machinesObj[el] = null;
+		});
 
-    this.graph = { ...machinesObj };
-    machines.forEach(el => {
-      this.graph[el] = { ...machinesObj };
-    });
-  }
+		this.graph = { ...machinesObj };
+		machines.forEach(el => {
+			this.graph[el] = { ...machinesObj };
+		});
+	}
 
-  addEdge(from, to) {
-    this.graph[from][to] = true;
-  }
+	addEdge(from, to) {
+		this.graph[from][to] = true;
+	}
 
-  removeEdge(from, to) {
-    this.graph[from][to] = null;
-  }
+	removeEdge(from, to) {
+		this.graph[from][to] = null;
+	}
 
-  getOutgoingEdges(machine) {
-    const ret = [];
-    Object.keys(this.graph[machine]).forEach(machineDest => {
-      if (this.graph[machine][machineDest]) {
-        ret.push(machineDest);
-      }
-    });
-    return ret;
-  }
+	getOutgoingEdges(machine) {
+		const ret = [];
+		Object.keys(this.graph[machine]).forEach(machineDest => {
+			if (this.graph[machine][machineDest]) {
+				ret.push(machineDest);
+			}
+		});
+		return ret;
+	}
 }
 
 export default GraphHolder;

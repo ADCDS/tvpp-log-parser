@@ -1,0 +1,11 @@
+diff a/src/web/index.js b/src/web/index.js	(rejected hunks)
+@@ -10,2 +10,2 @@ app.use(express.static("./dist"));
+-app.get("/", function (req, res) {
+-	res.render("index", {title: "Hey", message: "Hello there!"});
++app.get("/", function(req, res) {
++  res.render("index", { title: "Hey", message: "Hello there!" });
+@@ -14,2 +14,2 @@ app.get("/", function (req, res) {
+-app.listen(3000, function () {
+-	console.log("TVPP log parser is running on port 80!");
++app.listen(3000, function() {
++  console.log("TVPP log parser is running on port 80!");

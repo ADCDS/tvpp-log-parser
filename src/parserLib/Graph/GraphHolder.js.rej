@@ -1,0 +1,12 @@
+diff a/src/parserLib/Graph/GraphHolder.js b/src/parserLib/Graph/GraphHolder.js	(rejected hunks)
+@@ -9,5 +9,5 @@ class GraphHolder {
+-		this.graph = {...machinesObj};
+-		machines.forEach(el => {
+-			this.graph[el] = {...machinesObj};
+-		});
+-	}
++    this.graph = { ...machinesObj };
++    machines.forEach(el => {
++      this.graph[el] = { ...machinesObj };
++    });
++  }
