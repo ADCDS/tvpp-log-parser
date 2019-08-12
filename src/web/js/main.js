@@ -170,7 +170,7 @@ document
 	.addEventListener("change", createHandler(parsePerformanceLog), false);
 
 document
-	.getElementById("FilterType")
+	.getElementById("filterType")
 	.addEventListener("change", handleFilterTypeChange);
 
 document

@@ -7,7 +7,7 @@ import DijkstraFilter from "../src/parserLib/Graph/Filter/DijkstraFilter";
 
 test("dijkstraFilterTest", () => {
 	const logOverlay = LogParserOverlay.readLog(
-		"./logs/log-overlay_CH-all_TEC+0_P-120s_PERCENT-05_IN-20_FREE-50-.txt"
+		"./logs/test1_overlay.txt"
 	);
 	const logPerformance = LogParserPerformance.readLog("./logs/test1_perf.txt");
 	logOverlay.then(
@@ -25,7 +25,7 @@ test("dijkstraFilterTest", () => {
 							logEntity.addPerfomanceEntries(performanceEntryArray);
 							const graphHolder = new GraphManager(logEntity);
 							// graphHolder.goToLastState();
-							graphHolder.goToAbsoluteState(142802);
+							graphHolder.goToAbsoluteState(100);
 							const dijkstraFilter = new DijkstraFilter(
 								graphHolder.getGraphHolder(),
 								{

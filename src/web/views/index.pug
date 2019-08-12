@@ -21,10 +21,10 @@ html(lang='pt')
 				- const PugfilterTypeOptions = [{name: 'No Filter', value: 'NoFilter', selected: true}, {name: 'Dijkstra Shortest Path', value: 'DijkstraFilter'}]
 				select#filterType(name='FilterType' size='3' required)
 					each filterType in PugfilterTypeOptions
-						if(FilterType.selected != null && FilterType.selected)
-							option(value=(FilterType.value) selected) #{FilterType.name}
+						if(filterType.selected != null && filterType.selected)
+							option(value=(filterType.value) selected) #{filterType.name}
 						else
-							option(value=(FilterType.value)) #{FilterType.name}
+							option(value=(filterType.value)) #{filterType.name}
 			br
 			label(for='topologyType') Topology Type
 				- const PugtopologyTypeOptions = [{name: 'Ring Topology', value: 'RingTopology', selected: true}]

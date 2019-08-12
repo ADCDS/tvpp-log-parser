@@ -56,7 +56,8 @@ class DijkstraFilter extends Filter {
 			neighbors.forEach(neighbor => {
 				graph[node][neighbor] = false;
 			});
-			graph[node][fathers[node]] = true;
+			if(fathers[node] != null)
+				graph[node][fathers[node]] = true;
 		});
 
 		console.log("Done");
