@@ -68,6 +68,8 @@ function startGraph() {
 	window.graphManager = new GraphManager(window.logEntity);
 	window.graphManager.goToAbsoluteState(window.selectedEvent);
 
+	let filter = null;
+	let topology = null;
 	if (
 		window.FilterType != null &&
 		window.FilterType.name === "DijkstraFilter"
@@ -79,7 +81,7 @@ function startGraph() {
 				: window.logEntity.eventList[0].machine
 		};
 
-		const filter = new window.FilterType(
+		filter = new window.FilterType(
 			window.graphManager.graphHolder,
 			options
 		);
@@ -87,11 +89,21 @@ function startGraph() {
 	} else {
 		console.log("remove me");
 	}
-	const topology = new window.TopologyType(
-		window.graphManager.graphHolder,
-		window.logEntity.machines,
-		window.TopologyTypeOptions
-	);
+	if(window.TopologyType.name === "StarTopology"){
+		topology = new window.TopologyType(
+			window.graphManager.graphHolder,
+			window.logEntity.machines,
+			window.TopologyTypeOptions,
+			(window.FilterType.name === "DijkstraFilter" && filter ? filter.distancesFromSource : null),
+			(window.FilterType.name === "DijkstraFilter" && filter ? filter.fathers : null)
+		);
+	}else {
+		topology = new window.TopologyType(
+			window.graphManager.graphHolder,
+			window.logEntity.machines,
+			window.TopologyTypeOptions
+		);
+	}
 	topology.updatePositions();
 	topology.synchronizeSigma(window.sigma);
 

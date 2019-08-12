@@ -6,6 +6,7 @@ class DijkstraFilter extends Filter {
 		super(graphHolder, options);
 		this.vertices = Object.keys(this.graphHolder.graph);
 		this.distancesFromSource = {};
+		this.fathers = {};
 	}
 
 	dijkstraShortestPath = function(graph, source) {
@@ -45,6 +46,7 @@ class DijkstraFilter extends Filter {
 		console.log("Done");
 
 		this.distancesFromSource = dist;
+		this.fathers = prev;
 		return prev;
 	};
 
