@@ -1,6 +1,9 @@
+import GraphHolder from "../GraphHolder";
+
 class Filter {
-	constructor(graphHolder) {
-		this.graphHolder = { ...graphHolder };
+	constructor(graphHolder, options) {
+		this.graphHolder = graphHolder;
+		this.options = options || {};
 	}
 
 	applyFilter() {}

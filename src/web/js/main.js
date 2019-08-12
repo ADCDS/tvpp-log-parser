@@ -15,21 +15,34 @@ let loadedOverlay = false;
 
 window.logEntity = new TVPPLog();
 window.graphManager = null;
-window.currentEvent = 0;
-window.filterType = null;
-window.topologyType = null;
+
+window.FilterType = null;
+window.FilterTypeOptions = {};
+
+window.TopologyType = RingTopology;
+window.TopologyTypeOptions = { radius: 100 };
+
+window.selectedEvent = 0;
 
 function prevState() {}
 
 function nextState() {}
 
+function handleSelectedEventChange(e) {
+	if (e.target.value < window.logEntity.eventList.length)
+		window.selectedEvent = Number(e.target.value);
+	else window.selectedEvent = Number(window.logEntity.eventList.length);
+	e.target.value = window.selectedEvent;
+}
+
 function handleTopologyTypeChange(e) {
-	const { value } = e;
+	const { value } = e.target;
 
 	switch (value) {
 		default:
 		case "RingToplogy":
 			window.typeTopology = RingTopology;
+			window.topologyTypeOptions = { radius: 100 };
 			break;
 		case "StarTopology":
 			window.typeTopology = StarTopology;
@@ -38,30 +51,55 @@ function handleTopologyTypeChange(e) {
 }
 
 function handleFilterTypeChange(e) {
-	const { value } = e;
+	const { value } = e.target;
 
 	switch (value) {
 		default:
 		case "NoFilter":
-			window.filterType = null;
+			window.FilterType = null;
 			break;
 		case "DijkstraFilter":
-			window.filterType = DijkstraFilter;
+			window.FilterType = DijkstraFilter;
 			break;
 	}
 }
 
 function startGraph() {
 	window.graphManager = new GraphManager(window.logEntity);
-	window.graphManager.goToLastState();
-	const ringTopology = new RingTopology(
+	window.graphManager.goToAbsoluteState(window.selectedEvent);
+
+	if (
+		window.FilterType != null &&
+		window.FilterType.name === "DijkstraFilter"
+	) {
+		// The first machine on the log is the server
+		const options = {
+			source: window.logEntity.discriminateByPort
+				? `${window.logEntity.eventList[0].machine}:${window.logEntity.eventList[0].port}`
+				: window.logEntity.eventList[0].machine
+		};
+
+		const filter = new window.FilterType(
+			window.graphManager.graphHolder,
+			options
+		);
+		filter.applyFilter();
+	} else {
+		console.log("remove me");
+	}
+	const topology = new window.TopologyType(
 		window.graphManager.graphHolder,
 		window.logEntity.machines,
-		100
+		window.TopologyTypeOptions
 	);
-	ringTopology.updatePositions();
-	ringTopology.synchronizeSigma(window.sigma);
+	topology.updatePositions();
+	topology.synchronizeSigma(window.sigma);
+
 	window.sigma.refresh();
+}
+
+function draw() {
+	startGraph();
 }
 
 const parseOverlayLog = function(e) {
@@ -70,8 +108,8 @@ const parseOverlayLog = function(e) {
 		entryArray => {
 			console.log(`Parsed ${entryArray.length} lines from overlay log`);
 			window.logEntity.addOverlayEntries(entryArray);
+			document.getElementById("numberOfEvents").innerHTML = entryArray.length;
 			loadedOverlay = true;
-			startGraph();
 		}
 	);
 };
@@ -131,7 +169,19 @@ document
 	.getElementById("logPerformanceFile")
 	.addEventListener("change", createHandler(parsePerformanceLog), false);
 
-document.getElementById("topologyType").addEventListener("change");
+document
+	.getElementById("FilterType")
+	.addEventListener("change", handleFilterTypeChange);
+
+document
+	.getElementById("topologyType")
+	.addEventListener("change", handleTopologyTypeChange);
+
+document
+	.getElementById("selectedEventNumber")
+	.addEventListener("change", handleSelectedEventChange);
+
+document.getElementById("draw").addEventListener("click", draw);
 
 document.addEventListener("keydown", e => {
 	switch (e.keyCode) {
@@ -160,20 +210,6 @@ document.addEventListener("keydown", e => {
 			maxNodeSize: 8
 		}
 	});
-	document.getElementById("prev").addEventListener(
-		"click",
-		() => {
-			prevState();
-		},
-		false
-	);
-	document.getElementById("next").addEventListener(
-		"click",
-		() => {
-			nextState();
-		},
-		false
-	);
 
 	console.log("Hello world");
 })();

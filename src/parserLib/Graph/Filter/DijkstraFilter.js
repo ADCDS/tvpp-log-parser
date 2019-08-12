@@ -2,9 +2,8 @@ import { FibonacciHeap } from "@tyriar/fibonacci-heap";
 import Filter from "./Filter";
 
 class DijkstraFilter extends Filter {
-	constructor(graphHolder, source) {
-		super(graphHolder);
-		this.source = source;
+	constructor(graphHolder, options) {
+		super(graphHolder, options);
 		this.vertices = Object.keys(this.graphHolder.graph);
 		this.distancesFromSource = {};
 	}
@@ -51,7 +50,7 @@ class DijkstraFilter extends Filter {
 
 	applyFilter() {
 		const { graph } = this.graphHolder;
-		const fathers = this.dijkstraShortestPath(graph, this.source);
+		const fathers = this.dijkstraShortestPath(graph, this.options.source);
 		this.vertices.forEach(node => {
 			const neighbors = Object.keys(graph[node]);
 			neighbors.forEach(neighbor => {

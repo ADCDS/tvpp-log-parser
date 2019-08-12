@@ -3,10 +3,11 @@
 import Node from "../Node";
 
 class Topology {
-	constructor(graphHolder, machines) {
+	constructor(graphHolder, machines, options) {
 		this.graphHolder = graphHolder;
 		this.machines = machines;
 		this.nodeHolder = {};
+		this.options = options || {};
 		Object.keys(machines).forEach(machineKey => {
 			this.nodeHolder[machineKey] = new Node(machineKey);
 			this.nodeHolder[machineKey].color = "#000000";

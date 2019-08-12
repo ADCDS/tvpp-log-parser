@@ -28,7 +28,9 @@ test("dijkstraFilterTest", () => {
 							graphHolder.goToAbsoluteState(142802);
 							const dijkstraFilter = new DijkstraFilter(
 								graphHolder.getGraphHolder(),
-								"150.164.3.36"
+								{
+									source: "150.164.3.36"
+								}
 							);
 							dijkstraFilter.applyFilter();
 							console.log("Done");
