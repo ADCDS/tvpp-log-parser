@@ -1,25 +1,25 @@
 doctype html
 html(lang='pt')
-  head
-    title TVPP Log View
-    style(type="text/css").
-      #container {
-        width: 100%;
-        height: 700px;
-        margin: 30px;
-      }
+	head
+		title TVPP Log View
+		style(type="text/css").
+			#container {
+				width: 100%;
+				height: 700px;
+				margin: 30px;
+			}
 
-  body
-    h1 TVPP Log viewer
-    div#toolbar
-      input#logOverlayFile(type='file')
-      br
-      input#logPerformanceFile(type='file')
-      br
-      input#prev(type='button', value='<')
-      input#next(type='button', value='>')
-    div#container
+	body
+		h1 TVPP Log viewer
+		div#toolbar
+			input#logOverlayFile(type='file')
+			br
+			input#logPerformanceFile(type='file')
+			br
+			input#prev(type='button', value='<')
+			input#next(type='button', value='>')
+		div#container
 
-    ul#list
-  script(src='/js/bundle.js')
+		ul#list
+	script(src='/js/bundle.js')
 
