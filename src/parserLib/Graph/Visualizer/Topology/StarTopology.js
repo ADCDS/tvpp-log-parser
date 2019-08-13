@@ -2,19 +2,26 @@ import Topology from "./Topology";
 import DijkstraFilter from "../../Filter/DijkstraFilter";
 
 class StarTopology extends Topology {
-	constructor(graphHolder, machines, options, distanceFromSource, fathers) {
+	constructor(graphHolder, machines, options) {
 		super(graphHolder, machines, options);
-		this.options = options || {
-			radius: 30
-		};
-		if (this.distanceFromSource == null || this.fathers == null) {
-			// I dont have the distances, need to calculate using dijkstra
-			const dijkstraFilter = new DijkstraFilter(graphHolder);
+		this.radius = options.radius || 30;
+		this.distancesFromSource = options.distancesFromSource;
+		this.fathers = options.fathers;
+		this.source = options.source;
+
+		if (this.distancesFromSource == null || this.fathers == null) {
+			if(this.source == null){
+				throw "Invoked StarTopology without dijkstra data and source";
+			}
+
+			// I dont have the distances, need to calculate it using dijkstra
+			const dijkstraFilter = new DijkstraFilter(graphHolder, {
+				source: this.source
+			});
 			dijkstraFilter.applyFilter();
-			this.distanceFromSource = dijkstraFilter.distancesFromSource;
+			this.distancesFromSource = dijkstraFilter.distancesFromSource;
 			this.fathers = dijkstraFilter.fathers;
 		}
-		this.distanceFromSource = distanceFromSource;
 	}
 
 	updatePositions() {
@@ -24,24 +31,34 @@ class StarTopology extends Topology {
 
 		//Distances preprocessor
 		let numberOfNodesAtRing = {0: 1};
-		let nodes = Object.keys(this.distanceFromSource).sort(
+		let iterNumRing = {0: 0};
+		let nodes = Object.keys(this.distancesFromSource).sort(
 			(e1, e2) => {
-				return this.distanceFromSource[e1] - this.distanceFromSource[e2];
+				return this.distancesFromSource[e1] - this.distancesFromSource[e2];
 			}
 		);
 		nodes.forEach(el => {
-			if (numberOfNodesAtRing.hasOwnProperty(this.distanceFromSource[el])) {
-				this.distanceFromSource[el]++;
+			if (numberOfNodesAtRing.hasOwnProperty(this.distancesFromSource[el])) {
+				numberOfNodesAtRing[this.distancesFromSource[el]]++;
 			} else {
-				this.distanceFromSource[el] = 1;
+				numberOfNodesAtRing[this.distancesFromSource[el]] = 1;
+				iterNumRing[this.distancesFromSource[el]] = 0;
 			}
 		});
+
 		nodes.forEach(machineKey => {
 			const node = this.nodeHolder[machineKey];
-			node.x = this.radius * this.distanceFromSource[machineKey] * Math.cos((2 * iterNum * Math.PI) / machineLength);
-			node.y = this.radius * this.distanceFromSource[machineKey] * Math.sin((2 * iterNum * Math.PI) / machineLength);
-			iterNum++;
+			const nodeFather = this.nodeHolder[this.fathers[machineKey]];
+			let nodeFatherOffset = {x: 0, y: 0};
+			if(nodeFather != null)
+				nodeFatherOffset = {x: nodeFather.x, y: nodeFather.y};
+
+			node.x = /*nodeFatherOffset.x + */this.radius * this.distancesFromSource[machineKey] * Math.cos((2 * iterNumRing[this.distancesFromSource[machineKey]] * Math.PI) / numberOfNodesAtRing[this.distancesFromSource[machineKey]]);
+			node.y = /*nodeFatherOffset.y + */this.radius * this.distancesFromSource[machineKey] * Math.sin((2 * iterNumRing[this.distancesFromSource[machineKey]] * Math.PI) / numberOfNodesAtRing[this.distancesFromSource[machineKey]]);
+			iterNumRing[this.distancesFromSource[machineKey]]++;
 		});
+
+		console.log("Done");
 	}
 }
 

@@ -3,6 +3,10 @@ import Filter from "./Filter";
 
 class DijkstraFilter extends Filter {
 	constructor(graphHolder, options) {
+		if(!options.hasOwnProperty("source")){
+			throw "Invoked DijkstraFilter without 'source' option";
+		}
+
 		super(graphHolder, options);
 		this.vertices = Object.keys(this.graphHolder.graph);
 		this.distancesFromSource = {};

@@ -16,11 +16,11 @@ let loadedOverlay = false;
 window.logEntity = new TVPPLog();
 window.graphManager = null;
 
-window.FilterType = null;
+window.FilterType = DijkstraFilter;
 window.FilterTypeOptions = {};
 
-window.TopologyType = RingTopology;
-window.TopologyTypeOptions = { radius: 100 };
+window.TopologyType = StarTopology;
+window.TopologyTypeOptions = { radius: 30 };
 
 window.selectedEvent = 0;
 
@@ -90,12 +90,12 @@ function startGraph() {
 		console.log("remove me");
 	}
 	if(window.TopologyType.name === "StarTopology"){
+		window.TopologyTypeOptions['distancesFromSource'] = filter.distancesFromSource;
+		window.TopologyTypeOptions['fathers'] = filter.fathers;
 		topology = new window.TopologyType(
 			window.graphManager.graphHolder,
 			window.logEntity.machines,
-			window.TopologyTypeOptions,
-			(window.FilterType.name === "DijkstraFilter" && filter ? filter.distancesFromSource : null),
-			(window.FilterType.name === "DijkstraFilter" && filter ? filter.fathers : null)
+			window.TopologyTypeOptions
 		);
 	}else {
 		topology = new window.TopologyType(
