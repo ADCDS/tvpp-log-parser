@@ -47,6 +47,7 @@ class TVPPLog {
   }
 
   addPerfomanceEntries(entries) {
+  	let foundBandwidths = {};
     entries.forEach(logEntry => {
       const machineName =
         logEntry.machine +
@@ -57,6 +58,21 @@ class TVPPLog {
 
       const machineObj = this.machines[machineName];
       machineObj.addStatus(logEntry);
+
+      if(logEntry.hasOwnProperty('bandwidth')){
+	      foundBandwidths[logEntry.bandwidth] = true;
+	      /*if(machineObj.hasOwnProperty('bandwidth') && machineObj.bandwidth !== logEntry.bandwidth){
+	      	throw "Machine " + machineObj.address +" bandwidth from " + machineObj.bandwidth + " to " + logEntry.bandwidth + " changed at line " + logEntry.logId;
+	      }*/
+	      machineObj.addBandwidth(logEntry.msgTime, logEntry.bandwidth);
+      }
+    });
+    let bandwidths = Object.keys(foundBandwidths).sort().map(Number);
+    Object.keys(this.machines).forEach(machineKey => {
+    	Object.keys(this.machines[machineKey].bandwidths).forEach(machineBandwidths => {
+    		let bandwidthObj = this.machines[machineKey].bandwidths[machineBandwidths];
+    	    bandwidthObj.classification = bandwidths.indexOf(bandwidthObj.value);
+	    });
     });
   }
 }

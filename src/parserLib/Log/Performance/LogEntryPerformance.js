@@ -1,5 +1,6 @@
 class LogEntryPerformance {
   constructor(
+  	logId,
     machine,
     port,
     pkGen,
@@ -29,6 +30,7 @@ class LogEntryPerformance {
     bandwidth,
     ingressRequest
   ) {
+    this.logId = logId;
     this.machine = machine;
     this.port = port;
     this.pkGen = pkGen;
@@ -55,7 +57,7 @@ class LogEntryPerformance {
     this.partnerOutFREE = partnerOutFREE;
     this.sizePeerOut = sizePeerOut;
     this.sizePeerOutFREE = sizePeerOutFREE;
-    this.bandwidth = bandwidth;
+    this.bandwidth = Number(bandwidth);
     this.ingressRequest = ingressRequest;
   }
 }

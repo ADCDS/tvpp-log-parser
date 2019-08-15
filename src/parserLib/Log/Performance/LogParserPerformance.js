@@ -23,13 +23,13 @@ class LogParserPerformance {
 
   static async parse(lineArray) {
     const ret = [];
-    for (let i = 1; i < lineArray.length; i += 1) {
-      if (lineArray[i] !== "") ret.push(this.lineToEntry(lineArray[i]));
+    for (let i = 0; i < lineArray.length; i += 1) {
+      if (lineArray[i] !== "") ret.push(this.lineToEntry(i, lineArray[i]));
     }
     return ret;
   }
 
-  static lineToEntry(line) {
+  static lineToEntry(lineId, line) {
     /**
      *  0.0.0.0:0 works as an separator,
      *  to the left are the servers which our 'hostAddress' sends chunks to,
@@ -41,6 +41,7 @@ class LogParserPerformance {
     const split = machine.split(":");
 
     return new LogEntryPerformance(
+      lineId,
       split[0],
       split[1],
       pieces[1],

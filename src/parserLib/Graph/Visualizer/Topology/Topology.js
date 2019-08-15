@@ -7,10 +7,21 @@ class Topology {
 		this.graphHolder = graphHolder;
 		this.machines = machines;
 		this.nodeHolder = {};
-		this.options = options || {};
+		this.options = options;
+
+		this.colorMap = options.colorMap || {
+				"0": "#ff0000",
+				"1": "#0000ff",
+				"2": "#ff7b00",
+				"3": "#fff400",
+				"4": "#64ff00",
+			};
+
+		this.bandwidths = {};
+
 		Object.keys(machines).forEach(machineKey => {
 			this.nodeHolder[machineKey] = new Node(machineKey);
-			this.nodeHolder[machineKey].color = "#000000";
+			this.nodeHolder[machineKey].color = this.colorMap[machines[machineKey].bandwidthClassification];
 			this.nodeHolder[machineKey].size = 3;
 		});
 	}

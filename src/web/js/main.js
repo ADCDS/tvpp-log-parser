@@ -41,11 +41,11 @@ function handleTopologyTypeChange(e) {
 	switch (value) {
 		default:
 		case "RingToplogy":
-			window.typeTopology = RingTopology;
-			window.topologyTypeOptions = { radius: 100 };
+			window.TopologyType = RingTopology;
+			window.TopologyTypeOptions = { radius: 100 };
 			break;
 		case "StarTopology":
-			window.typeTopology = StarTopology;
+			window.TopologyType = StarTopology;
 			break;
 	}
 }
