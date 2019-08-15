@@ -10,7 +10,7 @@ class LogEntryOverlay {
   }
 
   toEvent() {
-    return new Event(this.machine, this.port, {
+    return new Event(this.machine, this.timestamp, this.port, {
       in: this.partnersIn,
       out: this.partnersOut
     });

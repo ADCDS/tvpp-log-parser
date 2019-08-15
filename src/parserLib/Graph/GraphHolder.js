@@ -10,6 +10,8 @@ class GraphHolder {
 		machines.forEach(el => {
 			this.graph[el] = { ...machinesObj };
 		});
+
+		this.timestamp = 0;
 	}
 
 	addEdge(from, to) {

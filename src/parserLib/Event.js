@@ -1,6 +1,7 @@
 class Event {
-	constructor(machine, port, state, added, removed) {
+	constructor(machine, timestamp, port, state, added, removed) {
 		this.machine = machine;
+		this.timestamp = Number(timestamp);
 		this.port = port;
 		this.state = state || { in: [], out: [] };
 		this.added = added || { in: [], out: [] };

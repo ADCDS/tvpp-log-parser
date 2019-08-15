@@ -26,6 +26,8 @@ class GraphManager {
 			currState.machine +
 			(this.logEntity.options.discriminateByPort ? `:${currState.port}` : "");
 
+		this.graphHolder.timestamp = currState.timestamp;
+
 		["in", "out"].forEach(type => {
 			if (currState.added[type].length > 0) {
 				currState.added[type].forEach(targetMachine => {
