@@ -53,6 +53,7 @@ class Machine {
   		ret = this.bandwidths[timestamp];
   		iter++;
     }
+    return ret;
   }
 }
 

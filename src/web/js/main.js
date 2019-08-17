@@ -90,8 +90,15 @@ function startGraph() {
 		console.log("remove me");
 	}
 	if(window.TopologyType.name === "StarTopology"){
-		window.TopologyTypeOptions['distancesFromSource'] = filter.distancesFromSource;
-		window.TopologyTypeOptions['fathers'] = filter.fathers;
+		if (
+			window.FilterType != null &&
+			window.FilterType.name === "DijkstraFilter"
+		) {
+			window.TopologyTypeOptions['distancesFromSource'] = filter.distancesFromSource;
+			window.TopologyTypeOptions['fathers'] = filter.fathers;
+		}else if (window.FilterType == null){
+			window.TopologyTypeOptions['source'] = window.logEntity.eventList[0].machine;
+		}
 		topology = new window.TopologyType(
 			window.graphManager.graphHolder,
 			window.logEntity.machines,

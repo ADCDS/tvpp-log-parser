@@ -4,7 +4,7 @@ import DijkstraFilter from "../../Filter/DijkstraFilter";
 class StarTopology extends Topology {
 	constructor(graphHolder, machines, options) {
 		super(graphHolder, machines, options);
-		this.radius = options.radius || 30;
+		this.radius = options.radius || 100;
 		this.distancesFromSource = options.distancesFromSource;
 		this.fathers = options.fathers;
 		this.source = options.source;
@@ -25,6 +25,7 @@ class StarTopology extends Topology {
 	}
 
 	updatePositions() {
+		super.updatePositions();
 		const nodeKeys = Object.keys(this.nodeHolder);
 		const machineLength = nodeKeys.length;
 		let iterNum = 0;

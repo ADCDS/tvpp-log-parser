@@ -9,6 +9,7 @@ class RingTopology extends Topology {
 	}
 
 	updatePositions() {
+		super.updatePositions();
 		const nodeKeys = Object.keys(this.nodeHolder);
 		const machineLength = nodeKeys.length;
 		let iterNum = 0;

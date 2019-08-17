@@ -10,19 +10,31 @@ class Topology {
 		this.options = options;
 
 		this.colorMap = options.colorMap || {
-				"0": "#ff0000",
-				"1": "#0000ff",
-				"2": "#ff7b00",
-				"3": "#fff400",
-				"4": "#64ff00",
-			};
+			"0": "#ff0000",
+			"1": "#0000ff",
+			"2": "#ff7b00",
+			"3": "#fff400",
+			"4": "#64ff00",
+		};
 
 		this.bandwidths = {};
 
+		//Setup node holders
 		Object.keys(machines).forEach(machineKey => {
 			this.nodeHolder[machineKey] = new Node(machineKey);
-			this.nodeHolder[machineKey].color = this.colorMap[machines[machineKey].bandwidthClassification];
+			this.nodeHolder[machineKey].color = this.colorMap[this.machines[machineKey].getBandwidthClassificationAt(this.graphHolder.timestamp)];
 			this.nodeHolder[machineKey].size = 3;
+		});
+	}
+
+	updateNodeColors(timestamp) {
+		Object.keys(this.machines).forEach(machineKey => {
+			if(this.machines[machineKey].getBandwidthClassificationAt(timestamp)) {
+				this.nodeHolder[machineKey].color = this.colorMap[this.machines[machineKey].getBandwidthClassificationAt(timestamp).classification];
+			} else {
+				//throw "Node exists on overlay log, but it doesnt exists in performance log";
+				this.nodeHolder[machineKey].color = "#00000";
+			}
 		});
 	}
 
@@ -34,14 +46,16 @@ class Topology {
 		this.graphHolder = graphHolder;
 	}
 
-	updatePositions() {}
+	updatePositions() {
+		this.updateNodeColors(this.graphHolder.timestamp);
+	}
 
 	synchronizeSigma(sigma) {
 		sigma.graph.clear();
 
 		// Add nodes
 		Object.keys(this.nodeHolder).forEach(machineKey => {
-			const node = { ...this.nodeHolder[machineKey] };
+			const node = {...this.nodeHolder[machineKey]};
 			node.id = machineKey;
 			sigma.graph.addNode(node);
 		});
