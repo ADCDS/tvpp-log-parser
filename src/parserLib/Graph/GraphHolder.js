@@ -31,6 +31,10 @@ class GraphHolder {
 		});
 		return ret;
 	}
+
+	getEdges(machine){
+    return this.graph[machine];
+  }
 }
 
 export default GraphHolder;
