@@ -1,0 +1,2 @@
+http://cs.brown.edu/people/rtamassi/gdhandbook/chapters/force-directed.pdf
+https://www.mathematica-journal.com/issue/v10i1/contents/graph_draw/graph_draw.pdf
