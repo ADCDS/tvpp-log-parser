@@ -46,10 +46,11 @@
     "tvpp-log-parser"
   ],
   "dependencies": {
+    "@tyriar/fibonacci-heap": "2.0.9",
+    "babel-polyfill": "6.26.0",
     "express": "4.17.1",
     "pug": "2.0.4",
-    "sigma": "1.2.1",
-    "babel-polyfill": "6.26.0"
+    "sigma": "1.2.1"
   },
   "devDependencies": {
     "@babel/cli": "7.4.4",
