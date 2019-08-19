@@ -7,9 +7,9 @@ class Topology {
 		this.graphHolder = graphHolder;
 		this.machines = machines;
 		this.nodeHolder = {};
-		this.options = options;
+		this.options = options || {};
 
-		this.colorMap = options.colorMap || {
+		this.colorMap = this.options.colorMap || {
 			"0": "#ff0000",
 			"1": "#0000ff",
 			"2": "#ff7b00",
