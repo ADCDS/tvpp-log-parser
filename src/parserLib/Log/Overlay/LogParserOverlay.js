@@ -69,8 +69,8 @@ class LogParserOverlay {
 			hostAddress[0],
 			hostAddress[1],
 			timestamp,
-			partnersOut,
-			partnersIn
+      partnersIn,
+      partnersOut
 		);
 	}
 }
