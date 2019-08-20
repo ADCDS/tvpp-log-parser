@@ -21,7 +21,7 @@ window.FilterType = DijkstraFilter;
 window.FilterTypeOptions = {};
 
 window.TopologyType = SpringTopology;
-window.TopologyTypeOptions = null;
+window.TopologyTypeOptions = {};
 
 window.selectedEvent = 0;
 
@@ -49,6 +49,9 @@ function handleTopologyTypeChange(e) {
       break;
     case "StarTopology":
       window.TopologyType = StarTopology;
+      break;
+    case "SpringTopology":
+      window.TopologyType = SpringTopology;
       break;
   }
 }
