@@ -28,18 +28,29 @@ class GraphManager {
 
 		this.graphHolder.timestamp = currState.timestamp;
 
-		["in", "out"].forEach(type => {
-			if (currState.added[type].length > 0) {
-				currState.added[type].forEach(targetMachine => {
-					this.graphHolder.addEdge(currentMachine, targetMachine);
-				});
-			}
-			if (currState.removed[type].length > 0) {
-				currState.removed[type].forEach(targetMachine => {
-					this.graphHolder.removeEdge(currentMachine, targetMachine);
-				});
-			}
-		});
+		// Outgoing edges
+    if (currState.added["out"].length > 0) {
+      currState.added["out"].forEach(targetMachine => {
+        this.graphHolder.addEdge(currentMachine, targetMachine);
+      });
+    }
+    if (currState.removed["out"].length > 0) {
+      currState.removed["out"].forEach(targetMachine => {
+        this.graphHolder.removeEdge(currentMachine, targetMachine);
+      });
+    }
+
+    // Incoming edges
+    if (currState.added["in"].length > 0) {
+      currState.added["in"].forEach(targetMachine => {
+        this.graphHolder.addEdge(targetMachine, currentMachine);
+      });
+    }
+    if (currState.removed["in"].length > 0) {
+      currState.removed["in"].forEach(targetMachine => {
+        this.graphHolder.removeEdge(targetMachine, currentMachine);
+      });
+    }
 	}
 
 	goToAbsoluteState(statePos) {
