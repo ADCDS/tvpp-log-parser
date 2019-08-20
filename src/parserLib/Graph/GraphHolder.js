@@ -18,6 +18,29 @@ class GraphHolder {
 		this.graph[from][to] = true;
 	}
 
+  forceAddEdge(from, to) {
+	  if(!this.graph.hasOwnProperty(from)){
+      this.graph[from] = {};
+	    Object.keys(this.graph).forEach(machineKey => {
+	      this.graph[from][machineKey] = null;
+      });
+    }
+
+    this.graph[from][to] = true;
+  }
+
+  forceRemoveEdge(from, to) {
+    if(!this.graph.hasOwnProperty(from)){
+      this.graph[from] = {};
+      Object.keys(this.graph).forEach(machineKey => {
+        this.graph[from][machineKey] = null;
+      });
+    }
+
+    this.graph[from][to] = false;
+  }
+
+
 	removeEdge(from, to) {
 		this.graph[from][to] = null;
 	}

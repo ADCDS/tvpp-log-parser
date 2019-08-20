@@ -20,12 +20,9 @@ class TVPPLog {
     entries.forEach(logEntry => {
       // Check if machine already exists in this log
       const currEvent = logEntry.toEvent();
-      const machineName =
-        logEntry.machine +
-        (this.options.discriminateByPort ? `:${logEntry.port}` : "");
-      if (Object.prototype.hasOwnProperty.call(this.machines, machineName)) {
+      if (this.hasMachine(logEntry.machine, logEntry.port)) {
         // If it exists, we need to check its latest state
-        const machineRef = this.machines[machineName];
+        const machineRef = this.getMachine(logEntry.machine, logEntry.port);
 
         // If we do, lets check the latest event state
         const latestEvent = machineRef.events[machineRef.events.length - 1];
@@ -40,23 +37,53 @@ class TVPPLog {
         };
 
         // Create the machine reference with the first event
-        this.machines[machineName] = new Machine(machineName, [currEvent]);
+        this.addMachine(logEntry.machine, logEntry.port, [currEvent]);
       }
       this.eventList.push(currEvent);
     });
   }
 
+  addRawMachine(machineName, events){
+    this.machines[machineName] = new Machine(machineName, events);
+  }
+
+  hasRawMachine(machineName){
+    return Object.prototype.hasOwnProperty.call(this.machines, machineName)
+  }
+
+  getRawMachine(machineName){
+    return this.machines[machineName];
+  }
+
+  addMachine(address, port, events){
+    const machineName =
+      address +
+      (this.options.discriminateByPort ? `:${port}` : "");
+    this.machines[machineName] = new Machine(machineName, events);
+  }
+
+  hasMachine(address, port){
+    const machineName =
+      address +
+      (this.options.discriminateByPort ? `:${port}` : "");
+    return Object.prototype.hasOwnProperty.call(this.machines, machineName)
+  }
+
+  getMachine(address, port){
+    const machineName =
+      address +
+      (this.options.discriminateByPort ? `:${port}` : "");
+    return this.machines[machineName];
+  }
+
   addPerfomanceEntries(entries) {
   	let foundBandwidths = {};
     entries.forEach(logEntry => {
-      const machineName =
-        logEntry.machine +
-        (this.options.discriminateByPort ? `:${logEntry.port}` : "");
-      if (!Object.prototype.hasOwnProperty.call(this.machines, machineName)) {
-        this.machines[machineName] = new Machine(machineName);
+      if (!this.hasMachine(logEntry.machine, logEntry.port)) {
+        this.addMachine(logEntry.machine, logEntry.port);
       }
 
-      const machineObj = this.machines[machineName];
+      const machineObj = this.getMachine(logEntry.machine, logEntry.port);
       machineObj.addStatus(logEntry);
 
       if(logEntry.hasOwnProperty('bandwidth')){
