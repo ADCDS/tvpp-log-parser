@@ -15,7 +15,7 @@ class StarTopology extends Topology {
 			}
 
 			// I dont have the distances, need to calculate it using dijkstra
-			const dijkstraFilter = new DijkstraFilter(graphHolder, {
+			const dijkstraFilter = new DijkstraFilter(graphHolder.clone(), {
 				source: this.source
 			});
 			dijkstraFilter.applyFilter();

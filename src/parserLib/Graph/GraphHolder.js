@@ -29,11 +29,16 @@ class GraphHolder {
 				ret.push(machineDest);
 			}
 		});
+
 		return ret;
 	}
 
 	getEdges(machine){
     return this.graph[machine];
+  }
+
+  clone(){
+	  return JSON.parse(JSON.stringify(this));
   }
 }
 
