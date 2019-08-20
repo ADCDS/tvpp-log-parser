@@ -58,10 +58,10 @@ class DijkstraFilter extends Filter {
     const { graph } = this.graphHolder;
     const fathers = this.dijkstraShortestPath(graph, this.options.source);
     this.vertices.forEach(node => {
-      const neighbors = Object.keys(graph[node]);
-      neighbors.forEach(neighbor => {
-        graph[node][neighbor] = false;
+      this.vertices.forEach(node2 => {
+        graph[node2][node] = false;
       });
+
       if (fathers[node] != null) graph[fathers[node]][node] = true;
     });
 
