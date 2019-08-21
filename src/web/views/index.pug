@@ -27,7 +27,7 @@ html(lang='pt')
 							option(value=(filterType.value)) #{filterType.name}
 			br
 			label(for='topologyType') Topology Type
-				- const PugtopologyTypeOptions = [{name: 'Ring Topology', value: 'RingTopology'},{name: 'Star Topology', value: 'Star Topology', selected: true}]
+				- const PugtopologyTypeOptions = [{name: 'Ring Topology', value: 'RingTopology'},{name: 'Star Topology', value: 'StarTopology'},{name: 'Spring Topology', value: 'SpringTopology', selected: true}]
 				select#topologyType(name='topologyType' size='3' required)
 					each topologyType in PugtopologyTypeOptions
 						if(topologyType.selected != null && topologyType.selected)

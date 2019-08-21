@@ -14,7 +14,9 @@ const Sigma = require("sigma");
 let loadedPerformance = false;
 let loadedOverlay = false;
 
-window.logEntity = new TVPPLog();
+window.logEntity = new TVPPLog({
+  discriminateByPort: true
+});
 window.graphManager = null;
 
 window.FilterType = DijkstraFilter;
@@ -82,9 +84,7 @@ function startGraph() {
   ) {
     // The first machine on the log is the server
     const options = {
-      source: window.logEntity.discriminateByPort
-        ? `${window.logEntity.eventList[0].machine}:${window.logEntity.eventList[0].port}`
-        : window.logEntity.eventList[0].machine
+      source: window.logEntity.getMachineName(window.logEntity.eventList[0].machine, window.logEntity.eventList[0].port)
     };
 
     filter = new window.FilterType(
