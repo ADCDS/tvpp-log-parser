@@ -7,7 +7,9 @@ test("syncParseTest", () => {
     data => {
       LogParserOverlay.parse(data).then(entryArray => {
         console.log(`Parsed ${entryArray.length} lines`);
-        const logEntity = new TVPPLog();
+        const logEntity = new TVPPLog({
+          discriminateByPort: true
+        });
         logEntity.addOverlayEntries(entryArray);
         console.log("Done");
       });

@@ -20,6 +20,14 @@ class TVPPLog {
     entries.forEach(logEntry => {
       // Check if machine already exists in this log
       const currEvent = logEntry.toEvent();
+
+      // Rename machine based on the configuration of TVPPLog
+      ["in", "out"].forEach(type => {
+        currEvent.state[type] = currEvent.state[type].map(el => {
+          return this.getMachineName(el.address, el.port);
+        });
+      });
+
       if (this.hasMachine(logEntry.machine, logEntry.port)) {
         // If it exists, we need to check its latest state
         const machineRef = this.getMachine(logEntry.machine, logEntry.port);
@@ -32,8 +40,8 @@ class TVPPLog {
         // No entry, this the first time we are seeing this machine on the logs
         // This is the first event, no need to remove nodes
         currEvent.added = {
-          in: logEntry.partnersIn,
-          out: logEntry.partnersOut
+          in: currEvent.state.in,
+          out: currEvent.state.out
         };
 
         // Create the machine reference with the first event
@@ -56,23 +64,22 @@ class TVPPLog {
   }
 
   addMachine(address, port, events){
-    const machineName =
-      address +
-      (this.options.discriminateByPort ? `:${port}` : "");
+    const machineName = this.getMachineName(address, port);
     this.machines[machineName] = new Machine(machineName, events);
   }
 
+  getMachineName(address, port) {
+    return address +
+      (this.options.discriminateByPort ? `:${port}` : "");;
+  }
+
   hasMachine(address, port){
-    const machineName =
-      address +
-      (this.options.discriminateByPort ? `:${port}` : "");
+    const machineName = this.getMachineName(address, port);
     return Object.prototype.hasOwnProperty.call(this.machines, machineName)
   }
 
   getMachine(address, port){
-    const machineName =
-      address +
-      (this.options.discriminateByPort ? `:${port}` : "");
+    const machineName = this.getMachineName(address, port);
     return this.machines[machineName];
   }
 

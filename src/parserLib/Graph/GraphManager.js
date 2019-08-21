@@ -18,19 +18,17 @@ class GraphManager {
   }
 
   nextState() {
-    const currState = this.logEntity.eventList[this.currentState];
+    const currentEvent = this.logEntity.eventList[this.currentState];
     if (this.currentState >= this.logEntity.eventList.length) return;
     this.currentState += 1;
 
-    const currentMachine =
-      currState.machine +
-      (this.logEntity.options.discriminateByPort ? `:${currState.port}` : "");
+    const currentMachine = this.logEntity.getMachineName(currentEvent.machine, currentEvent.port);
 
-    this.graphHolder.timestamp = currState.timestamp;
+    this.graphHolder.timestamp = currentEvent.timestamp;
 
     // Outgoing edges
-    if (currState.added["out"].length > 0) {
-      currState.added["out"].forEach(targetMachine => {
+    if (currentEvent.added["out"].length > 0) {
+      currentEvent.added["out"].forEach(targetMachine => {
         try {
           this.graphHolder.addEdge(currentMachine, targetMachine);
         } catch (e) {
@@ -41,8 +39,8 @@ class GraphManager {
         }
       });
     }
-    if (currState.removed["out"].length > 0) {
-      currState.removed["out"].forEach(targetMachine => {
+    if (currentEvent.removed["out"].length > 0) {
+      currentEvent.removed["out"].forEach(targetMachine => {
         try {
           this.graphHolder.removeEdge(currentMachine, targetMachine);
         } catch (e) {
@@ -55,8 +53,8 @@ class GraphManager {
     }
 
     // Incoming edges
-    if (currState.added["in"].length > 0) {
-      currState.added["in"].forEach(targetMachine => {
+    if (currentEvent.added["in"].length > 0) {
+      currentEvent.added["in"].forEach(targetMachine => {
         try {
           this.graphHolder.addEdge(targetMachine, currentMachine);
         } catch (e) {
@@ -68,8 +66,8 @@ class GraphManager {
 
       });
     }
-    if (currState.removed["in"].length > 0) {
-      currState.removed["in"].forEach(targetMachine => {
+    if (currentEvent.removed["in"].length > 0) {
+      currentEvent.removed["in"].forEach(targetMachine => {
         try {
           this.graphHolder.removeEdge(targetMachine, currentMachine);
         } catch (e) {

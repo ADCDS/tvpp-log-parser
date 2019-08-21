@@ -21,24 +21,20 @@ class LogParserOverlay {
 		});
 	}
 
-	static async parse(lineArray) {
+	static async parse(lineArray, discriminateByPort) {
 		const ret = [];
 		for (let i = 0; i < lineArray.length; i += 1) {
-			if (lineArray[i] !== "") ret.push(this.lineToEntry(lineArray[i]));
+			if (lineArray[i] !== "") ret.push(this.lineToEntry(lineArray[i], discriminateByPort));
 		}
 		return ret;
 	}
 
-	static lineToEntry(line, discriminateByPort) {
+	static lineToEntry(line) {
 		/**
 		 *  0.0.0.0:0 works as an separator,
 		 *  to the right are the servers which our 'hostAddress' sends chunks to,
 		 *  to the left are the servers which 'hostAddress' receives packets from.
 		 */
-
-		if (discriminateByPort == null) {
-			discriminateByPort = false;
-		}
 
 		const pieces = line.split("0.0.0.0:0");
 		const firstHalf = pieces[0].split(" ");
@@ -55,15 +51,15 @@ class LogParserOverlay {
 			return !(value === "" || value === "\r");
 		});
 
-		if (!discriminateByPort) {
-			partnersIn = partnersIn.map(el => {
-				return el.split(":")[0];
-			});
+    partnersIn = partnersIn.map(el => {
+      const addressPort = el.split(":");
+      return {address: addressPort[0], port: addressPort[1]};
+    });
 
-			partnersOut = partnersOut.map(el => {
-				return el.split(":")[0];
-			});
-		}
+    partnersOut = partnersOut.map(el => {
+      const addressPort = el.split(":");
+      return {address: addressPort[0], port: addressPort[1]};
+    });
 
 		return new LogEntryOverlay(
 			hostAddress[0],
