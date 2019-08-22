@@ -22,58 +22,72 @@ class GraphManager {
     if (this.currentState >= this.logEntity.eventList.length) return;
     this.currentState += 1;
 
-    const currentMachine = this.logEntity.getMachineName(currentEvent.machine, currentEvent.port);
+    const currentMachine = this.logEntity.getMachineName(
+      currentEvent.machine,
+      currentEvent.port
+    );
 
     this.graphHolder.timestamp = currentEvent.timestamp;
 
     // Outgoing edges
-    if (currentEvent.added["out"].length > 0) {
-      currentEvent.added["out"].forEach(targetMachine => {
-        try {
+    if (currentEvent.added.out.length > 0) {
+      currentEvent.added.out.forEach(targetMachine => {
+        if (this.graphHolder.hasNode(targetMachine)) {
           this.graphHolder.addEdge(currentMachine, targetMachine);
-        } catch (e) {
+        } else {
           // One of the machines is mentioned by another, but it doesn't have a single log of its own
-          console.log("Log ID: " + this.currentState + ": Couldn't add edge " + currentMachine + " -> " + targetMachine + ". Forcefully adding it...");
-          this.graphHolder.forceAddEdge(currentMachine, targetMachine);
-          this.logEntity.addRawMachine(currentMachine);
+          console.log(
+            `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
+          );
+          this.graphHolder.insertNode(targetMachine);
+          this.graphHolder.addEdge(currentMachine, targetMachine);
+          this.logEntity.addRawMachine(targetMachine);
         }
       });
     }
-    if (currentEvent.removed["out"].length > 0) {
-      currentEvent.removed["out"].forEach(targetMachine => {
-        try {
+    if (currentEvent.removed.out.length > 0) {
+      currentEvent.removed.out.forEach(targetMachine => {
+        if (this.graphHolder.hasNode(targetMachine)) {
           this.graphHolder.removeEdge(currentMachine, targetMachine);
-        } catch (e) {
+        } else {
           // One of the machines is mentioned by another, but it doesn't have a single log of its own
-          console.log("Log ID: " + this.currentState + ": Couldn't add edge " + currentMachine + " -> " + targetMachine + ". Forcefully removing it...");
-          this.graphHolder.forceRemoveEdge(currentMachine, targetMachine);
-          this.logEntity.addRawMachine(currentMachine);
+          console.log(
+            `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
+          );
+          this.graphHolder.insertNode(targetMachine);
+          this.graphHolder.removeEdge(currentMachine, targetMachine);
+          this.logEntity.addRawMachine(targetMachine);
         }
       });
     }
 
     // Incoming edges
-    if (currentEvent.added["in"].length > 0) {
-      currentEvent.added["in"].forEach(targetMachine => {
-        try {
+    if (currentEvent.added.in.length > 0) {
+      currentEvent.added.in.forEach(targetMachine => {
+        if (this.graphHolder.hasNode(targetMachine)) {
           this.graphHolder.addEdge(targetMachine, currentMachine);
-        } catch (e) {
+        } else {
           // One of the machines is mentioned by another, but it doesn't have a single log of its own
-          console.log("Log ID: " + this.currentState + ": Couldn't add edge " + targetMachine + " -> " + currentMachine + ". Forcefully adding it...");
-          this.graphHolder.forceAddEdge(targetMachine, currentMachine);
+          console.log(
+            `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
+          );
+          this.graphHolder.insertNode(targetMachine);
+          this.graphHolder.addEdge(targetMachine, currentMachine);
           this.logEntity.addRawMachine(targetMachine);
         }
-
       });
     }
-    if (currentEvent.removed["in"].length > 0) {
-      currentEvent.removed["in"].forEach(targetMachine => {
-        try {
+    if (currentEvent.removed.in.length > 0) {
+      currentEvent.removed.in.forEach(targetMachine => {
+        if (this.graphHolder.hasNode(targetMachine)) {
           this.graphHolder.removeEdge(targetMachine, currentMachine);
-        } catch (e) {
+        } else {
           // One of the machines is mentioned by another, but it doesn't have a single log of its own
-          console.log("Log ID: " + this.currentState + ": Couldn't add edge " + targetMachine + " -> " + currentMachine + ". Forcefully removing it...");
-          this.graphHolder.forceRemoveEdge(targetMachine, currentMachine);
+          console.log(
+            `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
+          );
+          this.graphHolder.insertNode(targetMachine);
+          this.graphHolder.removeEdge(targetMachine, currentMachine);
           this.logEntity.addRawMachine(targetMachine);
         }
       });
