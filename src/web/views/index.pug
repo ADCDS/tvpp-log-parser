@@ -1,49 +1,49 @@
 doctype html
 html(lang='pt')
-	head
-		title TVPP Log View
-		style(type="text/css").
-			#container {
-				width: 100%;
-				height: 700px;
-				margin: 30px;
-			}
+  head
+    title TVPP Log View
+    style(type="text/css").
+      #container {
+        width: 100%;
+        height: 700px;
+        margin: 30px;
+      }
 
-	body
-		h1 TVPP Log viewer
-		div#toolbar
-			input#logOverlayFile(type='file')
-			br
-			input#logPerformanceFile(type='file')
+  body
+    h1 TVPP Log viewer
+    div#toolbar
+      input#logOverlayFile(type='file')
+      br
+      input#logPerformanceFile(type='file')
 
-			br
-			label(for='FilterType') Filter Type
-				- const PugfilterTypeOptions = [{name: 'No Filter', value: 'NoFilter'}, {name: 'Dijkstra Shortest Path', value: 'DijkstraFilter', selected: true}]
-				select#filterType(name='FilterType' size='3' required)
-					each filterType in PugfilterTypeOptions
-						if(filterType.selected != null && filterType.selected)
-							option(value=(filterType.value) selected) #{filterType.name}
-						else
-							option(value=(filterType.value)) #{filterType.name}
-			br
-			label(for='topologyType') Topology Type
-				- const PugtopologyTypeOptions = [{name: 'Ring Topology', value: 'RingTopology'},{name: 'Star Topology', value: 'StarTopology'},{name: 'Spring Topology', value: 'SpringTopology', selected: true}]
-				select#topologyType(name='topologyType' size='3' required)
-					each topologyType in PugtopologyTypeOptions
-						if(topologyType.selected != null && topologyType.selected)
-							option(value=(topologyType.value) selected) #{topologyType.name}
-						else
-							option(value=(topologyType.value)) #{topologyType.name}
-			br
-			input#selectedEventNumber(type='number')
-			span#numberOfEvents
-			br
-			//input#prev(type='button', value='<')
-			//input#next(type='button', value='>')
-			input#draw(type='button', value='Draw!')
-			br
-		div#container
+      br
+      label(for='FilterType') Filter Type
+        - const PugfilterTypeOptions = [{name: 'No Filter', value: 'NoFilter'}, {name: 'Dijkstra Shortest Path', value: 'DijkstraFilter', selected: true}]
+        select#filterType(name='FilterType' size='3' required)
+          each filterType in PugfilterTypeOptions
+            if(filterType.selected != null && filterType.selected)
+              option(value=(filterType.value) selected) #{filterType.name}
+            else
+              option(value=(filterType.value)) #{filterType.name}
+      br
+      label(for='topologyType') Topology Type
+        - const PugtopologyTypeOptions = [{name: 'Ring Topology', value: 'RingTopology'},{name: 'Star Topology', value: 'StarTopology'},{name: 'Spring Topology', value: 'SpringTopology'},{name: 'Algorithm R1', value: 'AlgorithmR1', selected: true}]
+        select#topologyType(name='topologyType' size='3' required)
+          each topologyType in PugtopologyTypeOptions
+            if(topologyType.selected != null && topologyType.selected)
+              option(value=(topologyType.value) selected) #{topologyType.name}
+            else
+              option(value=(topologyType.value)) #{topologyType.name}
+      br
+      input#selectedEventNumber(type='number')
+      span#numberOfEvents
+      br
+      //input#prev(type='button', value='<')
+      //input#next(type='button', value='>')
+      input#draw(type='button', value='Draw!')
+      br
+    div#container
 
-		ul#list
-	script(src='/js/bundle.js')
+    ul#list
+  script(src='/js/bundle.js')
 

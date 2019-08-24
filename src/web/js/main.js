@@ -8,6 +8,7 @@ import RingTopology from "../../parserLib/Graph/Visualizer/Topology/RingTopology
 import StarTopology from "../../parserLib/Graph/Visualizer/Topology/StarTopology";
 import DijkstraFilter from "../../parserLib/Graph/Filter/DijkstraFilter";
 import SpringTopology from "../../parserLib/Graph/Visualizer/Topology/SpringTopology";
+import AlgorithmR1 from "../../parserLib/Graph/Visualizer/Topology/AlgorithmR1";
 
 const Sigma = require("sigma");
 
@@ -22,7 +23,7 @@ window.graphManager = null;
 window.FilterType = DijkstraFilter;
 window.FilterTypeOptions = {};
 
-window.TopologyType = SpringTopology;
+window.TopologyType = AlgorithmR1;
 window.TopologyTypeOptions = {};
 
 window.selectedEvent = 0;
@@ -55,6 +56,9 @@ function handleTopologyTypeChange(e) {
     case "SpringTopology":
       window.TopologyType = SpringTopology;
       break;
+    case "AlgorithmR1":
+      window.TopologyType = AlgorithmR1;
+      break;
   }
 }
 
@@ -78,13 +82,14 @@ function startGraph() {
 
   let filter = null;
   let topology = null;
+  const sourceMachineName = window.logEntity.getMachineName(window.logEntity.eventList[0].machine, window.logEntity.eventList[0].port);
   if (
     window.FilterType != null &&
     window.FilterType.name === "DijkstraFilter"
   ) {
     // The first machine on the log is the server
     const options = {
-      source: window.logEntity.getMachineName(window.logEntity.eventList[0].machine, window.logEntity.eventList[0].port)
+      source: sourceMachineName
     };
 
     filter = new window.FilterType(
@@ -103,14 +108,21 @@ function startGraph() {
       window.TopologyTypeOptions['distancesFromSource'] = filter.distancesFromSource;
       window.TopologyTypeOptions['fathers'] = filter.fathers;
     } else if (window.FilterType == null) {
-      window.TopologyTypeOptions['source'] = window.logEntity.eventList[0].machine;
+      window.TopologyTypeOptions['source'] = sourceMachineName;
     }
     topology = new window.TopologyType(
       window.graphManager.graphHolder,
       window.logEntity.machines,
       window.TopologyTypeOptions
     );
-  } else {
+  } else if(window.TopologyType.name === "AlgorithmR1") {
+    window.TopologyTypeOptions['source'] = sourceMachineName;
+    topology = new window.TopologyType(
+      window.graphManager.graphHolder,
+      window.logEntity.machines,
+      window.TopologyTypeOptions
+    );
+  }else{
     topology = new window.TopologyType(
       window.graphManager.graphHolder,
       window.logEntity.machines,

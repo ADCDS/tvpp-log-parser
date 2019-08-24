@@ -1,11 +1,12 @@
-import LogParserOverlay from "../src/parserLib/Log/Overlay/LogParserOverlay";
-import TVPPLog from "../src/parserLib/TVPPLog";
-import GraphManager from "../src/parserLib/Graph/GraphManager";
-import LogParserPerformance from "../src/parserLib/Log/Performance/LogParserPerformance";
-import RingTopology from "../src/parserLib/Graph/Visualizer/Topology/RingTopology";
-import StarTopology from "../src/parserLib/Graph/Visualizer/Topology/StarTopology";
+import LogParserOverlay from "../../src/parserLib/Log/Overlay/LogParserOverlay";
+import TVPPLog from "../../src/parserLib/TVPPLog";
+import GraphManager from "../../src/parserLib/Graph/GraphManager";
+import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserPerformance";
+import RingTopology from "../../src/parserLib/Graph/Visualizer/Topology/RingTopology";
+import StarTopology from "../../src/parserLib/Graph/Visualizer/Topology/StarTopology";
+import SpringTopology from "../../src/parserLib/Graph/Visualizer/Topology/SpringTopology";
 
-test("starTopologyTest", () => {
+test("springTopologyTest", () => {
   const logOverlay = LogParserOverlay.readLog("./logs/test1_overlay.txt");
   const logPerformance = LogParserPerformance.readLog("./logs/test1_perf.txt");
   logOverlay.then(
@@ -18,16 +19,18 @@ test("starTopologyTest", () => {
               console.log(
                 `Parsed ${performanceEntryArray.length} performance lines`
               );
-              const logEntity = new TVPPLog();
+              const logEntity = new TVPPLog({
+                discriminateByPort: true
+              });
               logEntity.addOverlayEntries(overlayEntryArray);
               logEntity.addPerfomanceEntries(performanceEntryArray);
               const graphHolder = new GraphManager(logEntity);
               graphHolder.goToAbsoluteState(100);
-              const starTopology = new StarTopology(
+              const starTopology = new SpringTopology(
                 graphHolder.getGraphHolder(),
                 graphHolder.getMachines(),
 	              {
-		              source: "150.164.3.36",
+                  source: logEntity.getMachineName(logEntity.eventList[0].machine, logEntity.eventList[0].port),
 		              radius: 30
 	              }
               );
