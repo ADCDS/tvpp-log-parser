@@ -1,7 +1,7 @@
 import Layout from "./Layout";
 import DijkstraFilter from "../../Filter/DijkstraFilter";
 
-class StarLayout extends Layout {
+class RingLayeredLayout extends Layout {
 	constructor(graphHolder, machines, options) {
 		super(graphHolder, machines, options);
 		this.radius = options.radius || 100;
@@ -11,7 +11,7 @@ class StarLayout extends Layout {
 
 		if (this.distancesFromSource == null || this.fathers == null) {
 			if (this.source == null) {
-				throw "Invoked StarLayout without dijkstra data and source";
+				throw "Invoked RingLayeredLayout without dijkstra data and source";
 			}
 
 			// I dont have the distances, need to calculate it using dijkstra
@@ -81,4 +81,4 @@ class StarLayout extends Layout {
 	}
 }
 
-export default StarLayout;
+export default RingLayeredLayout;

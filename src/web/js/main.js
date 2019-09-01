@@ -5,7 +5,7 @@ import LogParserOverlay from "../../parserLib/Log/Overlay/LogParserOverlay";
 import LogParserPerformance from "../../parserLib/Log/Performance/LogParserPerformance";
 import GraphManager from "../../parserLib/Graph/GraphManager";
 import RingLayout from "../../parserLib/Graph/Visualizer/Layout/RingLayout";
-import StarLayout from "../../parserLib/Graph/Visualizer/Layout/StarLayout";
+import RingLayeredLayout from "../../parserLib/Graph/Visualizer/Layout/RingLayeredLayout";
 import DijkstraFilter from "../../parserLib/Graph/Filter/DijkstraFilter";
 import SpringLayout from "../../parserLib/Graph/Visualizer/Layout/SpringLayout";
 import AlgorithmR1 from "../../parserLib/Graph/Visualizer/Layout/AlgorithmR1";
@@ -50,8 +50,8 @@ function handleLayoutTypeChange(e) {
       window.LayoutType = RingLayout;
       window.LayoutTypeOptions = {radius: 100};
       break;
-    case "StarLayout":
-      window.LayoutType = StarLayout;
+    case "RingLayeredLayout":
+      window.LayoutType = RingLayeredLayout;
       break;
     case "SpringLayout":
       window.LayoutType = SpringLayout;
@@ -100,7 +100,7 @@ function startGraph() {
   } else {
     console.log("remove me");
   }
-  if (window.LayoutType.name === "StarLayout") {
+  if (window.LayoutType.name === "RingLayeredLayout") {
     if (
       window.FilterType != null &&
       window.FilterType.name === "DijkstraFilter"
