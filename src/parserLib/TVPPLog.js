@@ -4,13 +4,17 @@ class TVPPLog {
   constructor(options) {
     const defaultOptions = {
       discriminateByPort: false,
-      forceAddGhostNodes: false
+      forceAddGhostNodes: false,
+      iterateTroughServerApparition: true
     };
 
     this.options = options || defaultOptions;
 
     this.eventList = [];
     this.machines = {};
+
+    this.sourceMachineKey = null;
+    this.sourceApparitionLocations = [];
   }
 
   /**
@@ -18,8 +22,14 @@ class TVPPLog {
    * @param entries
    */
   addOverlayEntries(entries) {
+    this.sourceMachineKey = this.getMachineName(entries[0].machine, entries[0].port);
+
+    let iterNum = 0;
     entries.forEach(logEntry => {
-      // Check if machine already exists in this log
+      const currMachineName = this.getMachineName(logEntry.machine, logEntry.port);
+      if(currMachineName === this.sourceMachineKey)
+        this.sourceApparitionLocations.push(iterNum);
+
       const currEvent = logEntry.toEvent();
 
       // Rename machine based on the configuration of TVPPLog
@@ -49,6 +59,7 @@ class TVPPLog {
         this.addMachine(logEntry.machine, logEntry.port, [currEvent]);
       }
       this.eventList.push(currEvent);
+      iterNum++;
     });
   }
 
