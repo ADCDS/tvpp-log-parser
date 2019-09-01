@@ -10,8 +10,8 @@ class Machine {
     this.events = events || [];
     this.statuses = statuses || [];
 
-    this.bandwidths = {};
-    this.lastBandwidth = null;
+    this.bandwidth = null;
+    this.bandwidthClassification = null;
 
     // Not used yet
     this.statusesOrdered = {
@@ -34,27 +34,6 @@ class Machine {
 		}); */
   }
 
-  addBandwidth(timestamp, value){
-	if(value !== this.lastBandwidth) {
-		this.bandwidths[timestamp] = {
-			value: value,
-			classification: null
-		};
-		this.lastBandwidth = value;
-	}
-  }
-
-  getBandwidthClassificationAt(timestamp){
-  	const bandwidthsTimestamps = Object.keys(this.bandwidths).map(Number);
-  	let ret = this.bandwidths[bandwidthsTimestamps[0]];
-  	let iter = 1;
-  	while(timestamp <= bandwidthsTimestamps[iter]){
-  		timestamp = bandwidthsTimestamps[iter];
-  		ret = this.bandwidths[timestamp];
-  		iter++;
-    }
-    return ret;
-  }
 }
 
 export default Machine;
