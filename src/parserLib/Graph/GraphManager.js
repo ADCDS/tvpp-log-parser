@@ -35,13 +35,15 @@ class GraphManager {
         if (this.graphHolder.hasNode(targetMachine)) {
           this.graphHolder.addEdge(currentMachine, targetMachine);
         } else {
-          // One of the machines is mentioned by another, but it doesn't have a single log of its own
-          console.log(
-            `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
-          );
-          this.graphHolder.insertNode(targetMachine);
-          this.graphHolder.addEdge(currentMachine, targetMachine);
-          this.logEntity.addRawMachine(targetMachine);
+          if (this.logEntity.options.forceAddGhostNodes) {
+            // One of the machines is mentioned by another, but it doesn't have a single log of its own
+            console.log(
+              `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
+            );
+            this.graphHolder.insertNode(targetMachine);
+            this.graphHolder.addEdge(currentMachine, targetMachine);
+            this.logEntity.addRawMachine(targetMachine);
+          }
         }
       });
     }
@@ -50,13 +52,15 @@ class GraphManager {
         if (this.graphHolder.hasNode(targetMachine)) {
           this.graphHolder.removeEdge(currentMachine, targetMachine);
         } else {
-          // One of the machines is mentioned by another, but it doesn't have a single log of its own
-          console.log(
-            `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
-          );
-          this.graphHolder.insertNode(targetMachine);
-          this.graphHolder.removeEdge(currentMachine, targetMachine);
-          this.logEntity.addRawMachine(targetMachine);
+          if (this.logEntity.options.forceAddGhostNodes) {
+            // One of the machines is mentioned by another, but it doesn't have a single log of its own
+            console.log(
+              `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
+            );
+            this.graphHolder.insertNode(targetMachine);
+            this.graphHolder.removeEdge(currentMachine, targetMachine);
+            this.logEntity.addRawMachine(targetMachine);
+          }
         }
       });
     }
@@ -67,13 +71,15 @@ class GraphManager {
         if (this.graphHolder.hasNode(targetMachine)) {
           this.graphHolder.addEdge(targetMachine, currentMachine);
         } else {
-          // One of the machines is mentioned by another, but it doesn't have a single log of its own
-          console.log(
-            `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
-          );
-          this.graphHolder.insertNode(targetMachine);
-          this.graphHolder.addEdge(targetMachine, currentMachine);
-          this.logEntity.addRawMachine(targetMachine);
+          if (this.logEntity.options.forceAddGhostNodes) {
+            // One of the machines is mentioned by another, but it doesn't have a single log of its own
+            console.log(
+              `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
+            );
+            this.graphHolder.insertNode(targetMachine);
+            this.graphHolder.addEdge(targetMachine, currentMachine);
+            this.logEntity.addRawMachine(targetMachine);
+          }
         }
       });
     }
@@ -82,13 +88,15 @@ class GraphManager {
         if (this.graphHolder.hasNode(targetMachine)) {
           this.graphHolder.removeEdge(targetMachine, currentMachine);
         } else {
-          // One of the machines is mentioned by another, but it doesn't have a single log of its own
-          console.log(
-            `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
-          );
-          this.graphHolder.insertNode(targetMachine);
-          this.graphHolder.removeEdge(targetMachine, currentMachine);
-          this.logEntity.addRawMachine(targetMachine);
+          if (this.logEntity.options.forceAddGhostNodes) {
+            // One of the machines is mentioned by another, but it doesn't have a single log of its own
+            console.log(
+              `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
+            );
+            this.graphHolder.insertNode(targetMachine);
+            this.graphHolder.removeEdge(targetMachine, currentMachine);
+            this.logEntity.addRawMachine(targetMachine);
+          }
         }
       });
     }

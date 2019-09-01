@@ -3,7 +3,8 @@ import Machine from "./Machine";
 class TVPPLog {
   constructor(options) {
     const defaultOptions = {
-      discriminateByPort: false
+      discriminateByPort: false,
+      forceAddGhostNodes: false
     };
 
     this.options = options || defaultOptions;
