@@ -23,7 +23,7 @@ class Layout {
 		Object.keys(machines).forEach(machineKey => {
 			this.nodeHolder[machineKey] = new Node(machineKey);
 			this.nodeHolder[machineKey].color = this.colorMap[this.machines[machineKey].getBandwidthClassificationAt(this.graphHolder.timestamp)];
-			this.nodeHolder[machineKey].size = 3;
+			this.nodeHolder[machineKey].size = 5;
 		});
 	}
 

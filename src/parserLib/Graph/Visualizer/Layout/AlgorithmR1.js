@@ -4,8 +4,9 @@ class AlgorithmR1 extends Layout {
   constructor(graphHolder, machines, options) {
     super(graphHolder, machines, options);
     this.options = options || {};
-    this.gamma = this.options.gamma || 700;
+    this.gamma = this.options.gamma || 200;
     this.source = this.options.source;
+    this.drawUndefinedNodes = this.options.drawUndefinedNodes || false;
     this.height = 1;
 
     if (this.source === null) {
@@ -89,28 +90,37 @@ class AlgorithmR1 extends Layout {
     this.drawSubTree1(this.source, 0, 0, AlgorithmR1.degreeToRadian(360));
 
     const undefinedNodes = [];
-    Object.keys(this.nodeHolder).forEach(nodeName => {
-      const node = this.nodeHolder[nodeName];
+    if(!this.drawUndefinedNodes) {
+      Object.keys(this.nodeHolder).forEach(nodeName => {
+        if (this.nodeHolder[nodeName].x === undefined || this.nodeHolder[nodeName].y === undefined) {
+          delete this.nodeHolder[nodeName]
+        }
+      });
+    }else{
+      Object.keys(this.nodeHolder).forEach(nodeName => {
+        const node = this.nodeHolder[nodeName];
 
-      if (node.x === undefined || node.y === undefined) {
-        undefinedNodes.push(node);
-      }
-    });
+        if (node.x === undefined || node.y === undefined) {
+          undefinedNodes.push(node);
+        }
+      });
 
-    let iterNum = 0;
-    undefinedNodes.forEach(node => {
-      const heightOfSource = this.heightOf(this.source);
 
-      node.x =
-        this.gamma *
-        heightOfSource *
-        Math.cos((2 * iterNum * Math.PI) / undefinedNodes.length);
-      node.y =
-        this.gamma *
-        heightOfSource *
-        Math.sin((2 * iterNum * Math.PI) / undefinedNodes.length);
-      iterNum++;
-    });
+      let iterNum = 0;
+      undefinedNodes.forEach(node => {
+        const heightOfSource = this.heightOf(this.source);
+
+        node.x =
+          this.gamma *
+          heightOfSource *
+          Math.cos((2 * iterNum * Math.PI) / undefinedNodes.length);
+        node.y =
+          this.gamma *
+          heightOfSource *
+          Math.sin((2 * iterNum * Math.PI) / undefinedNodes.length);
+        iterNum++;
+      });
+    }
 
     console.log("Done AlgorithmR1");
   }
