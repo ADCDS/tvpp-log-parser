@@ -4,9 +4,8 @@ import GraphManager from "../../src/parserLib/Graph/GraphManager";
 import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserPerformance";
 import RingLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayout";
 import RingLayeredLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayeredLayout";
-import SpringLayout from "../../src/parserLib/Graph/Visualizer/Layout/SpringLayout";
 
-test("springTopologyTest", () => {
+test("starLayoutTest", () => {
   const logOverlay = LogParserOverlay.readLog("./logs/test1_overlay.txt");
   const logPerformance = LogParserPerformance.readLog("./logs/test1_perf.txt");
   logOverlay.then(
@@ -26,7 +25,7 @@ test("springTopologyTest", () => {
               logEntity.addPerformanceEntries(performanceEntryArray);
               const graphHolder = new GraphManager(logEntity);
               graphHolder.goToAbsoluteEventState(100);
-              const starTopology = new SpringLayout(
+              const starLayout = new RingLayeredLayout(
                 graphHolder.getGraphHolder(),
                 graphHolder.getMachines(),
 	              {
@@ -34,7 +33,7 @@ test("springTopologyTest", () => {
 		              radius: 30
 	              }
               );
-              starTopology.updatePositions();
+              starLayout.updatePositions();
               console.log("Done");
             }
           );

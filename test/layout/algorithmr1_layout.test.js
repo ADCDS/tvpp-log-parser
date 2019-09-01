@@ -8,7 +8,7 @@ import SpringLayout from "../../src/parserLib/Graph/Visualizer/Layout/SpringLayo
 import AlgorithmR1 from "../../src/parserLib/Graph/Visualizer/Layout/AlgorithmR1";
 import DijkstraFilter from "../../src/parserLib/Graph/Filter/DijkstraFilter";
 
-test("algorithmR1TopologyTest", async () => {
+test("algorithmR1LayoutTest", async () => {
   const logOverlay = await LogParserOverlay.readLog("./logs/test1_overlay.txt");
   const logPerformance = await LogParserPerformance.readLog("./logs/test1_perf.txt");
   const overlayEntryArray = await LogParserOverlay.parse(logOverlay);

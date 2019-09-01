@@ -3,8 +3,10 @@ import TVPPLog from "../../src/parserLib/TVPPLog";
 import GraphManager from "../../src/parserLib/Graph/GraphManager";
 import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserPerformance";
 import RingLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayout";
+import RingLayeredLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayeredLayout";
+import SpringLayout from "../../src/parserLib/Graph/Visualizer/Layout/SpringLayout";
 
-test("ringTopologyTest", () => {
+test("springLayoutTest", () => {
   const logOverlay = LogParserOverlay.readLog("./logs/test1_overlay.txt");
   const logPerformance = LogParserPerformance.readLog("./logs/test1_perf.txt");
   logOverlay.then(
@@ -23,13 +25,16 @@ test("ringTopologyTest", () => {
               logEntity.addOverlayEntries(overlayEntryArray);
               logEntity.addPerformanceEntries(performanceEntryArray);
               const graphHolder = new GraphManager(logEntity);
-              graphHolder.goToLastEventState();
-              const ringTopology = new RingLayout(
+              graphHolder.goToAbsoluteEventState(100);
+              const starLayout = new SpringLayout(
                 graphHolder.getGraphHolder(),
                 graphHolder.getMachines(),
-                100
+	              {
+                  source: logEntity.getMachineName(logEntity.eventList[0].machine, logEntity.eventList[0].port),
+		              radius: 30
+	              }
               );
-              ringTopology.updatePositions();
+              starLayout.updatePositions();
               console.log("Done");
             }
           );
