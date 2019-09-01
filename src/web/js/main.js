@@ -23,8 +23,8 @@ window.graphManager = null;
 window.FilterType = DijkstraFilter;
 window.FilterTypeOptions = {};
 
-window.TopologyType = AlgorithmR1;
-window.TopologyTypeOptions = {};
+window.LayoutType = AlgorithmR1;
+window.LayoutTypeOptions = {};
 
 window.selectedEvent = 0;
 
@@ -41,23 +41,23 @@ function handleSelectedEventChange(e) {
   e.target.value = window.selectedEvent;
 }
 
-function handleTopologyTypeChange(e) {
+function handleLayoutTypeChange(e) {
   const {value} = e.target;
 
   switch (value) {
     default:
-    case "RingToplogy":
-      window.TopologyType = RingLayout;
-      window.TopologyTypeOptions = {radius: 100};
+    case "RingLayout":
+      window.LayoutType = RingLayout;
+      window.LayoutTypeOptions = {radius: 100};
       break;
     case "StarLayout":
-      window.TopologyType = StarLayout;
+      window.LayoutType = StarLayout;
       break;
     case "SpringLayout":
-      window.TopologyType = SpringLayout;
+      window.LayoutType = SpringLayout;
       break;
     case "AlgorithmR1":
-      window.TopologyType = AlgorithmR1;
+      window.LayoutType = AlgorithmR1;
       break;
   }
 }
@@ -100,33 +100,33 @@ function startGraph() {
   } else {
     console.log("remove me");
   }
-  if (window.TopologyType.name === "StarLayout") {
+  if (window.LayoutType.name === "StarLayout") {
     if (
       window.FilterType != null &&
       window.FilterType.name === "DijkstraFilter"
     ) {
-      window.TopologyTypeOptions['distancesFromSource'] = filter.distancesFromSource;
-      window.TopologyTypeOptions['fathers'] = filter.fathers;
+      window.LayoutTypeOptions['distancesFromSource'] = filter.distancesFromSource;
+      window.LayoutTypeOptions['fathers'] = filter.fathers;
     } else if (window.FilterType == null) {
-      window.TopologyTypeOptions['source'] = sourceMachineName;
+      window.LayoutTypeOptions['source'] = sourceMachineName;
     }
-    topology = new window.TopologyType(
+    topology = new window.LayoutType(
       window.graphManager.graphHolder,
       window.logEntity.machines,
-      window.TopologyTypeOptions
+      window.LayoutTypeOptions
     );
-  } else if(window.TopologyType.name === "AlgorithmR1") {
-    window.TopologyTypeOptions['source'] = sourceMachineName;
-    topology = new window.TopologyType(
+  } else if(window.LayoutType.name === "AlgorithmR1") {
+    window.LayoutTypeOptions['source'] = sourceMachineName;
+    topology = new window.LayoutType(
       window.graphManager.graphHolder,
       window.logEntity.machines,
-      window.TopologyTypeOptions
+      window.LayoutTypeOptions
     );
   }else{
-    topology = new window.TopologyType(
+    topology = new window.LayoutType(
       window.graphManager.graphHolder,
       window.logEntity.machines,
-      window.TopologyTypeOptions
+      window.LayoutTypeOptions
     );
   }
   topology.updatePositions();
@@ -212,7 +212,7 @@ document
 
 document
   .getElementById("topologyType")
-  .addEventListener("change", handleTopologyTypeChange);
+  .addEventListener("change", handleLayoutTypeChange);
 
 document
   .getElementById("selectedEventNumber")
@@ -241,10 +241,8 @@ document.addEventListener("keydown", e => {
       type: "canvas"
     },
     settings: {
-      minEdgeSize: 0.1,
-      maxEdgeSize: 2,
-      minNodeSize: 1,
-      maxNodeSize: 8
+      autoRescale: false,
+      autoResize: false
     }
   });
 
