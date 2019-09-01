@@ -1,5 +1,6 @@
 import Layout from "./Layout";
 
+// TODO add dynamicRadius
 class AlgorithmR1 extends Layout {
   constructor(graphHolder, machines, options) {
     super(graphHolder, machines, options);
@@ -7,6 +8,7 @@ class AlgorithmR1 extends Layout {
     this.gamma = this.options.gamma || 200;
     this.source = this.options.source;
     this.drawUndefinedNodes = this.options.drawUndefinedNodes || false;
+    this.dynamicRadius = this.options.dynamicRadius || false;
     this.height = 1;
 
     if (this.source === null) {
@@ -90,13 +92,16 @@ class AlgorithmR1 extends Layout {
     this.drawSubTree1(this.source, 0, 0, AlgorithmR1.degreeToRadian(360));
 
     const undefinedNodes = [];
-    if(!this.drawUndefinedNodes) {
+    if (!this.drawUndefinedNodes) {
       Object.keys(this.nodeHolder).forEach(nodeName => {
-        if (this.nodeHolder[nodeName].x === undefined || this.nodeHolder[nodeName].y === undefined) {
-          delete this.nodeHolder[nodeName]
+        if (
+          this.nodeHolder[nodeName].x === undefined ||
+          this.nodeHolder[nodeName].y === undefined
+        ) {
+          delete this.nodeHolder[nodeName];
         }
       });
-    }else{
+    } else {
       Object.keys(this.nodeHolder).forEach(nodeName => {
         const node = this.nodeHolder[nodeName];
 
@@ -104,7 +109,6 @@ class AlgorithmR1 extends Layout {
           undefinedNodes.push(node);
         }
       });
-
 
       let iterNum = 0;
       undefinedNodes.forEach(node => {
