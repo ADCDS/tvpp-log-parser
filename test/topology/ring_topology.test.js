@@ -21,9 +21,9 @@ test("ringTopologyTest", () => {
                 discriminateByPort: true
               });
               logEntity.addOverlayEntries(overlayEntryArray);
-              logEntity.addPerfomanceEntries(performanceEntryArray);
+              logEntity.addPerformanceEntries(performanceEntryArray);
               const graphHolder = new GraphManager(logEntity);
-              graphHolder.goToLastState();
+              graphHolder.goToLastEventState();
               const ringTopology = new RingLayout(
                 graphHolder.getGraphHolder(),
                 graphHolder.getMachines(),

@@ -3,7 +3,7 @@ import TVPPLog from "../../src/parserLib/TVPPLog";
 import GraphManager from "../../src/parserLib/Graph/GraphManager";
 import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserPerformance";
 import RingLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayout";
-import StarLayout from "../../src/parserLib/Graph/Visualizer/Layout/StarLayout";
+import RingLayeredLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayeredLayout";
 import SpringLayout from "../../src/parserLib/Graph/Visualizer/Layout/SpringLayout";
 
 test("springTopologyTest", () => {
@@ -23,9 +23,9 @@ test("springTopologyTest", () => {
                 discriminateByPort: true
               });
               logEntity.addOverlayEntries(overlayEntryArray);
-              logEntity.addPerfomanceEntries(performanceEntryArray);
+              logEntity.addPerformanceEntries(performanceEntryArray);
               const graphHolder = new GraphManager(logEntity);
-              graphHolder.goToAbsoluteState(100);
+              graphHolder.goToAbsoluteEventState(100);
               const starTopology = new SpringLayout(
                 graphHolder.getGraphHolder(),
                 graphHolder.getMachines(),

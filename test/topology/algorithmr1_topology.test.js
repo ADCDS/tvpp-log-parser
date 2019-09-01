@@ -3,7 +3,7 @@ import TVPPLog from "../../src/parserLib/TVPPLog";
 import GraphManager from "../../src/parserLib/Graph/GraphManager";
 import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserPerformance";
 import RingLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayout";
-import StarLayout from "../../src/parserLib/Graph/Visualizer/Layout/StarLayout";
+import RingLayeredLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayeredLayout";
 import SpringLayout from "../../src/parserLib/Graph/Visualizer/Layout/SpringLayout";
 import AlgorithmR1 from "../../src/parserLib/Graph/Visualizer/Layout/AlgorithmR1";
 import DijkstraFilter from "../../src/parserLib/Graph/Filter/DijkstraFilter";
@@ -23,12 +23,12 @@ test("algorithmR1TopologyTest", async () => {
   });
 
   logEntity.addOverlayEntries(overlayEntryArray);
-  logEntity.addPerfomanceEntries(performanceEntryArray);
+  logEntity.addPerformanceEntries(performanceEntryArray);
 
   let sourceMachineName = logEntity.getMachineName(logEntity.eventList[0].machine, logEntity.eventList[0].port);
 
   const graphHolder = new GraphManager(logEntity);
-  graphHolder.goToAbsoluteState(100);
+  graphHolder.goToAbsoluteEventState(100);
 
   const dijkstraFilter = new DijkstraFilter(
     graphHolder.getGraphHolder(),
