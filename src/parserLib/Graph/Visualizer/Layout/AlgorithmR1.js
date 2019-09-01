@@ -1,6 +1,6 @@
-import Topology from "./Topology";
+import Layout from "./Layout";
 
-class AlgorithmR1 extends Topology {
+class AlgorithmR1 extends Layout {
   constructor(graphHolder, machines, options) {
     super(graphHolder, machines, options);
     this.options = options || {};

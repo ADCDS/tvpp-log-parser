@@ -2,7 +2,7 @@ import LogParserOverlay from "../../src/parserLib/Log/Overlay/LogParserOverlay";
 import TVPPLog from "../../src/parserLib/TVPPLog";
 import GraphManager from "../../src/parserLib/Graph/GraphManager";
 import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserPerformance";
-import RingTopology from "../../src/parserLib/Graph/Visualizer/Topology/RingTopology";
+import RingLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayout";
 
 test("ringTopologyTest", () => {
   const logOverlay = LogParserOverlay.readLog("./logs/test1_overlay.txt");
@@ -24,7 +24,7 @@ test("ringTopologyTest", () => {
               logEntity.addPerfomanceEntries(performanceEntryArray);
               const graphHolder = new GraphManager(logEntity);
               graphHolder.goToLastState();
-              const ringTopology = new RingTopology(
+              const ringTopology = new RingLayout(
                 graphHolder.getGraphHolder(),
                 graphHolder.getMachines(),
                 100

@@ -2,10 +2,10 @@ import LogParserOverlay from "../../src/parserLib/Log/Overlay/LogParserOverlay";
 import TVPPLog from "../../src/parserLib/TVPPLog";
 import GraphManager from "../../src/parserLib/Graph/GraphManager";
 import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserPerformance";
-import RingTopology from "../../src/parserLib/Graph/Visualizer/Topology/RingTopology";
-import StarTopology from "../../src/parserLib/Graph/Visualizer/Topology/StarTopology";
-import SpringTopology from "../../src/parserLib/Graph/Visualizer/Topology/SpringTopology";
-import AlgorithmR1 from "../../src/parserLib/Graph/Visualizer/Topology/AlgorithmR1";
+import RingLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayout";
+import StarLayout from "../../src/parserLib/Graph/Visualizer/Layout/StarLayout";
+import SpringLayout from "../../src/parserLib/Graph/Visualizer/Layout/SpringLayout";
+import AlgorithmR1 from "../../src/parserLib/Graph/Visualizer/Layout/AlgorithmR1";
 import DijkstraFilter from "../../src/parserLib/Graph/Filter/DijkstraFilter";
 
 test("algorithmR1TopologyTest", async () => {

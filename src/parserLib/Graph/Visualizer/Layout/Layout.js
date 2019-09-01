@@ -2,7 +2,7 @@
 
 import Node from "../Node";
 
-class Topology {
+class Layout {
 	constructor(graphHolder, machines, options) {
 		this.graphHolder = graphHolder;
 		this.machines = machines;
@@ -80,4 +80,4 @@ class Topology {
 	}
 }
 
-export default Topology;
+export default Layout;

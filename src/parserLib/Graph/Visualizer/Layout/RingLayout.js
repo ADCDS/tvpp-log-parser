@@ -1,6 +1,6 @@
-import Topology from "./Topology";
+import Layout from "./Layout";
 
-class RingTopology extends Topology {
+class RingLayout extends Layout {
 	constructor(graphHolder, machines, options) {
 		super(graphHolder, machines, options);
 		this.options = options || {
@@ -24,4 +24,4 @@ class RingTopology extends Topology {
 	}
 }
 
-export default RingTopology;
+export default RingLayout;

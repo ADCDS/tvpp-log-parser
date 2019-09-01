@@ -2,9 +2,9 @@ import LogParserOverlay from "../../src/parserLib/Log/Overlay/LogParserOverlay";
 import TVPPLog from "../../src/parserLib/TVPPLog";
 import GraphManager from "../../src/parserLib/Graph/GraphManager";
 import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserPerformance";
-import RingTopology from "../../src/parserLib/Graph/Visualizer/Topology/RingTopology";
-import StarTopology from "../../src/parserLib/Graph/Visualizer/Topology/StarTopology";
-import SpringTopology from "../../src/parserLib/Graph/Visualizer/Topology/SpringTopology";
+import RingLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayout";
+import StarLayout from "../../src/parserLib/Graph/Visualizer/Layout/StarLayout";
+import SpringLayout from "../../src/parserLib/Graph/Visualizer/Layout/SpringLayout";
 
 test("springTopologyTest", () => {
   const logOverlay = LogParserOverlay.readLog("./logs/test1_overlay.txt");
@@ -26,7 +26,7 @@ test("springTopologyTest", () => {
               logEntity.addPerfomanceEntries(performanceEntryArray);
               const graphHolder = new GraphManager(logEntity);
               graphHolder.goToAbsoluteState(100);
-              const starTopology = new SpringTopology(
+              const starTopology = new SpringLayout(
                 graphHolder.getGraphHolder(),
                 graphHolder.getMachines(),
 	              {

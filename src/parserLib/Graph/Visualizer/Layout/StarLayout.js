@@ -1,7 +1,7 @@
-import Topology from "./Topology";
+import Layout from "./Layout";
 import DijkstraFilter from "../../Filter/DijkstraFilter";
 
-class StarTopology extends Topology {
+class StarLayout extends Layout {
 	constructor(graphHolder, machines, options) {
 		super(graphHolder, machines, options);
 		this.radius = options.radius || 100;
@@ -11,7 +11,7 @@ class StarTopology extends Topology {
 
 		if (this.distancesFromSource == null || this.fathers == null) {
 			if (this.source == null) {
-				throw "Invoked StarTopology without dijkstra data and source";
+				throw "Invoked StarLayout without dijkstra data and source";
 			}
 
 			// I dont have the distances, need to calculate it using dijkstra
@@ -81,4 +81,4 @@ class StarTopology extends Topology {
 	}
 }
 
-export default StarTopology;
+export default StarLayout;

@@ -1,6 +1,6 @@
-import Topology from "./Topology";
+import Layout from "./Layout";
 
-class SpringTopology extends Topology {
+class SpringLayout extends Layout {
   constructor(graphHolder, machines, options) {
     super(graphHolder, machines, options);
     this.options = options || {};
@@ -79,7 +79,7 @@ class SpringTopology extends Topology {
     let newY = this.nodeHolder[machineKey].y;
 
 
-    console.log("SpringTopology: " + machineKey + ": OLD {x: " + oldX + ", y: " + oldY + "}, NEW {x: " + newX + ", y: " + newY + "}");
+    console.log("SpringLayout: " + machineKey + ": OLD {x: " + oldX + ", y: " + oldY + "}, NEW {x: " + newX + ", y: " + newY + "}");
   }
 
   updatePositions() {
@@ -103,4 +103,4 @@ class SpringTopology extends Topology {
   }
 }
 
-export default SpringTopology;
+export default SpringLayout;

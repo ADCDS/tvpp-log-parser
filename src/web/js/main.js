@@ -4,11 +4,11 @@ import TVPPLog from "../../parserLib/TVPPLog";
 import LogParserOverlay from "../../parserLib/Log/Overlay/LogParserOverlay";
 import LogParserPerformance from "../../parserLib/Log/Performance/LogParserPerformance";
 import GraphManager from "../../parserLib/Graph/GraphManager";
-import RingTopology from "../../parserLib/Graph/Visualizer/Topology/RingTopology";
-import StarTopology from "../../parserLib/Graph/Visualizer/Topology/StarTopology";
+import RingLayout from "../../parserLib/Graph/Visualizer/Layout/RingLayout";
+import StarLayout from "../../parserLib/Graph/Visualizer/Layout/StarLayout";
 import DijkstraFilter from "../../parserLib/Graph/Filter/DijkstraFilter";
-import SpringTopology from "../../parserLib/Graph/Visualizer/Topology/SpringTopology";
-import AlgorithmR1 from "../../parserLib/Graph/Visualizer/Topology/AlgorithmR1";
+import SpringLayout from "../../parserLib/Graph/Visualizer/Layout/SpringLayout";
+import AlgorithmR1 from "../../parserLib/Graph/Visualizer/Layout/AlgorithmR1";
 
 const Sigma = require("sigma");
 
@@ -47,14 +47,14 @@ function handleTopologyTypeChange(e) {
   switch (value) {
     default:
     case "RingToplogy":
-      window.TopologyType = RingTopology;
+      window.TopologyType = RingLayout;
       window.TopologyTypeOptions = {radius: 100};
       break;
-    case "StarTopology":
-      window.TopologyType = StarTopology;
+    case "StarLayout":
+      window.TopologyType = StarLayout;
       break;
-    case "SpringTopology":
-      window.TopologyType = SpringTopology;
+    case "SpringLayout":
+      window.TopologyType = SpringLayout;
       break;
     case "AlgorithmR1":
       window.TopologyType = AlgorithmR1;
@@ -100,7 +100,7 @@ function startGraph() {
   } else {
     console.log("remove me");
   }
-  if (window.TopologyType.name === "StarTopology") {
+  if (window.TopologyType.name === "StarLayout") {
     if (
       window.FilterType != null &&
       window.FilterType.name === "DijkstraFilter"

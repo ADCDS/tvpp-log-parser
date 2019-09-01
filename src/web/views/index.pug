@@ -26,8 +26,8 @@ html(lang='pt')
             else
               option(value=(filterType.value)) #{filterType.name}
       br
-      label(for='topologyType') Topology Type
-        - const PugtopologyTypeOptions = [{name: 'Ring Topology', value: 'RingTopology'},{name: 'Star Topology', value: 'StarTopology'},{name: 'Spring Topology', value: 'SpringTopology'},{name: 'Algorithm R1', value: 'AlgorithmR1', selected: true}]
+      label(for='topologyType') Layout Type
+        - const PugtopologyTypeOptions = [{name: 'Ring Layout', value: 'RingTopology'},{name: 'Star Layout', value: 'StarTopology'},{name: 'Spring Layout', value: 'SpringTopology'},{name: 'Algorithm R1', value: 'AlgorithmR1', selected: true}]
         select#topologyType(name='topologyType' size='3' required)
           each topologyType in PugtopologyTypeOptions
             if(topologyType.selected != null && topologyType.selected)
