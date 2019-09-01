@@ -22,7 +22,7 @@ test("dijkstraFilterTest", () => {
 							);
 							const logEntity = new TVPPLog();
 							logEntity.addOverlayEntries(overlayEntryArray);
-							logEntity.addPerfomanceEntries(performanceEntryArray);
+							logEntity.addPerformanceEntries(performanceEntryArray);
 							const graphHolder = new GraphManager(logEntity);
 							// graphHolder.goToLastState();
 							graphHolder.goToAbsoluteState(100);

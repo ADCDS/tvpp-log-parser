@@ -156,7 +156,7 @@ const parsePerformanceLog = function (e) {
   LogParserPerformance.parse(e.currentTarget.result.split("\n")).then(
     entryArray => {
       console.log(`Parsed ${entryArray.length} lines from performance log`);
-      window.logEntity.addPerfomanceEntries(entryArray);
+      window.logEntity.addPerformanceEntries(entryArray);
       loadedPerformance = true;
       if (loadedOverlay) {
         // Do the thing

@@ -84,7 +84,7 @@ class TVPPLog {
     return this.machines[machineName];
   }
 
-  addPerfomanceEntries(entries) {
+  addPerformanceEntries(entries) {
   	let foundBandwidths = {};
     entries.forEach(logEntry => {
       if (!this.hasMachine(logEntry.machine, logEntry.port)) {

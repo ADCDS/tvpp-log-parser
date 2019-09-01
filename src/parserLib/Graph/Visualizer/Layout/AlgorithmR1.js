@@ -59,7 +59,7 @@ class AlgorithmR1 extends Layout {
   drawSubTree1(machineName, p, alpha1, alpha2) {
     const v = this.nodeHolder[machineName];
     v.setPolarCoordinate(p, (alpha1 + alpha2) / 2);
-    console.log("Polar: ", p, (alpha1 + alpha2) / 2, "Cartesian: ", v.x, v.y);
+    //console.log("Polar: ", p, (alpha1 + alpha2) / 2, "Cartesian: ", v.x, v.y);
 
     let alphaRes;
     let s;
