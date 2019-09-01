@@ -14,7 +14,7 @@ test("graphManagerTest", () => {
         logEntity.addOverlayEntries(entryArray);
         const graphHolder = new GraphManager(logEntity);
         for (let i = 0; i < 160; i += 1) {
-          graphHolder.nextState();
+          graphHolder.goToNextEvent();
         }
       });
     },

@@ -78,7 +78,7 @@ function handleFilterTypeChange(e) {
 
 function startGraph() {
   window.graphManager = new GraphManager(window.logEntity);
-  window.graphManager.goToAbsoluteState(window.selectedEvent);
+  window.graphManager.goToAbsoluteEventState(window.selectedEvent);
 
   let filter = null;
   let topology = null;

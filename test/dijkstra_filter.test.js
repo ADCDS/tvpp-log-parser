@@ -24,8 +24,8 @@ test("dijkstraFilterTest", () => {
 							logEntity.addOverlayEntries(overlayEntryArray);
 							logEntity.addPerformanceEntries(performanceEntryArray);
 							const graphHolder = new GraphManager(logEntity);
-							// graphHolder.goToLastState();
-							graphHolder.goToAbsoluteState(100);
+							// graphHolder.goToLastEventState();
+							graphHolder.goToAbsoluteEventState(100);
 							const dijkstraFilter = new DijkstraFilter(
 								graphHolder.getGraphHolder(),
 								{

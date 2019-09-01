@@ -3,7 +3,7 @@ import GraphHolder from "./GraphHolder";
 class GraphManager {
   constructor(logEntity) {
     this.logEntity = logEntity;
-    this.currentState = 0;
+    this.currentEventIndex = 0;
     this.graphHolder = new GraphHolder(Object.keys(this.logEntity.machines));
   }
 
@@ -12,22 +12,20 @@ class GraphManager {
   }
 
   // TODO THIS
-  prevState() {
-    if (this.currentState === 0) return;
-    this.currentState -= 1;
+  goToPrevEvent() {
+    if (this.currentEventIndex === 0) return;
+    this.currentEventIndex -= 1;
   }
 
-  nextState() {
-    const currentEvent = this.logEntity.eventList[this.currentState];
-    if (this.currentState >= this.logEntity.eventList.length) return;
-    this.currentState += 1;
+  goToNextEvent() {
+    const currentEvent = this.logEntity.eventList[this.currentEventIndex];
+    if (this.currentEventIndex >= this.logEntity.eventList.length) return;
+    this.currentEventIndex += 1;
 
     const currentMachine = this.logEntity.getMachineName(
       currentEvent.machine,
       currentEvent.port
     );
-
-    this.graphHolder.timestamp = currentEvent.timestamp;
 
     // Outgoing edges
     if (currentEvent.added.out.length > 0) {
@@ -38,7 +36,7 @@ class GraphManager {
           if (this.logEntity.options.forceAddGhostNodes) {
             // One of the machines is mentioned by another, but it doesn't have a single log of its own
             console.log(
-              `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
+              `Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
             );
             this.graphHolder.insertNode(targetMachine);
             this.graphHolder.addEdge(currentMachine, targetMachine);
@@ -55,7 +53,7 @@ class GraphManager {
           if (this.logEntity.options.forceAddGhostNodes) {
             // One of the machines is mentioned by another, but it doesn't have a single log of its own
             console.log(
-              `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
+              `Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
             );
             this.graphHolder.insertNode(targetMachine);
             this.graphHolder.removeEdge(currentMachine, targetMachine);
@@ -74,7 +72,7 @@ class GraphManager {
           if (this.logEntity.options.forceAddGhostNodes) {
             // One of the machines is mentioned by another, but it doesn't have a single log of its own
             console.log(
-              `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
+              `Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
             );
             this.graphHolder.insertNode(targetMachine);
             this.graphHolder.addEdge(targetMachine, currentMachine);
@@ -91,7 +89,7 @@ class GraphManager {
           if (this.logEntity.options.forceAddGhostNodes) {
             // One of the machines is mentioned by another, but it doesn't have a single log of its own
             console.log(
-              `Log ID: ${this.currentState}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
+              `Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
             );
             this.graphHolder.insertNode(targetMachine);
             this.graphHolder.removeEdge(targetMachine, currentMachine);
@@ -102,27 +100,27 @@ class GraphManager {
     }
   }
 
-  goToAbsoluteState(statePos) {
-    if (this.currentState >= this.logEntity.eventList.length) {
+  goToAbsoluteEventState(statePos) {
+    if (this.currentEventIndex >= this.logEntity.eventList.length) {
       // Requested position is beyond log size
       statePos = this.logEntity.eventList.length - 1;
     }
     if (statePos < 0) statePos = 0;
 
-    if (statePos < this.currentState) {
-      while (this.currentState !== statePos) {
-        this.prevState();
+    if (statePos < this.currentEventIndex) {
+      while (this.currentEventIndex !== statePos) {
+        this.goToPrevEvent();
       }
-    } else if (statePos > this.currentState) {
-      while (this.currentState !== statePos) {
-        this.nextState();
+    } else if (statePos > this.currentEventIndex) {
+      while (this.currentEventIndex !== statePos) {
+        this.goToNextEvent();
       }
     }
   }
 
-  goToLastState() {
-    while (this.currentState < this.logEntity.eventList.length)
-      this.nextState();
+  goToLastEventState() {
+    while (this.currentEventIndex < this.logEntity.eventList.length)
+      this.goToNextEvent();
   }
 
   getMachines() {
