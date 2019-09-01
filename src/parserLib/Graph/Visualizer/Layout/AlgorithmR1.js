@@ -9,6 +9,7 @@ class AlgorithmR1 extends Layout {
     this.source = this.options.source;
     this.drawUndefinedNodes = this.options.drawUndefinedNodes || false;
     this.dynamicRadius = this.options.dynamicRadius || false;
+
     this.height = 1;
 
     if (this.source === null) {
@@ -85,6 +86,10 @@ class AlgorithmR1 extends Layout {
       );
       alphaRes += s * this.widthOf(node);
     });
+  }
+
+  calculateNumberOfNodesAtRing(ringIndex) {
+    if (ringIndex === 0) return 1;
   }
 
   updatePositions() {
