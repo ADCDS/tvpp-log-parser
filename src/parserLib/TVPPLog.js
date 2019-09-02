@@ -8,7 +8,7 @@ class TVPPLog {
       iterateTroughServerApparition: true
     };
 
-    this.options = options || defaultOptions;
+    this.options = Object.assign(defaultOptions, options);
 
     this.eventList = [];
     this.machines = {};
@@ -22,12 +22,18 @@ class TVPPLog {
    * @param entries
    */
   addOverlayEntries(entries) {
-    this.sourceMachineKey = this.getMachineName(entries[0].machine, entries[0].port);
+    this.sourceMachineKey = this.getMachineName(
+      entries[0].machine,
+      entries[0].port
+    );
 
     let iterNum = 0;
     entries.forEach(logEntry => {
-      const currMachineName = this.getMachineName(logEntry.machine, logEntry.port);
-      if(currMachineName === this.sourceMachineKey)
+      const currMachineName = this.getMachineName(
+        logEntry.machine,
+        logEntry.port
+      );
+      if (currMachineName === this.sourceMachineKey)
         this.sourceApparitionLocations.push(iterNum);
 
       const currEvent = logEntry.toEvent();
@@ -63,40 +69,39 @@ class TVPPLog {
     });
   }
 
-  addRawMachine(machineName, events){
+  addRawMachine(machineName, events) {
     this.machines[machineName] = new Machine(machineName, events);
   }
 
-  hasRawMachine(machineName){
-    return Object.prototype.hasOwnProperty.call(this.machines, machineName)
+  hasRawMachine(machineName) {
+    return Object.prototype.hasOwnProperty.call(this.machines, machineName);
   }
 
-  getRawMachine(machineName){
+  getRawMachine(machineName) {
     return this.machines[machineName];
   }
 
-  addMachine(address, port, events){
+  addMachine(address, port, events) {
     const machineName = this.getMachineName(address, port);
     this.machines[machineName] = new Machine(machineName, events);
   }
 
   getMachineName(address, port) {
-    return address +
-      (this.options.discriminateByPort ? `:${port}` : "");;
+    return address + (this.options.discriminateByPort ? `:${port}` : "");
   }
 
-  hasMachine(address, port){
+  hasMachine(address, port) {
     const machineName = this.getMachineName(address, port);
-    return Object.prototype.hasOwnProperty.call(this.machines, machineName)
+    return Object.prototype.hasOwnProperty.call(this.machines, machineName);
   }
 
-  getMachine(address, port){
+  getMachine(address, port) {
     const machineName = this.getMachineName(address, port);
     return this.machines[machineName];
   }
 
   addPerformanceEntries(entries) {
-  	let foundBandwidths = {};
+    const foundBandwidths = {};
     entries.forEach(logEntry => {
       if (!this.hasMachine(logEntry.machine, logEntry.port)) {
         this.addMachine(logEntry.machine, logEntry.port);
@@ -105,15 +110,21 @@ class TVPPLog {
       const machineObj = this.getMachine(logEntry.machine, logEntry.port);
       machineObj.addStatus(logEntry);
 
-      if(logEntry.hasOwnProperty('bandwidth')){
-	      foundBandwidths[logEntry.bandwidth] = true;
-	      if(machineObj.hasOwnProperty('bandwidth') && machineObj.bandwidth !== null && machineObj.bandwidth !== logEntry.bandwidth){
-	      	throw "Machine " + machineObj.address +" bandwidth from " + machineObj.bandwidth + " to " + logEntry.bandwidth + " changed at line " + logEntry.logId;
-	      }
-	      machineObj.bandwidth = logEntry.bandwidth;
+      if (logEntry.hasOwnProperty("bandwidth")) {
+        foundBandwidths[logEntry.bandwidth] = true;
+        if (
+          machineObj.hasOwnProperty("bandwidth") &&
+          machineObj.bandwidth !== null &&
+          machineObj.bandwidth !== logEntry.bandwidth
+        ) {
+          throw `Machine ${machineObj.address} bandwidth from ${machineObj.bandwidth} to ${logEntry.bandwidth} changed at line ${logEntry.logId}`;
+        }
+        machineObj.bandwidth = logEntry.bandwidth;
       }
     });
-    let bandwidths = Object.keys(foundBandwidths).sort().map(Number);
+    const bandwidths = Object.keys(foundBandwidths)
+      .sort()
+      .map(Number);
     Object.keys(this.machines).forEach(machineKey => {
       const machine = this.machines[machineKey];
       machine.bandwidthClassification = bandwidths.indexOf(machine.bandwidth);
