@@ -9,41 +9,63 @@ html(lang='pt')
         margin: 30px;
       }
 
+      #panelHolder {
+        display: flex;
+      }
+      #toolbar {
+        margin: 30px;
+      }
+      #infoView {
+        margin: 30px;
+        height: 200px;
+        overflow: auto;
+        text-align: right;
+      }
   body
     h1 TVPP Log viewer
-    div#toolbar
-      input#logOverlayFile(type='file')
-      br
-      input#logPerformanceFile(type='file')
+    div#panelHolder
+      div#toolbar
+        input#logOverlayFile(type='file')
+        br
+        input#logPerformanceFile(type='file')
 
-      br
-      label(for='FilterType') Filter Type
-        - const PugfilterTypeOptions = [{name: 'No Filter', value: 'NoFilter'}, {name: 'Dijkstra Shortest Path', value: 'DijkstraFilter', selected: true}]
-        select#filterType(name='FilterType' size='3' required)
-          each filterType in PugfilterTypeOptions
-            if(filterType.selected != null && filterType.selected)
-              option(value=(filterType.value) selected) #{filterType.name}
-            else
-              option(value=(filterType.value)) #{filterType.name}
-      br
-      label(for='topologyType') Layout Type
-        - const PugtopologyTypeOptions = [{name: 'Ring Layout', value: 'RingLayout'},{name: 'Ring Layered Layout', value: 'RingLayeredLayout'},{name: 'Spring Layout', value: 'SpringLayout'},{name: 'Algorithm R1', value: 'AlgorithmR1', selected: true}]
-        select#topologyType(name='topologyType' size='3' required)
-          each topologyType in PugtopologyTypeOptions
-            if(topologyType.selected != null && topologyType.selected)
-              option(value=(topologyType.value) selected) #{topologyType.name}
-            else
-              option(value=(topologyType.value)) #{topologyType.name}
-      br
-      input#selectedEventNumber(type='number')
-      span#numberOfEvents
-      br
-      //input#prev(type='button', value='<')
-      //input#next(type='button', value='>')
-      input#draw(type='button', value='Draw!')
-      br
+        br
+        label(for='FilterType') Filter Type
+          - const PugfilterTypeOptions = [{name: 'No Filter', value: 'NoFilter'}, {name: 'Dijkstra Shortest Path', value: 'DijkstraFilter', selected: true}]
+          select#filterType(name='FilterType' size='3' required)
+            each filterType in PugfilterTypeOptions
+              if(filterType.selected != null && filterType.selected)
+                option(value=(filterType.value) selected) #{filterType.name}
+              else
+                option(value=(filterType.value)) #{filterType.name}
+        br
+        label(for='topologyType') Layout Type
+          - const PugtopologyTypeOptions = [{name: 'Ring Layout', value: 'RingLayout'},{name: 'Ring Layered Layout', value: 'RingLayeredLayout'},{name: 'Spring Layout', value: 'SpringLayout'},{name: 'Algorithm R1', value: 'AlgorithmR1', selected: true}]
+          select#topologyType(name='topologyType' size='3' required)
+            each topologyType in PugtopologyTypeOptions
+              if(topologyType.selected != null && topologyType.selected)
+                option(value=(topologyType.value) selected) #{topologyType.name}
+              else
+                option(value=(topologyType.value)) #{topologyType.name}
+        br
+        input#selectedEventNumber(type='number')
+        br
+
+        input#draw(type='button', value='Draw!')
+        br
+      div#infoView
+        label(for='numberOfNodes') Número de Nós:
+          input(readonly=true)#numberOfNodes
+        br
+        label(for='numberOfEvents') Número de Eventos:
+          input(readonly=true)#numberOfEvents
+        br
+        label(for='numberOfSourceEvents') Número de Eventos do Source:
+          input(readonly=true)#numberOfSourceEvents
+        br
+        label(for='currentEvent') Evento atual:
+          input(readonly=true)#currentEvent
+
     div#container
-
-    ul#list
   script(src='/js/bundle.js')
 
