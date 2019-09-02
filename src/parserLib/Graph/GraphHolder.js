@@ -1,3 +1,5 @@
+import TreeFilter from "./Filter/Tree/TreeFilter";
+
 class GraphHolder {
   constructor(machines) {
     // Preallocate graph
@@ -10,6 +12,15 @@ class GraphHolder {
     machines.forEach(el => {
       this.graph[el] = { ...machinesObj };
     });
+
+    this.generatedByFilter = null;
+  }
+
+  isTree() {
+    return (
+      this.generatedByFilter !== null &&
+      this.generatedByFilter.prototype instanceof TreeFilter
+    );
   }
 
   hasNode(machine) {

@@ -6,18 +6,20 @@ import RingLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayout";
 import RingLayeredLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayeredLayout";
 import SpringLayout from "../../src/parserLib/Graph/Visualizer/Layout/SpringLayout";
 import AlgorithmR1 from "../../src/parserLib/Graph/Visualizer/Layout/AlgorithmR1";
-import DijkstraFilter from "../../src/parserLib/Graph/Filter/DijkstraFilter";
+import DijkstraFilter from "../../src/parserLib/Graph/Filter/Tree/DijkstraFilter";
 
 test("algorithmR1LayoutTest", async () => {
   const logOverlay = await LogParserOverlay.readLog("./logs/test1_overlay.txt");
-  const logPerformance = await LogParserPerformance.readLog("./logs/test1_perf.txt");
+  const logPerformance = await LogParserPerformance.readLog(
+    "./logs/test1_perf.txt"
+  );
   const overlayEntryArray = await LogParserOverlay.parse(logOverlay);
 
   console.log(`Parsed ${overlayEntryArray.length} overlay lines`);
-  const performanceEntryArray = await LogParserPerformance.parse(logPerformance);
-  console.log(
-    `Parsed ${performanceEntryArray.length} performance lines`
+  const performanceEntryArray = await LogParserPerformance.parse(
+    logPerformance
   );
+  console.log(`Parsed ${performanceEntryArray.length} performance lines`);
   const logEntity = new TVPPLog({
     discriminateByPort: true
   });
@@ -25,17 +27,17 @@ test("algorithmR1LayoutTest", async () => {
   logEntity.addOverlayEntries(overlayEntryArray);
   logEntity.addPerformanceEntries(performanceEntryArray);
 
-  let sourceMachineName = logEntity.getMachineName(logEntity.eventList[0].machine, logEntity.eventList[0].port);
+  const sourceMachineName = logEntity.getMachineName(
+    logEntity.eventList[0].machine,
+    logEntity.eventList[0].port
+  );
 
   const graphHolder = new GraphManager(logEntity);
   graphHolder.goToAbsoluteEventState(100);
 
-  const dijkstraFilter = new DijkstraFilter(
-    graphHolder.getGraphHolder(),
-    {
-      source: sourceMachineName
-    }
-  );
+  const dijkstraFilter = new DijkstraFilter(graphHolder.getGraphHolder(), {
+    source: sourceMachineName
+  });
   dijkstraFilter.applyFilter();
 
   const algorithmR1 = new AlgorithmR1(

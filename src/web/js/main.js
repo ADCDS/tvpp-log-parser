@@ -6,7 +6,7 @@ import LogParserPerformance from "../../parserLib/Log/Performance/LogParserPerfo
 import GraphManager from "../../parserLib/Graph/GraphManager";
 import RingLayout from "../../parserLib/Graph/Visualizer/Layout/RingLayout";
 import RingLayeredLayout from "../../parserLib/Graph/Visualizer/Layout/RingLayeredLayout";
-import DijkstraFilter from "../../parserLib/Graph/Filter/DijkstraFilter";
+import DijkstraFilter from "../../parserLib/Graph/Filter/Tree/DijkstraFilter";
 import SpringLayout from "../../parserLib/Graph/Visualizer/Layout/SpringLayout";
 import AlgorithmR1 from "../../parserLib/Graph/Visualizer/Layout/AlgorithmR1";
 
@@ -28,11 +28,9 @@ window.LayoutTypeOptions = {};
 
 window.selectedEvent = 0;
 
-function prevState() {
-}
+function prevState() {}
 
-function nextState() {
-}
+function nextState() {}
 
 function handleSelectedEventChange(e) {
   if (e.target.value < window.logEntity.eventList.length)
@@ -42,13 +40,13 @@ function handleSelectedEventChange(e) {
 }
 
 function handleLayoutTypeChange(e) {
-  const {value} = e.target;
+  const { value } = e.target;
 
   switch (value) {
     default:
     case "RingLayout":
       window.LayoutType = RingLayout;
-      window.LayoutTypeOptions = {radius: 100};
+      window.LayoutTypeOptions = { radius: 100 };
       break;
     case "RingLayeredLayout":
       window.LayoutType = RingLayeredLayout;
@@ -63,7 +61,7 @@ function handleLayoutTypeChange(e) {
 }
 
 function handleFilterTypeChange(e) {
-  const {value} = e.target;
+  const { value } = e.target;
 
   switch (value) {
     default:
@@ -82,7 +80,10 @@ function startGraph() {
 
   let filter = null;
   let topology = null;
-  const sourceMachineName = window.logEntity.getMachineName(window.logEntity.eventList[0].machine, window.logEntity.eventList[0].port);
+  const sourceMachineName = window.logEntity.getMachineName(
+    window.logEntity.eventList[0].machine,
+    window.logEntity.eventList[0].port
+  );
   if (
     window.FilterType != null &&
     window.FilterType.name === "DijkstraFilter"
@@ -92,10 +93,7 @@ function startGraph() {
       source: sourceMachineName
     };
 
-    filter = new window.FilterType(
-      window.graphManager.graphHolder,
-      options
-    );
+    filter = new window.FilterType(window.graphManager.graphHolder, options);
     filter.applyFilter();
   } else {
     console.log("remove me");
@@ -105,24 +103,24 @@ function startGraph() {
       window.FilterType != null &&
       window.FilterType.name === "DijkstraFilter"
     ) {
-      window.LayoutTypeOptions['distancesFromSource'] = filter.distancesFromSource;
-      window.LayoutTypeOptions['fathers'] = filter.fathers;
+      window.LayoutTypeOptions.distancesFromSource = filter.distancesFromSource;
+      window.LayoutTypeOptions.fathers = filter.fathers;
     } else if (window.FilterType == null) {
-      window.LayoutTypeOptions['source'] = sourceMachineName;
+      window.LayoutTypeOptions.source = sourceMachineName;
     }
     topology = new window.LayoutType(
       window.graphManager.graphHolder,
       window.logEntity.machines,
       window.LayoutTypeOptions
     );
-  } else if(window.LayoutType.name === "AlgorithmR1") {
-    window.LayoutTypeOptions['source'] = sourceMachineName;
+  } else if (window.LayoutType.name === "AlgorithmR1") {
+    window.LayoutTypeOptions.source = sourceMachineName;
     topology = new window.LayoutType(
       window.graphManager.graphHolder,
       window.logEntity.machines,
       window.LayoutTypeOptions
     );
-  }else{
+  } else {
     topology = new window.LayoutType(
       window.graphManager.graphHolder,
       window.logEntity.machines,
@@ -139,19 +137,21 @@ function draw() {
   startGraph();
 }
 
-const parseOverlayLog = function (e) {
+const parseOverlayLog = function(e) {
   console.log("Overlay log read.");
   LogParserOverlay.parse(e.currentTarget.result.split("\n")).then(
     entryArray => {
       console.log(`Parsed ${entryArray.length} lines from overlay log`);
       window.logEntity.addOverlayEntries(entryArray);
       document.getElementById("numberOfEvents").innerHTML = entryArray.length;
+      document.getElementById("numberOfNodes").innerHTML =
+        window.logEntity.machines.length;
       loadedOverlay = true;
     }
   );
 };
 
-const parsePerformanceLog = function (e) {
+const parsePerformanceLog = function(e) {
   console.log("Performance log read.");
   LogParserPerformance.parse(e.currentTarget.result.split("\n")).then(
     entryArray => {
@@ -166,8 +166,8 @@ const parsePerformanceLog = function (e) {
 };
 
 function createHandler(onLoadCb) {
-  return function (evt) {
-    const {files} = evt.target; // FileList object
+  return function(evt) {
+    const { files } = evt.target; // FileList object
 
     // files is a FileList of File objects. List some properties.
     const output = [];
@@ -234,7 +234,7 @@ document.addEventListener("keydown", e => {
   e.preventDefault(); // prevent the default action (scroll / move caret)
 });
 
-(function () {
+(function() {
   window.sigma = new Sigma({
     renderer: {
       container: document.getElementById("container"),

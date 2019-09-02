@@ -1,18 +1,18 @@
 import Layout from "./Layout";
+import TreeFilter from "../../Filter/Tree/TreeFilter";
 
 // TODO add dynamicRadius
 class AlgorithmR1 extends Layout {
   constructor(graphHolder, machines, options) {
+    const defaultOptions = {
+      gamma: 200,
+      drawUndefinedNodes: false,
+      dynamicRadius: false
+    };
+    options = Object.assign(defaultOptions, options);
     super(graphHolder, machines, options);
-    this.options = options || {};
-    this.gamma = this.options.gamma || 200;
-    this.source = this.options.source;
-    this.drawUndefinedNodes = this.options.drawUndefinedNodes || false;
-    this.dynamicRadius = this.options.dynamicRadius || false;
 
-    this.height = 1;
-
-    if (this.source === null) {
+    if (this.options.source === null) {
       throw "Algorithm R1 initialized without a source";
     }
   }
@@ -22,7 +22,7 @@ class AlgorithmR1 extends Layout {
   }
 
   tAngle(p) {
-    return 2 * Math.acos(p / (p + this.gamma));
+    return 2 * Math.acos(p / (p + this.options.gamma));
   }
 
   heightOf(nodeName) {
@@ -59,7 +59,7 @@ class AlgorithmR1 extends Layout {
   drawSubTree1(machineName, p, alpha1, alpha2) {
     const v = this.nodeHolder[machineName];
     v.setPolarCoordinate(p, (alpha1 + alpha2) / 2);
-    //console.log("Polar: ", p, (alpha1 + alpha2) / 2, "Cartesian: ", v.x, v.y);
+    // console.log("Polar: ", p, (alpha1 + alpha2) / 2, "Cartesian: ", v.x, v.y);
 
     let alphaRes;
     let s;
@@ -80,7 +80,7 @@ class AlgorithmR1 extends Layout {
     childrenNodes.forEach(node => {
       this.drawSubTree1(
         node,
-        p + this.gamma,
+        p + this.options.gamma,
         alphaRes,
         alphaRes + s * this.widthOf(node)
       );
@@ -97,7 +97,7 @@ class AlgorithmR1 extends Layout {
     this.drawSubTree1(this.source, 0, 0, AlgorithmR1.degreeToRadian(360));
 
     const undefinedNodes = [];
-    if (!this.drawUndefinedNodes) {
+    if (!this.options.drawUndefinedNodes) {
       Object.keys(this.nodeHolder).forEach(nodeName => {
         if (
           this.nodeHolder[nodeName].x === undefined ||
@@ -120,18 +120,43 @@ class AlgorithmR1 extends Layout {
         const heightOfSource = this.heightOf(this.source);
 
         node.x =
-          this.gamma *
+          this.options.gamma *
           heightOfSource *
           Math.cos((2 * iterNum * Math.PI) / undefinedNodes.length);
         node.y =
-          this.gamma *
+          this.options.gamma *
           heightOfSource *
           Math.sin((2 * iterNum * Math.PI) / undefinedNodes.length);
         iterNum++;
       });
     }
-
     console.log("Done AlgorithmR1");
+  }
+
+  getOptions() {
+    let options = super.getOptions();
+    options = Object.assign(options, {
+      gamma: {
+        name: "Gamma",
+        type: Number,
+        default: 200
+      },
+      source: {
+        name: "Source",
+        type: String,
+        default: "::src"
+      },
+      drawUndefinedNodes: {
+        name: "Draw undefined nodes",
+        type: Boolean,
+        default: false
+      },
+      filter: {
+        name: "Filter",
+        type: TreeFilter
+      }
+    });
+    return options;
   }
 }
 
