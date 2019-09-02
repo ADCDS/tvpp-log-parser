@@ -5,43 +5,29 @@ import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserP
 import RingLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayout";
 import RingLayeredLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayeredLayout";
 
-test("starLayoutTest", () => {
-  const logOverlay = LogParserOverlay.readLog("./logs/test1_overlay.txt");
-  const logPerformance = LogParserPerformance.readLog("./logs/test1_perf.txt");
-  logOverlay.then(
-    dataOverlay => {
-      LogParserOverlay.parse(dataOverlay).then(overlayEntryArray => {
-        console.log(`Parsed ${overlayEntryArray.length} overlay lines`);
-        logPerformance.then(dataPerformance => {
-          LogParserPerformance.parse(dataPerformance).then(
-            performanceEntryArray => {
-              console.log(
-                `Parsed ${performanceEntryArray.length} performance lines`
-              );
-              const logEntity = new TVPPLog({
-                discriminateByPort: true
-              });
-              logEntity.addOverlayEntries(overlayEntryArray);
-              logEntity.addPerformanceEntries(performanceEntryArray);
-              const graphHolder = new GraphManager(logEntity);
-              graphHolder.goToAbsoluteEventState(100);
-              const starLayout = new RingLayeredLayout(
-                graphHolder.getGraphHolder(),
-                graphHolder.getMachines(),
-	              {
-                  source: logEntity.getMachineName(logEntity.eventList[0].machine, logEntity.eventList[0].port),
-		              radius: 30
-	              }
-              );
-              starLayout.updatePositions();
-              console.log("Done");
-            }
-          );
-        });
-      });
-    },
-    reason => {
-      console.log(reason);
+test("starLayoutTest", async () => {
+  const dataOverlay = await LogParserOverlay.readLog("./logs/test1_overlay.txt");
+  const dataPerformance = await LogParserPerformance.readLog("./logs/test1_perf.txt");
+  const overlayEntryArray = await LogParserOverlay.parse(dataOverlay);
+  const performanceEntryArray = await LogParserPerformance.parse(dataPerformance);
+  console.log(
+    `Parsed ${performanceEntryArray.length} performance lines`
+  );
+  const logEntity = new TVPPLog({
+    discriminateByPort: true
+  });
+  logEntity.addOverlayEntries(overlayEntryArray);
+  logEntity.addPerformanceEntries(performanceEntryArray);
+  const graphHolder = new GraphManager(logEntity);
+  graphHolder.goToAbsoluteEventState(100);
+  const starLayout = new RingLayeredLayout(
+    graphHolder.getGraphHolder(),
+    graphHolder.getMachines(),
+    {
+      source: logEntity.getMachineName(logEntity.eventList[0].machine, logEntity.eventList[0].port),
+      radius: 30
     }
   );
+  starLayout.updatePositions();
+  console.log("Done");
 });

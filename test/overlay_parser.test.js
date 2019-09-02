@@ -1,21 +1,12 @@
 import LogParserOverlay from "../src/parserLib/Log/Overlay/LogParserOverlay";
 import TVPPLog from "../src/parserLib/TVPPLog";
 
-test("syncParseTest", () => {
-  const log = LogParserOverlay.readLog("./logs/test1_overlay.txt");
-  log.then(
-    data => {
-      LogParserOverlay.parse(data).then(entryArray => {
-        console.log(`Parsed ${entryArray.length} lines`);
-        const logEntity = new TVPPLog({
-          discriminateByPort: true
-        });
-        logEntity.addOverlayEntries(entryArray);
-        console.log("Done");
-      });
-    },
-    reason => {
-      console.log(reason);
-    }
-  );
+test("syncParseTest", async () => {
+  const data = await LogParserOverlay.readLog("./logs/test1_overlay.txt");
+  const entryArray = await LogParserOverlay.parse(data);
+
+  const logEntity = new TVPPLog({
+    discriminateByPort: true
+  });
+  logEntity.addOverlayEntries(entryArray);
 });
