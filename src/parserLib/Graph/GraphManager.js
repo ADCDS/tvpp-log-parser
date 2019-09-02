@@ -4,6 +4,7 @@ class GraphManager {
   constructor(logEntity) {
     this.logEntity = logEntity;
     this.currentEventIndex = 0;
+    this.currentSourceIndex = 0;
     this.graphHolder = new GraphHolder(Object.keys(this.logEntity.machines));
   }
 
@@ -11,10 +12,40 @@ class GraphManager {
     this.graphHolder = new GraphHolder(Object.keys(this.logEntity.machines));
   }
 
-  // TODO THIS
-  goToPrevEvent() {
-    if (this.currentEventIndex === 0) return;
-    this.currentEventIndex -= 1;
+  goToNextState(){
+    if(this.logEntity.options.iterateTroughServerApparition){
+      this.goToNextServerApparition();
+    }else{
+      this.goToNextEvent();
+    }
+  }
+
+  goToPrevState(){
+    if(this.logEntity.options.iterateTroughServerApparition){
+      this.goToPrevServerApparition();
+    }else{
+      this.goToPrevEvent();
+    }
+  }
+
+  goToNextServerApparition(){
+    if(this.currentSourceIndex >= this.logEntity.sourceApparitionLocations.length)
+      throw "goToNextServerApparition Invalid index: " + this.currentSourceIndex;
+
+    this.syncMachines();
+    this.currentEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex++];
+    const nextEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex];
+    this.goToAbsoluteEventState(nextEventIndex);
+  }
+
+  goToPrevServerApparition(){
+    if(this.currentSourceIndex <= 0)
+      throw "goToPrevServerApparition Invalid index: " + this.currentSourceIndex;
+
+    this.syncMachines();
+    const nextEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex--];
+    this.currentEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex];
+    this.goToAbsoluteEventState(nextEventIndex);
   }
 
   goToNextEvent() {
@@ -98,6 +129,12 @@ class GraphManager {
         }
       });
     }
+  }
+
+  // TODO THIS
+  goToPrevEvent() {
+    if (this.currentEventIndex === 0) return;
+    this.currentEventIndex -= 1;
   }
 
   goToAbsoluteEventState(statePos) {
