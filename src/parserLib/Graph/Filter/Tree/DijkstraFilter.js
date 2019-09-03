@@ -1,9 +1,10 @@
 import { FibonacciHeap } from "@tyriar/fibonacci-heap";
 import TreeFilter from "./TreeFilter";
+import TreeFilterResult from "../Results/TreeFilterResult";
 
 class DijkstraFilter extends TreeFilter {
-  constructor(graphHolder, options) {
-    super(graphHolder, options);
+  constructor(options) {
+    super(options);
     this.vertices = Object.keys(this.graphHolder.graph);
   }
 
@@ -42,17 +43,18 @@ class DijkstraFilter extends TreeFilter {
       });
     }
 
-    this.distancesFromSource = dist;
-    this.fathers = prev;
-    return prev;
+    return {
+      distancesFromSource: dist,
+      fathers: prev
+    };
   };
 
-  applyFilter() {
-    const newGraphHolder = super.applyFilter();
-    newGraphHolder.generatedByFilter = DijkstraFilter;
+  applyFilter(graphHolder) {
+    const newGraphHolder = graphHolder.clone();
 
     const { graph } = newGraphHolder;
-    const fathers = this.dijkstraShortestPath(graph, this.options.source);
+    const dijkstraResults = this.dijkstraShortestPath(graph, this.options.source);
+    const fathers = dijkstraResults.fathers;
     this.vertices.forEach(node => {
       this.vertices.forEach(node2 => {
         graph[node2][node] = false;
@@ -61,7 +63,7 @@ class DijkstraFilter extends TreeFilter {
       if (fathers[node] != null) graph[fathers[node]][node] = true;
     });
 
-    return newGraphHolder;
+    return new TreeFilterResult(newGraphHolder, DijkstraFilter, dijkstraResults.distancesFromSource, dijkstraResults.fathers);
   }
 }
 

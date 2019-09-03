@@ -2,12 +2,10 @@ import GraphHolder from "../GraphHolder";
 
 class Filter {
   constructor(graphHolder, options) {
-    this.graphHolder = graphHolder;
     this.options = options || {};
   }
 
-  applyFilter() {
-    return this.graphHolder.clone();
+  applyFilter(graphHolder) {
   }
 }
 

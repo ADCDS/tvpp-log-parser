@@ -4,8 +4,8 @@ import Node from "../Node";
 import Filter from "../../Filter/Filter";
 
 class Layout {
-  constructor(graphHolder, machines, options) {
-    this.graphHolder = graphHolder;
+  constructor(filterResult, machines, options) {
+    this.graphHolder = filterResult.graphHolder;
     this.machines = machines;
     this.nodeHolder = {};
 
@@ -24,20 +24,6 @@ class Layout {
 
     this.bandwidths = {};
 
-    // Check if we need to apply filter
-    if (this.options.filter !== null) {
-      if (
-        !(this.options.filter instanceof this.graphHolder.generatedByFilter)
-      ) {
-        // We need to apply our filter
-        this.options.filter = new this.options.filter.prototype(
-          graphHolder,
-          options
-        );
-        this.graphHolder = this.options.filter.applyFilter();
-      }
-    }
-
     // Setup node holders
     Object.keys(machines).forEach(machineKey => {
       if (this.machines[machineKey].hasOwnProperty("bandwidthClassification")) {
@@ -52,7 +38,7 @@ class Layout {
     });
   }
 
-  updateNodeColors(timestamp) {
+  updateNodeColors() {
     Object.keys(this.machines).forEach(machineKey => {
       if (this.machines[machineKey].hasOwnProperty("bandwidthClassification")) {
         this.nodeHolder[machineKey].color = this.options.colorMap[
@@ -73,7 +59,6 @@ class Layout {
   }
 
   updatePositions() {
-    this.updateNodeColors(this.graphHolder.timestamp);
   }
 
   synchronizeSigma(sigma) {

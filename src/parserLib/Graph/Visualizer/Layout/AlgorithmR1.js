@@ -3,14 +3,14 @@ import TreeFilter from "../../Filter/Tree/TreeFilter";
 
 // TODO add dynamicRadius
 class AlgorithmR1 extends Layout {
-  constructor(graphHolder, machines, options) {
+  constructor(filterResult, machines, options) {
     const defaultOptions = {
       gamma: 200,
       drawUndefinedNodes: false,
       dynamicRadius: false
     };
     options = Object.assign(defaultOptions, options);
-    super(graphHolder, machines, options);
+    super(filterResult, machines, options);
 
     if (this.options.source === null) {
       throw "Algorithm R1 initialized without a source";

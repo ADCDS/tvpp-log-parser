@@ -1,8 +1,8 @@
 import Layout from "./Layout";
 
 class RingLayout extends Layout {
-	constructor(graphHolder, machines, options) {
-		super(graphHolder, machines, options);
+	constructor(filterResult, machines, options) {
+		super(filterResult, machines, options);
 		this.options = options || {
 			radius: 100
 		};

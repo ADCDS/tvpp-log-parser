@@ -2,8 +2,8 @@ import Layout from "./Layout";
 import DijkstraFilter from "../../Filter/Tree/DijkstraFilter";
 
 class RingLayeredLayout extends Layout {
-  constructor(graphHolder, machines, options) {
-    super(graphHolder, machines, options);
+  constructor(filterResult, machines, options) {
+    super(filterResult, machines, options);
     this.radius = options.radius || 100;
     this.distancesFromSource = options.distancesFromSource;
     this.fathers = options.fathers;

@@ -2,20 +2,16 @@ import Filter from "../Filter";
 
 // Todo: create result filter object
 class TreeFilter extends Filter {
-  constructor(graphHolder, options) {
+  constructor(options) {
     if (!options.hasOwnProperty("source")) {
       throw "Invoked TreeFilter without 'source' option";
     }
 
-    super(graphHolder, options);
-    this.distancesFromSource = {};
-    this.fathers = {};
+    super(options);
+
   }
 
-  applyFilter() {
-    const graphHolder = super.applyFilter();
-    graphHolder.isTree = true;
-    return graphHolder;
+  applyFilter(graphHolder) {
   }
 }
 

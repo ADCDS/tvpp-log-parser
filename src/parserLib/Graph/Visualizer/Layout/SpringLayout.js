@@ -1,8 +1,8 @@
 import Layout from "./Layout";
 
 class SpringLayout extends Layout {
-  constructor(graphHolder, machines, options) {
-    super(graphHolder, machines, options);
+  constructor(filterResult, machines, options) {
+    super(filterResult, machines, options);
     this.options = options || {};
     this.c1 = this.options.c1 || 2;
     this.c2 = this.options.c2 || 10;
