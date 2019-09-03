@@ -1,26 +1,24 @@
 import Layout from "./Layout";
 import DijkstraFilter from "../../Filter/Tree/DijkstraFilter";
+import TreeFilterResult from "../../Filter/Results/TreeFilterResult";
+import TreeFilter from "../../Filter/Tree/TreeFilter";
 
 class RingLayeredLayout extends Layout {
   constructor(filterResult, machines, options) {
+    const defaultOptions = {
+      radius: 100,
+      drawUndefinedNodes: false
+    };
+
+    options = Object.assign(defaultOptions, options);
     super(filterResult, machines, options);
-    this.radius = options.radius || 100;
-    this.distancesFromSource = options.distancesFromSource;
-    this.fathers = options.fathers;
-    this.source = options.source;
 
-    if (this.distancesFromSource == null || this.fathers == null) {
-      if (this.source == null) {
-        throw "Invoked RingLayeredLayout without dijkstra data and source";
-      }
+    if (this.options.source === null) {
+      throw "RingLayeredLayout initialized without a source";
+    }
 
-      // I dont have the distances, need to calculate it using dijkstra
-      const dijkstraFilter = new DijkstraFilter(graphHolder.clone(), {
-        source: this.source
-      });
-      dijkstraFilter.applyFilter();
-      this.distancesFromSource = dijkstraFilter.distancesFromSource;
-      this.fathers = dijkstraFilter.fathers;
+    if (!(filterResult instanceof TreeFilterResult)) {
+      throw "RingLayeredLayout initialized without a tree";
     }
   }
 
@@ -41,47 +39,58 @@ class RingLayeredLayout extends Layout {
      *
      * I believe that this can be optimized
      */
-    Object.keys(this.distancesFromSource).forEach(el => {
-      if (this.distancesFromSource[el] === Infinity)
-        this.distancesFromSource[el] = -Infinity;
+    Object.keys(this.filterResult.distancesFromSource).forEach(el => {
+      if (this.filterResult.distancesFromSource[el] === Infinity)
+        this.filterResult.distancesFromSource[el] = -Infinity;
     });
-    const nodes = Object.keys(this.distancesFromSource).sort((e1, e2) => {
-      return this.distancesFromSource[e1] - this.distancesFromSource[e2];
-    });
+    const nodes = Object.keys(this.filterResult.distancesFromSource).sort(
+      (e1, e2) => {
+        return (
+          this.filterResult.distancesFromSource[e1] -
+          this.filterResult.distancesFromSource[e2]
+        );
+      }
+    );
 
-    const highestSourceDistance = this.distancesFromSource[
+    const highestSourceDistance = this.filterResult.distancesFromSource[
       nodes[nodes.length - 1]
     ];
 
     nodes.forEach(el => {
       // Treat vertices that are not connected to the source node
-      if (this.distancesFromSource[el] === -Infinity)
-        this.distancesFromSource[el] = highestSourceDistance + 1;
-      if (numberOfNodesAtRing.hasOwnProperty(this.distancesFromSource[el])) {
-        numberOfNodesAtRing[this.distancesFromSource[el]]++;
+      if (this.filterResult.distancesFromSource[el] === -Infinity)
+        this.filterResult.distancesFromSource[el] = highestSourceDistance + 1;
+      if (
+        numberOfNodesAtRing.hasOwnProperty(
+          this.filterResult.distancesFromSource[el]
+        )
+      ) {
+        numberOfNodesAtRing[this.filterResult.distancesFromSource[el]]++;
       } else {
-        numberOfNodesAtRing[this.distancesFromSource[el]] = 1;
-        iterNumRing[this.distancesFromSource[el]] = 0;
+        numberOfNodesAtRing[this.filterResult.distancesFromSource[el]] = 1;
+        iterNumRing[this.filterResult.distancesFromSource[el]] = 0;
       }
     });
 
     nodes.forEach(machineKey => {
       const node = this.nodeHolder[machineKey];
-      const nodeFather = this.nodeHolder[this.fathers[machineKey]];
+      const nodeFather = this.nodeHolder[this.filterResult.fathers[machineKey]];
       let nodeFatherOffset = { x: 0, y: 0 };
       if (nodeFather != null)
         nodeFatherOffset = { x: nodeFather.x, y: nodeFather.y };
 
-      const distancesFromSourceElement = this.distancesFromSource[machineKey];
+      const distancesFromSourceElement = this.filterResult.distancesFromSource[
+        machineKey
+      ];
       node.x =
-        /* nodeFatherOffset.x + */ this.radius *
+        /* nodeFatherOffset.x + */ this.options.radius *
         distancesFromSourceElement *
         Math.cos(
           (2 * iterNumRing[distancesFromSourceElement] * Math.PI) /
             numberOfNodesAtRing[distancesFromSourceElement]
         );
       node.y =
-        /* nodeFatherOffset.y + */ this.radius *
+        /* nodeFatherOffset.y + */ this.options.radius *
         distancesFromSourceElement *
         Math.sin(
           (2 * iterNumRing[distancesFromSourceElement] * Math.PI) /
@@ -94,7 +103,29 @@ class RingLayeredLayout extends Layout {
   }
 
   getOptions() {
-    const options = super.getOptions();
+    let options = super.getOptions();
+    options = Object.assign(options, {
+      radius: {
+        name: "Radius",
+        type: Number,
+        default: 100
+      },
+      source: {
+        name: "Source",
+        type: String,
+        default: "::src"
+      },
+      drawUndefinedNodes: {
+        name: "Draw undefined nodes",
+        type: Boolean,
+        default: false
+      },
+      filter: {
+        name: "Filter",
+        type: TreeFilter
+      }
+    });
+    return options;
   }
 }
 

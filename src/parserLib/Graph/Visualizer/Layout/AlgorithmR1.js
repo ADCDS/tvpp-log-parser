@@ -1,5 +1,6 @@
 import Layout from "./Layout";
 import TreeFilter from "../../Filter/Tree/TreeFilter";
+import TreeFilterResult from "../../Filter/Results/TreeFilterResult";
 
 // TODO add dynamicRadius
 class AlgorithmR1 extends Layout {
@@ -9,11 +10,16 @@ class AlgorithmR1 extends Layout {
       drawUndefinedNodes: false,
       dynamicRadius: false
     };
+
     options = Object.assign(defaultOptions, options);
     super(filterResult, machines, options);
 
     if (this.options.source === null) {
       throw "Algorithm R1 initialized without a source";
+    }
+
+    if (!(filterResult instanceof TreeFilterResult)) {
+      throw "Algorithm R1 initialized without a tree";
     }
   }
 

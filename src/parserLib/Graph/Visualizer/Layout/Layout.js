@@ -5,6 +5,7 @@ import Filter from "../../Filter/Filter";
 
 class Layout {
   constructor(filterResult, machines, options) {
+    this.filterResult = filterResult;
     this.graphHolder = filterResult.graphHolder;
     this.machines = machines;
     this.nodeHolder = {};
@@ -58,8 +59,7 @@ class Layout {
     this.graphHolder = graphHolder;
   }
 
-  updatePositions() {
-  }
+  updatePositions() {}
 
   synchronizeSigma(sigma) {
     sigma.graph.clear();
