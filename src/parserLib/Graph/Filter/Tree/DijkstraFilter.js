@@ -5,10 +5,9 @@ import TreeFilterResult from "../Results/TreeFilterResult";
 class DijkstraFilter extends TreeFilter {
   constructor(options) {
     super(options);
-    this.vertices = Object.keys(this.graphHolder.graph);
   }
 
-  dijkstraShortestPath = function(graph, source) {
+  dijkstraShortestPath = function(graph, vertices, source) {
     const dist = {};
     const prev = {};
     const heap = new FibonacciHeap();
@@ -19,7 +18,7 @@ class DijkstraFilter extends TreeFilter {
       heap.decreaseKey(queue[node], newValue);
     };
 
-    this.vertices.forEach(machine => {
+    vertices.forEach(machine => {
       prev[machine] = null;
       dist[machine] = Infinity;
       queue[machine] = heap.insert(Infinity, machine);
@@ -49,21 +48,30 @@ class DijkstraFilter extends TreeFilter {
     };
   };
 
-  applyFilter(graphHolder) {
+  applyFilter(graphHolder, source) {
+    if (!source) {
+      throw "Invoked DijkstraFilter without 'source' option";
+    }
     const newGraphHolder = graphHolder.clone();
+    const vertices = Object.keys(newGraphHolder.graph);
 
     const { graph } = newGraphHolder;
-    const dijkstraResults = this.dijkstraShortestPath(graph, this.options.source);
-    const fathers = dijkstraResults.fathers;
-    this.vertices.forEach(node => {
-      this.vertices.forEach(node2 => {
+    const dijkstraResults = this.dijkstraShortestPath(graph, vertices, source);
+    const { fathers } = dijkstraResults;
+    vertices.forEach(node => {
+      vertices.forEach(node2 => {
         graph[node2][node] = false;
       });
 
       if (fathers[node] != null) graph[fathers[node]][node] = true;
     });
 
-    return new TreeFilterResult(newGraphHolder, DijkstraFilter, dijkstraResults.distancesFromSource, dijkstraResults.fathers);
+    return new TreeFilterResult(
+      newGraphHolder,
+      DijkstraFilter,
+      dijkstraResults.distancesFromSource,
+      dijkstraResults.fathers
+    );
   }
 }
 

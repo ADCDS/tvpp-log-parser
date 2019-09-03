@@ -32,17 +32,18 @@ test("algorithmR1LayoutTest", async () => {
     logEntity.eventList[0].port
   );
 
-  const graphHolder = new GraphManager(logEntity);
-  graphHolder.goToAbsoluteEventState(100);
+  const graphManager = new GraphManager(logEntity);
+  graphManager.goToAbsoluteEventState(100);
 
-  const dijkstraFilter = new DijkstraFilter(graphHolder.getGraphHolder(), {
-    source: sourceMachineName
-  });
-  dijkstraFilter.applyFilter();
+  const dijkstraFilter = new DijkstraFilter();
+  const filterResult = dijkstraFilter.applyFilter(
+    graphManager.getGraphHolder(),
+    sourceMachineName
+  );
 
   const algorithmR1 = new AlgorithmR1(
-    graphHolder.getGraphHolder(),
-    graphHolder.getMachines(),
+    filterResult,
+    graphManager.getMachines(),
     {
       source: sourceMachineName,
       gamma: 30

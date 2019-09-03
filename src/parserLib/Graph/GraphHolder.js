@@ -61,7 +61,12 @@ class GraphHolder {
   }
 
   clone() {
-    return JSON.parse(JSON.stringify(this));
+    const newObj = Object.assign(
+      Object.create(Object.getPrototypeOf(this)),
+      this
+    );
+    newObj.graph = JSON.parse(JSON.stringify(this.graph));
+    return newObj;
   }
 }
 

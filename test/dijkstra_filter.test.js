@@ -20,12 +20,13 @@ test("dijkstraFilterTest", async () => {
   const logEntity = new TVPPLog();
   logEntity.addOverlayEntries(overlayEntryArray);
   logEntity.addPerformanceEntries(performanceEntryArray);
-  const graphHolder = new GraphManager(logEntity);
-  // graphHolder.goToLastEventState();
-  graphHolder.goToAbsoluteEventState(100);
-  const dijkstraFilter = new DijkstraFilter(graphHolder.getGraphHolder(), {
-    source: "150.164.3.36"
-  });
-  dijkstraFilter.applyFilter();
+  const graphManager = new GraphManager(logEntity);
+  // graphManager.goToLastEventState();
+  graphManager.goToAbsoluteEventState(100);
+  const dijkstraFilter = new DijkstraFilter();
+  const filterResult = dijkstraFilter.applyFilter(
+    graphManager.getGraphHolder(),
+    "150.164.3.36"
+  );
   console.log("Done");
 });

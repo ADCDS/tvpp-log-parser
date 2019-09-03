@@ -1,12 +1,11 @@
 import GraphHolder from "../GraphHolder";
 
 class Filter {
-  constructor(graphHolder, options) {
+  constructor(options) {
     this.options = options || {};
   }
 
-  applyFilter(graphHolder) {
-  }
+  applyFilter(graphHolder) {}
 }
 
 export default Filter;

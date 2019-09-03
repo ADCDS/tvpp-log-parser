@@ -4,7 +4,7 @@ import GraphManager from "../src/parserLib/Graph/GraphManager";
 
 test("graphManagerTest", async () => {
   const data = await LogParserOverlay.readLog("./logs/test1_overlay.txt");
-  const entryArray = await LogParserOverlay.parse(data)
+  const entryArray = await LogParserOverlay.parse(data);
 
   console.log(`Parsed ${entryArray.length} lines`);
   const logEntity = new TVPPLog({
@@ -12,7 +12,7 @@ test("graphManagerTest", async () => {
   });
   logEntity.addOverlayEntries(entryArray);
   const graphHolder = new GraphManager(logEntity);
-  for (let i = 0; i < 160; i += 1) {
+  for (let i = 0; i < 3; i += 1) {
     graphHolder.goToNextState();
   }
 });

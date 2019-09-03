@@ -100,7 +100,12 @@ class AlgorithmR1 extends Layout {
 
   updatePositions() {
     super.updatePositions();
-    this.drawSubTree1(this.source, 0, 0, AlgorithmR1.degreeToRadian(360));
+    this.drawSubTree1(
+      this.options.source,
+      0,
+      0,
+      AlgorithmR1.degreeToRadian(360)
+    );
 
     const undefinedNodes = [];
     if (!this.options.drawUndefinedNodes) {
