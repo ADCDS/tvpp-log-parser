@@ -102,7 +102,7 @@ class RingLayeredLayout extends Layout {
     console.log("Done");
   }
 
-  getOptions() {
+  static getOptions() {
     let options = super.getOptions();
     options = Object.assign(options, {
       radius: {

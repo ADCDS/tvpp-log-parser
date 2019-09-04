@@ -144,7 +144,7 @@ class AlgorithmR1 extends Layout {
     console.log("Done AlgorithmR1");
   }
 
-  getOptions() {
+  static getOptions() {
     let options = super.getOptions();
     options = Object.assign(options, {
       gamma: {

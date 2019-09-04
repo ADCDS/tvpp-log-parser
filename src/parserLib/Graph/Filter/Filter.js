@@ -7,7 +7,7 @@ class Filter {
 
   applyFilter(graphHolder) {}
 
-  getOptions() {}
+  static getOptions() {}
 }
 
 export default Filter;

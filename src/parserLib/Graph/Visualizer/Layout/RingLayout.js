@@ -27,7 +27,7 @@ class RingLayout extends Layout {
     });
   }
 
-  getOptions() {
+  static getOptions() {
     let options = super.getOptions();
     options = Object.assign(options, {
       radius: {

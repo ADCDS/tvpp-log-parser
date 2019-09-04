@@ -135,7 +135,7 @@ class SpringLayout extends Layout {
     }
   }
 
-  getOptions() {
+  static getOptions() {
     let options = super.getOptions();
     options = Object.assign(options, {
       c1: {

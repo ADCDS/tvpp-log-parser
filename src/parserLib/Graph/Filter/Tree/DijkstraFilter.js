@@ -75,7 +75,7 @@ class DijkstraFilter extends TreeFilter {
     );
   }
 
-  getOptions() {
+  static getOptions() {
     return {
       source: {
         name: "Source",

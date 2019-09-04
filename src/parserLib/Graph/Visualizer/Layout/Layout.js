@@ -90,7 +90,7 @@ class Layout {
     });
   }
 
-  getOptions() {
+  static getOptions() {
     return {
       filter: {
         name: "Filter",
