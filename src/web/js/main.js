@@ -9,6 +9,7 @@ import RingLayeredLayout from "../../parserLib/Graph/Visualizer/Layout/RingLayer
 import DijkstraFilter from "../../parserLib/Graph/Filter/Tree/DijkstraFilter";
 import SpringLayout from "../../parserLib/Graph/Visualizer/Layout/SpringLayout";
 import AlgorithmR1 from "../../parserLib/Graph/Visualizer/Layout/AlgorithmR1";
+import DOMManager from "./DOMManager";
 
 const Sigma = require("sigma");
 
@@ -31,6 +32,7 @@ window.selectedEvent = 0;
 function prevState() {}
 
 function nextState() {}
+
 
 function handleSelectedEventChange(e) {
   if (e.target.value < window.logEntity.eventList.length)
@@ -208,11 +210,11 @@ document
 
 document
   .getElementById("filterType")
-  .addEventListener("change", handleFilterTypeChange);
+  .addEventListener("change", DOMManager.handleMainFilterChange);
 
 document
-  .getElementById("topologyType")
-  .addEventListener("change", handleLayoutTypeChange);
+  .getElementById("layoutType")
+  .addEventListener("change", DOMManager.handleLayoutChange);
 
 document
   .getElementById("selectedEventNumber")
@@ -246,5 +248,7 @@ document.addEventListener("keydown", e => {
     }
   });
 
-  console.log("Hello world");
+  DOMManager.init();
+  console.log("App started");
+
 })();

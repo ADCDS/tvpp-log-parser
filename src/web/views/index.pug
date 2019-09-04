@@ -3,6 +3,12 @@ html(lang='pt')
   head
     title TVPP Log View
     style(type="text/css").
+      label {
+        display: block;
+        font-weight: bold;
+        margin: 5px;
+      }
+
       #container {
         width: 100%;
         height: 700px;
@@ -12,31 +18,37 @@ html(lang='pt')
       #panelHolder {
         display: flex;
       }
+
       #toolbar {
         margin: 30px;
       }
+
       #options {
         margin: 30px;
         height: 200px;
         overflow: auto;
       }
+
       #infoView {
         margin: 30px;
         height: 200px;
         overflow: auto;
         text-align: right;
       }
+
       #controller {
         margin: 30px;
         height: 200px;
         overflow: auto;
         text-align: right;
       }
+
       #filterType {
         width: 300px;
         height: 100px;
       }
-      #topologyType {
+
+      #layoutType {
         width: 300px;
         height: 100px;
       }
@@ -45,52 +57,32 @@ body
   h1 TVPP Log viewer
   div#panelHolder
     div#toolbar
+      label(for='logOverlayFile') Overlay Log File
       input#logOverlayFile(type='file')
-      br
+      label(for='logPerformanceFile') Performance Log File
       input#logPerformanceFile(type='file')
-      br
-      br
       label(for='FilterType') Filter Type
         br
-        - const PugfilterTypeOptions = [{name: 'No Filter', value: 'NoFilter'}, {name: 'Dijkstra Shortest Path', value: 'DijkstraFilter', selected: true}]
         select#filterType(name='FilterType' size='3' required)
-          each filterType in PugfilterTypeOptions
-            if(filterType.selected != null && filterType.selected)
-              option(value=(filterType.value) selected) #{filterType.name}
-            else
-              option(value=(filterType.value)) #{filterType.name}
-      br
-      label(for='topologyType') Layout Type
+      label(for='layoutType') Layout Type
         br
-        - const PugtopologyTypeOptions = [{name: 'Ring Layout', value: 'RingLayout'},{name: 'Ring Layered Layout', value: 'RingLayeredLayout'},{name: 'Spring Layout', value: 'SpringLayout'},{name: 'Algorithm R1', value: 'AlgorithmR1', selected: true}]
-        select#topologyType(name='topologyType' size='3' required)
-          each topologyType in PugtopologyTypeOptions
-            if(topologyType.selected != null && topologyType.selected)
-              option(value=(topologyType.value) selected) #{topologyType.name}
-            else
-              option(value=(topologyType.value)) #{topologyType.name}
-      br
-
-
+        select#layoutType(name='topologyType' size='3' required)
       input#draw(type='button', value='Draw!')
-      br
-    div#options
 
+    div#options
+      div#layoutOptions
+      div#filterOptions
     div#infoView
       label(for='numberOfNodes') Número de Nós:
         input(readonly=true)#numberOfNodes
-      br
       label(for='numberOfEvents') Número de Eventos:
         input(readonly=true)#numberOfEvents
-      br
       label(for='currentEvent') Evento atual:
         input(readonly=true, value=0)#currentEvent
     div#controller
       label(for='selectedEventNumber') Ir para evento:
         input#selectedEventNumber(type='number')
       input#goToEvent(type='button', value='Ir!')
-      br
-      br
       input#nextEvent(type='button', value='< Anterior')
       input#prevEvent(type='button', value='Próximo >')
 
