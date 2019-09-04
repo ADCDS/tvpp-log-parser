@@ -38,7 +38,7 @@ function nodemonStart() {
 function watch() {
   gulp.watch(
     [
-      "./src/web/js/main.js",
+      "./src/web/js/**/*.js",
       "./src/web/views/index.pug",
       "./src/parserLib/**/*.js"
     ],
