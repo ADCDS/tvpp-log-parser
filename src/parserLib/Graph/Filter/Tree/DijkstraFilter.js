@@ -1,19 +1,22 @@
-import { FibonacciHeap } from "@tyriar/fibonacci-heap";
+import {FibonacciHeap} from "@tyriar/fibonacci-heap";
 import TreeFilter from "./TreeFilter";
 import TreeFilterResult from "../Results/TreeFilterResult";
 
 class DijkstraFilter extends TreeFilter {
   constructor(options) {
     super(options);
+    if (!this.options.source) {
+      throw "Invoked DijkstraFilter without 'source' option";
+    }
   }
 
-  dijkstraShortestPath = function(graph, vertices, source) {
+  dijkstraShortestPath = function (graph, vertices) {
     const dist = {};
     const prev = {};
     const heap = new FibonacciHeap();
     const queue = {};
 
-    const decreaseDist = function(node, newValue) {
+    const decreaseDist = function (node, newValue) {
       dist[node] = newValue;
       heap.decreaseKey(queue[node], newValue);
     };
@@ -24,7 +27,7 @@ class DijkstraFilter extends TreeFilter {
       queue[machine] = heap.insert(Infinity, machine);
     });
 
-    decreaseDist(source, 0);
+    decreaseDist(this.options.source, 0);
 
     while (!heap.isEmpty()) {
       const currNode = heap.extractMinimum();
@@ -48,16 +51,14 @@ class DijkstraFilter extends TreeFilter {
     };
   };
 
-  applyFilter(graphHolder, source) {
-    if (!source) {
-      throw "Invoked DijkstraFilter without 'source' option";
-    }
+  applyFilter(graphHolder) {
+
     const newGraphHolder = graphHolder.clone();
     const vertices = Object.keys(newGraphHolder.graph);
 
-    const { graph } = newGraphHolder;
-    const dijkstraResults = this.dijkstraShortestPath(graph, vertices, source);
-    const { fathers } = dijkstraResults;
+    const {graph} = newGraphHolder;
+    const dijkstraResults = this.dijkstraShortestPath(graph, vertices);
+    const {fathers} = dijkstraResults;
     vertices.forEach(node => {
       vertices.forEach(node2 => {
         graph[node2][node] = false;
@@ -72,6 +73,16 @@ class DijkstraFilter extends TreeFilter {
       dijkstraResults.distancesFromSource,
       dijkstraResults.fathers
     );
+  }
+
+  getOptions() {
+    return {
+      source: {
+        name: "Source",
+        type: String,
+        default: "::src"
+      }
+    }
   }
 }
 

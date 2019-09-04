@@ -23,10 +23,11 @@ test("dijkstraFilterTest", async () => {
   const graphManager = new GraphManager(logEntity);
   // graphManager.goToLastEventState();
   graphManager.goToAbsoluteEventState(100);
-  const dijkstraFilter = new DijkstraFilter();
+  const dijkstraFilter = new DijkstraFilter({
+    source: "150.164.3.36"
+  });
   const filterResult = dijkstraFilter.applyFilter(
-    graphManager.getGraphHolder(),
-    "150.164.3.36"
+    graphManager.getGraphHolder()
   );
   console.log("Done");
 });

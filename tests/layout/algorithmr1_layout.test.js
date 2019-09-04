@@ -35,10 +35,11 @@ test("algorithmR1LayoutTest", async () => {
   const graphManager = new GraphManager(logEntity);
   graphManager.goToAbsoluteEventState(100);
 
-  const dijkstraFilter = new DijkstraFilter();
+  const dijkstraFilter = new DijkstraFilter({
+    source: sourceMachineName
+  });
   const filterResult = dijkstraFilter.applyFilter(
-    graphManager.getGraphHolder(),
-    sourceMachineName
+    graphManager.getGraphHolder()
   );
 
   const algorithmR1 = new AlgorithmR1(
