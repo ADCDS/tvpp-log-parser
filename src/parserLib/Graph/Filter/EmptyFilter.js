@@ -9,8 +9,6 @@ class EmptyFilter extends Filter {
   applyFilter(graphHolder) {
     return new FilterResult(graphHolder, EmptyFilter);
   }
-
-  static getOptions() {}
 }
 
 export default EmptyFilter;

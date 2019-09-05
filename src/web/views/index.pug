@@ -20,24 +20,25 @@ html(lang='pt')
       }
 
       #toolbar {
-        margin: 30px;
+        margin: 5px;
       }
 
       #options {
-        margin: 30px;
-        height: 200px;
+        margin: 5px;
+        height: 430px;
+        width: 300px;
         overflow: auto;
       }
 
       #infoView {
-        margin: 30px;
-        height: 200px;
+        margin: 5px;
+        height: 430px;
         overflow: auto;
         text-align: right;
       }
 
       #controller {
-        margin: 30px;
+        margin: 5px;
         height: 200px;
         overflow: auto;
         text-align: right;
@@ -53,6 +54,16 @@ html(lang='pt')
         height: 100px;
       }
 
+      #machineList{
+        text-align: initial;
+        height: 300px;
+        overflow-y: auto;
+      }
+
+      div{
+        border:1px solid black;
+        padding: 5px;
+      }
 body
   h1 TVPP Log viewer
   div#panelHolder
@@ -70,8 +81,14 @@ body
       input#draw(type='button', value='Draw!')
 
     div#options
-      div#layoutOptions
-      div#filterOptions
+      div#filterHolder
+        b Filter Options
+        div#filterOptions
+      br
+      div#layoutHolder
+        b Layout Options
+        div#layoutOptions
+
     div#infoView
       label(for='numberOfNodes') Número de Nós:
         input(readonly=true)#numberOfNodes
@@ -79,6 +96,9 @@ body
         input(readonly=true)#numberOfEvents
       label(for='currentEvent') Evento atual:
         input(readonly=true, value=0)#currentEvent
+      div#machineList
+        b Machine List
+        ul#machineListUl
     div#controller
       label(for='selectedEventNumber') Ir para evento:
         input#selectedEventNumber(type='number')
