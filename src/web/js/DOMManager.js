@@ -47,7 +47,7 @@ class DOMManager {
   }
 
   static getInputFromOption(inputId, option) {
-    if (!(option.type.prototype instanceof Filter)) {
+    if (!((option.type.prototype instanceof Filter) || option.type === Filter)) {
       // If we are not dealing with a filter
       const inputType = DOMManager.getInputType(option.type);
 
@@ -72,7 +72,7 @@ class DOMManager {
     // Generate sub filter config option
     // Default filter
     const filter = (this.selectedLayoutFilter = availableFilters[0]);
-    res += "<div>";
+    res += "<div id='subFilterOptionsHolder'>";
     res += DOMManager.generateOptionsForm(
       "subFilterOptions",
       filter.class.getOptions()
@@ -130,6 +130,16 @@ class DOMManager {
     return resHTML;
   }
 
+  static handleSubFilterChange(e) {
+    const filter = Utils.getFilter(e.target.value);
+    DOMManager.selectedLayoutFilter = filter;
+    document.getElementById('subFilterOptionsHolder').innerHTML = DOMManager.generateOptionsForm(
+      "subFilterOptions",
+      filter.class.getOptions()
+    );
+    DOMManager.updateDefaultsOptionValues();
+  }
+
   static handleMainFilterChange(e) {
     const filter = Utils.getFilter(e.target.value);
     const formHolderId = "filterOptions";
@@ -183,8 +193,12 @@ class DOMManager {
   static updateDefaultsOptionValues() {
     ["filterOptions", "layoutOptions", "subFilterOptions"].forEach(
       optionType => {
-        DOMManager.sourceOptions[optionType].forEach(value => {
+        DOMManager.sourceOptions[optionType].forEach((value, index) => {
           const el = document.getElementById(value);
+          if(!el){
+            DOMManager.sourceOptions[optionType].splice(index, 1);
+            return;
+          }
           if (
             window.logEntity.sourceMachineKey !== null &&
             el.value === "::src"

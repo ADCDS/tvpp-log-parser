@@ -73,11 +73,18 @@ document
   .addEventListener("change", DOMManager.handleSelectedEventChange);
 
 document
+  .addEventListener('click', function (e) {
+    if (e.target && e.target.id === '_mainlayoutOptions_filter') {
+      DOMManager.handleSubFilterChange(e);
+    }
+  });
+
+document
   .getElementById("nextEvent")
   .addEventListener("click", (e) => {
     const drawButtonDOM = document.getElementById("draw");
     const eventNumberDOM = document.getElementById('selectedEventNumber');
-    eventNumberDOM.value= window.selectedEvent+1;
+    eventNumberDOM.value = window.selectedEvent + 1;
     eventNumberDOM.dispatchEvent(new Event('change'));
     drawButtonDOM.dispatchEvent(new Event('click'));
   });
@@ -87,7 +94,7 @@ document
   .addEventListener("click", (e) => {
     const drawButtonDOM = document.getElementById("draw");
     const eventNumberDOM = document.getElementById('selectedEventNumber');
-    eventNumberDOM.value= window.selectedEvent-1;
+    eventNumberDOM.value = window.selectedEvent - 1;
     eventNumberDOM.dispatchEvent(new Event('change'));
     drawButtonDOM.dispatchEvent(new Event('click'));
   });
