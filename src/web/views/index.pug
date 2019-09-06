@@ -78,7 +78,6 @@ body
       label(for='layoutType') Layout Type
         br
         select#layoutType(name='topologyType' size='3' required)
-      input#draw(type='button', value='Draw!')
 
     div#options
       div#filterHolder
@@ -102,9 +101,9 @@ body
     div#controller
       label(for='selectedEventNumber') Ir para evento:
         input#selectedEventNumber(type='number')
-      input#goToEvent(type='button', value='Ir!')
-      input#nextEvent(type='button', value='< Anterior')
-      input#prevEvent(type='button', value='Próximo >')
+      input#draw(type='button', value='Go!')
+      input#prevEvent(type='button', value='< Prev')
+      input#nextEvent(type='button', value='Next >')
 
 div#container
 script(src='/js/bundle.js')

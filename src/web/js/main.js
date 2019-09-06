@@ -37,8 +37,8 @@ function draw() {
 }
 
 function createHandler(onLoadCb) {
-  return function(evt) {
-    const { files } = evt.target; // FileList object
+  return function (evt) {
+    const {files} = evt.target; // FileList object
     console.log("Reading file...");
     const reader = new FileReader();
 
@@ -72,9 +72,30 @@ document
   .getElementById("selectedEventNumber")
   .addEventListener("change", DOMManager.handleSelectedEventChange);
 
+document
+  .getElementById("nextEvent")
+  .addEventListener("click", (e) => {
+    const drawButtonDOM = document.getElementById("draw");
+    const eventNumberDOM = document.getElementById('selectedEventNumber');
+    eventNumberDOM.value= window.selectedEvent+1;
+    eventNumberDOM.dispatchEvent(new Event('change'));
+    drawButtonDOM.dispatchEvent(new Event('click'));
+  });
+
+document
+  .getElementById("prevEvent")
+  .addEventListener("click", (e) => {
+    const drawButtonDOM = document.getElementById("draw");
+    const eventNumberDOM = document.getElementById('selectedEventNumber');
+    eventNumberDOM.value= window.selectedEvent-1;
+    eventNumberDOM.dispatchEvent(new Event('change'));
+    drawButtonDOM.dispatchEvent(new Event('click'));
+  });
+
+
 document.getElementById("draw").addEventListener("click", draw);
 
-(function() {
+(function () {
   window.sigma = new Sigma({
     renderer: {
       container: document.getElementById("container"),

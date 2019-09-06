@@ -28,6 +28,17 @@ class GraphManager {
     }
   }
 
+  goToAbsoluteServerApparition(index){
+    if(this.currentSourceIndex >= this.logEntity.sourceApparitionLocations.length)
+      throw "goToNextServerApparition Invalid index: " + this.currentSourceIndex;
+
+    this.syncMachines();
+    this.currentSourceIndex = index;
+    this.currentEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex-1];
+    const nextEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex];
+    this.goToAbsoluteEventState(nextEventIndex);
+  }
+
   goToNextServerApparition(){
     if(this.currentSourceIndex >= this.logEntity.sourceApparitionLocations.length)
       throw "goToNextServerApparition Invalid index: " + this.currentSourceIndex;

@@ -52,7 +52,6 @@ class DOMManager {
       const inputType = DOMManager.getInputType(option.type);
 
       return `<label for='${  inputId  }'>${  option.name  }</label><input id ='${  inputId  }' type='${  inputType  }' ${  DOMManager.getDefaultAttr(option.type, option.default)  }>`;
-      );
     }
     // If we area dealing with a filter option
 
@@ -237,6 +236,37 @@ class DOMManager {
       resObj[el] = DOMManager.parseInputValue(option.type, element);
     });
     return resObj;
+  }
+
+  static synchronizeSigma(graphHolder, nodeHolder, sigma) {
+    sigma.graph.clear();
+
+    // Add nodes
+    Object.keys(nodeHolder).forEach(machineKey => {
+      const node = { ...nodeHolder[machineKey] };
+      node.id = machineKey;
+      sigma.graph.addNode(node);
+    });
+
+    // Add edges
+    Object.keys(nodeHolder).forEach(machineKey => {
+      const edgesTo = graphHolder.getOutgoingEdges(machineKey);
+      edgesTo.forEach(machineDest => {
+        try {
+          sigma.graph.addEdge({
+            id: `${machineKey}_>_${machineDest}`,
+            source: machineKey,
+            target: machineDest,
+            size: 2,
+            type: "arrow"
+          });
+        } catch (e) {
+          console.log("Something bad happnd");
+        }
+      });
+    });
+
+    sigma.refresh();
   }
 
   static extractOptions() {
