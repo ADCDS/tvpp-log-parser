@@ -64,6 +64,35 @@ html(lang='pt')
         border:1px solid black;
         padding: 5px;
       }
+
+      /* Style the tab */
+      .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+      }
+
+      /* Style the buttons inside the tab */
+      .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        font-size: 17px;
+      }
+
+      /* Change background color of buttons on hover */
+      .tab button:hover {
+        background-color: #ddd;
+      }
+
+      /* Create an active/current tablink class */
+      .tab button.active {
+        background-color: #ccc;
+      }
 body
   h1 TVPP Log viewer
   div#panelHolder
@@ -105,6 +134,14 @@ body
       input#prevEvent(type='button', value='< Prev')
       input#nextEvent(type='button', value='Next >')
 
-div#container
+div#graphContainer
+  div#graphController.tab
+    button.tablinks Previous State
+    button.tablinks Comparision State
+    button.tablinks Current State
+
+  div#containerPrevious
+  div#containerComparision
+  div#containerCurrent
 script(src='/js/bundle.js')
 

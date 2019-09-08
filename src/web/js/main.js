@@ -37,8 +37,8 @@ function draw() {
 }
 
 function createHandler(onLoadCb) {
-  return function (evt) {
-    const {files} = evt.target; // FileList object
+  return function(evt) {
+    const { files } = evt.target; // FileList object
     console.log("Reading file...");
     const reader = new FileReader();
 
@@ -72,40 +72,56 @@ document
   .getElementById("selectedEventNumber")
   .addEventListener("change", DOMManager.handleSelectedEventChange);
 
-document
-  .addEventListener('click', function (e) {
-    if (e.target && e.target.id === '_mainlayoutOptions_filter') {
-      DOMManager.handleSubFilterChange(e);
-    }
-  });
+document.addEventListener("click", function(e) {
+  if (e.target && e.target.id === "_mainlayoutOptions_filter") {
+    DOMManager.handleSubFilterChange(e);
+  }
+});
 
-document
-  .getElementById("nextEvent")
-  .addEventListener("click", (e) => {
-    const drawButtonDOM = document.getElementById("draw");
-    const eventNumberDOM = document.getElementById('selectedEventNumber');
-    eventNumberDOM.value = window.selectedEvent + 1;
-    eventNumberDOM.dispatchEvent(new Event('change'));
-    drawButtonDOM.dispatchEvent(new Event('click'));
-  });
+document.getElementById("nextEvent").addEventListener("click", e => {
+  const drawButtonDOM = document.getElementById("draw");
+  const eventNumberDOM = document.getElementById("selectedEventNumber");
+  eventNumberDOM.value = window.selectedEvent + 1;
+  eventNumberDOM.dispatchEvent(new Event("change"));
+  drawButtonDOM.dispatchEvent(new Event("click"));
+});
 
-document
-  .getElementById("prevEvent")
-  .addEventListener("click", (e) => {
-    const drawButtonDOM = document.getElementById("draw");
-    const eventNumberDOM = document.getElementById('selectedEventNumber');
-    eventNumberDOM.value = window.selectedEvent - 1;
-    eventNumberDOM.dispatchEvent(new Event('change'));
-    drawButtonDOM.dispatchEvent(new Event('click'));
-  });
-
+document.getElementById("prevEvent").addEventListener("click", e => {
+  const drawButtonDOM = document.getElementById("draw");
+  const eventNumberDOM = document.getElementById("selectedEventNumber");
+  eventNumberDOM.value = window.selectedEvent - 1;
+  eventNumberDOM.dispatchEvent(new Event("change"));
+  drawButtonDOM.dispatchEvent(new Event("click"));
+});
 
 document.getElementById("draw").addEventListener("click", draw);
 
-(function () {
-  window.sigma = new Sigma({
+(function() {
+  window.sigmaPrevious = new Sigma({
     renderer: {
-      container: document.getElementById("container"),
+      container: document.getElementById("containerPrevious"),
+      type: "canvas"
+    },
+    settings: {
+      autoRescale: false,
+      autoResize: false
+    }
+  });
+
+  window.sigmaComparision = new Sigma({
+    renderer: {
+      container: document.getElementById("containerComparision"),
+      type: "canvas"
+    },
+    settings: {
+      autoRescale: false,
+      autoResize: false
+    }
+  });
+
+  window.sigmaCurrent = new Sigma({
+    renderer: {
+      container: document.getElementById("containerCurrent"),
       type: "canvas"
     },
     settings: {
