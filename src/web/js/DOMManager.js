@@ -45,29 +45,31 @@ class DOMManager {
     layoutTypeDOM.value = availableLayouts[availableLayoutsKeys[0]].id;
     layoutTypeDOM.dispatchEvent(new Event("change"));
 
-    document.getElementById('btnCurrentState').dispatchEvent(new Event("click"));
+    document
+      .getElementById("btnCurrentState")
+      .dispatchEvent(new Event("click"));
   }
 
   static getInputFromOption(inputId, option) {
-    if (!((option.type.prototype instanceof Filter) || option.type === Filter)) {
+    if (!(option.type.prototype instanceof Filter || option.type === Filter)) {
       // If we are not dealing with a filter
       const inputType = DOMManager.getInputType(option.type);
 
-      return `<label for='${  inputId  }'>${  option.name  }</label><input id ='${  inputId  }' type='${  inputType  }' ${  DOMManager.getDefaultAttr(option.type, option.default)  }>`;
+      return `<label for='${inputId}'>${
+        option.name
+      }</label><input id ='${inputId}' type='${inputType}' ${DOMManager.getDefaultAttr(
+        option.type,
+        option.default
+      )}>`;
     }
     // If we area dealing with a filter option
 
     // Get all filters that we can use
     const availableFilters = Utils.getFiltersByType(option.type);
     let res = "<div class='layoutSubFilter'>";
-    res +=
-      "<label for='" +
-      inputId +
-      "'>Filter</label><select id='" +
-      inputId +
-      "'>";
+    res += `<label for='${inputId}'>Filter</label><select id='${inputId}'>`;
     availableFilters.forEach(value => {
-      res += `<option value='${  value.id  }'>${  value.name  }</option>`;
+      res += `<option value='${value.id}'>${value.name}</option>`;
     });
     res += "</select>";
 
@@ -112,7 +114,7 @@ class DOMManager {
       return "";
     }
     if (configType === String || configType === Number) {
-      return `value = '${  defaultValue  }'`;
+      return `value = '${defaultValue}'`;
     }
   }
 
@@ -135,7 +137,9 @@ class DOMManager {
   static handleSubFilterChange(e) {
     const filter = Utils.getFilter(e.target.value);
     DOMManager.selectedLayoutFilter = filter;
-    document.getElementById('subFilterOptionsHolder').innerHTML = DOMManager.generateOptionsForm(
+    document.getElementById(
+      "subFilterOptionsHolder"
+    ).innerHTML = DOMManager.generateOptionsForm(
       "subFilterOptions",
       filter.class.getOptions()
     );
@@ -181,14 +185,9 @@ class DOMManager {
     let i = 1;
     Object.keys(window.logEntity.machines).forEach(index => {
       const value = window.logEntity.machines[index];
-      document.getElementById("machineListUl").innerHTML +=
-        `<li>${ 
-        i++ 
-        } - ${ 
-        value.address 
-        } Type: ${ 
-        value.bandwidthClassification 
-        }</li>`;
+      document.getElementById("machineListUl").innerHTML += `<li>${i++} - ${
+        value.address
+      } Type: ${value.bandwidthClassification}</li>`;
     });
   }
 
@@ -197,7 +196,7 @@ class DOMManager {
       optionType => {
         DOMManager.sourceOptions[optionType].forEach((value, index) => {
           const el = document.getElementById(value);
-          if(!el){
+          if (!el) {
             DOMManager.sourceOptions[optionType].splice(index, 1);
             return;
           }
@@ -304,21 +303,24 @@ class DOMManager {
     };
   }
 
-  static handleStateGraphChange(e){
-    let availableButtons = []
-    let graphs = ['containerPrevious', 'containerComparision', 'containerCurrent'];
-    let i, tabcontent, tablinks;
+  static handleStateGraphChange(e) {
+    const graphs = [
+      "containerPrevious",
+      "containerComparision",
+      "containerCurrent"
+    ];
 
     graphs.forEach(el => {
-      document.getElementById(el).style.display = 'none';
+      document.getElementById(el).style.display = "none";
     });
 
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
+    const tablinks = document.getElementsByClassName("tablinks");
+    for (let i = 0; i < tablinks.length; i++) {
       tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
-    document.getElementById(e.target.dataset.graph).style.display = "block";
-    e.target.className += " active";
+    document.getElementById(e.currentTarget.dataset.graph).style.display =
+      "block";
+    e.currentTarget.className += " active";
   }
 }
 
