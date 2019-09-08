@@ -87,7 +87,7 @@ class DOMManager {
     if (configType === Number) return Number(value);
     if (configType === Boolean) return element.checked;
 
-    if (configType.prototype instanceof Filter) {
+    if (configType.prototype instanceof Filter || configType === Filter) {
       const layoutFilterFormHolderId = "subFilterOptions";
       return DOMManager.getOptions(
         layoutFilterFormHolderId,

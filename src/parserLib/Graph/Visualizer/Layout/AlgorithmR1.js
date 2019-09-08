@@ -128,7 +128,7 @@ class AlgorithmR1 extends Layout {
 
       let iterNum = 0;
       undefinedNodes.forEach(node => {
-        const heightOfSource = this.heightOf(this.source);
+        const heightOfSource = this.heightOf(this.options.source);
 
         node.x =
           this.options.gamma *
