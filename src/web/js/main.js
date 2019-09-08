@@ -37,8 +37,8 @@ function draw() {
 }
 
 function createHandler(onLoadCb) {
-  return function(evt) {
-    const { files } = evt.target; // FileList object
+  return function (evt) {
+    const {files} = evt.target; // FileList object
     console.log("Reading file...");
     const reader = new FileReader();
 
@@ -72,7 +72,13 @@ document
   .getElementById("selectedEventNumber")
   .addEventListener("change", DOMManager.handleSelectedEventChange);
 
-document.addEventListener("click", function(e) {
+Array.from(document
+  .getElementsByClassName("tablinks")).forEach(el => {
+  el.addEventListener("click", DOMManager.handleStateGraphChange);
+});
+
+
+document.addEventListener("click", function (e) {
   if (e.target && e.target.id === "_mainlayoutOptions_filter") {
     DOMManager.handleSubFilterChange(e);
   }
@@ -96,7 +102,7 @@ document.getElementById("prevEvent").addEventListener("click", e => {
 
 document.getElementById("draw").addEventListener("click", draw);
 
-(function() {
+(function () {
   window.sigmaPrevious = new Sigma({
     renderer: {
       container: document.getElementById("containerPrevious"),

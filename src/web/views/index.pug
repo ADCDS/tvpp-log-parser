@@ -136,9 +136,15 @@ body
 
 div#graphContainer
   div#graphController.tab
-    button.tablinks Previous State
-    button.tablinks Comparision State
-    button.tablinks Current State
+    button(data-graph='containerPrevious').tablinks
+      span Previous State
+      b#previousStateEventId (NaN)
+    button(data-graph='containerComparision').tablinks
+      span Comparision State
+      b#comparisionStateEventId (NaN)
+    button#btnCurrentState(data-graph='containerCurrent').tablinks
+      span Current State
+      b#nextStateEventId (NaN)
 
   div#containerPrevious
   div#containerComparision

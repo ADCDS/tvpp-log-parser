@@ -44,6 +44,8 @@ class DOMManager {
 
     layoutTypeDOM.value = availableLayouts[availableLayoutsKeys[0]].id;
     layoutTypeDOM.dispatchEvent(new Event("change"));
+
+    document.getElementById('btnCurrentState').dispatchEvent(new Event("click"));
   }
 
   static getInputFromOption(inputId, option) {
@@ -300,6 +302,23 @@ class DOMManager {
       filter: filterOptions,
       layout: layoutOptions
     };
+  }
+
+  static handleStateGraphChange(e){
+    let availableButtons = []
+    let graphs = ['containerPrevious', 'containerComparision', 'containerCurrent'];
+    let i, tabcontent, tablinks;
+
+    graphs.forEach(el => {
+      document.getElementById(el).style.display = 'none';
+    });
+
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(e.target.dataset.graph).style.display = "block";
+    e.target.className += " active";
   }
 }
 
