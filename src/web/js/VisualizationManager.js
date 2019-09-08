@@ -24,7 +24,7 @@ class VisualizationManager {
     const filterObj = new filterClass(filterOptions);
     const filterResult = filterObj.applyFilter(graphHolder);
 
-    DOMManager.synchronizeSigma(filterResult.graphHolder, layoutObj.nodeHolder, window.sigma);
+    DOMManager.synchronizeSigma(filterResult.graphHolder, layoutObj.nodeHolder, window.sigmaCurrent);
   }
 }
 
