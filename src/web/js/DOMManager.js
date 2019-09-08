@@ -320,6 +320,10 @@ class DOMManager {
     }
     document.getElementById(e.currentTarget.dataset.graph).style.display =
       "block";
+
+    const sigmaObj = window[e.currentTarget.dataset.sigma];
+    sigmaObj.refresh();
+
     e.currentTarget.className += " active";
   }
 }

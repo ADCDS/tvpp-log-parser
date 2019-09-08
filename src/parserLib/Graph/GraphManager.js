@@ -34,9 +34,16 @@ class GraphManager {
 
     this.syncMachines();
     this.currentSourceIndex = index;
-    this.currentEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex-1];
-    const nextEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex];
-    this.goToAbsoluteEventState(nextEventIndex);
+
+    // TODO improve this
+    if(index !== 0) {
+      this.currentEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex - 1];
+      const nextEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex];
+      this.goToAbsoluteEventState(nextEventIndex);
+    }else{
+      const nextEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex];
+      this.goToAbsoluteEventState(nextEventIndex);
+    }
   }
 
   goToNextServerApparition(){

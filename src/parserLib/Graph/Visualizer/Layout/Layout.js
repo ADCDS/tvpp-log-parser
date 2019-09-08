@@ -31,7 +31,7 @@ class Layout {
         this.nodeHolder[machineKey] = new Node(machineKey);
         this.nodeHolder[machineKey].color = this.options.colorMap[
           this.machines[machineKey].bandwidthClassification
-        ];
+          ];
         this.nodeHolder[machineKey].size = 5;
       } else {
         throw `Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`;
@@ -44,7 +44,7 @@ class Layout {
       if (this.machines[machineKey].hasOwnProperty("bandwidthClassification")) {
         this.nodeHolder[machineKey].color = this.options.colorMap[
           this.machines[machineKey].bandwidthClassification
-        ];
+          ];
       } else {
         throw `Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`;
       }
@@ -59,7 +59,8 @@ class Layout {
     this.graphHolder = graphHolder;
   }
 
-  updatePositions() {}
+  updatePositions() {
+  }
 
   static getOptions() {
     return {
@@ -68,6 +69,16 @@ class Layout {
         type: Filter
       }
     };
+  }
+
+  cloneNodeHolder() {
+    let resObj = {};
+    Object.keys(this.nodeHolder).forEach(index => {
+      const node = this.nodeHolder[index]; // Node
+      resObj[index] = {...node};
+    });
+
+    return resObj;
   }
 }
 

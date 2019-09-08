@@ -68,6 +68,19 @@ class GraphHolder {
     newObj.graph = JSON.parse(JSON.stringify(this.graph));
     return newObj;
   }
+
+  compareWith(anotherGraph){
+    const newGraph = new GraphHolder(Object.keys(this.graph));
+    Object.keys(this.graph).forEach(from => {
+        const fromRes = this.graph[from];
+        Object.keys(fromRes).forEach(to => {
+            const value = fromRes[to]; // Boolean
+            newGraph.graph[from][to] = (value !== anotherGraph.graph[from][to]);
+        });
+    });
+
+    return newGraph;
+  }
 }
 
 export default GraphHolder;
