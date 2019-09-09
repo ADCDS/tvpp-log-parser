@@ -2,6 +2,7 @@ import Utils from "../../utils";
 import Filter from "../../parserLib/Graph/Filter/Filter";
 import LogParserOverlay from "../../parserLib/Log/Overlay/LogParserOverlay";
 import LogParserPerformance from "../../parserLib/Log/Performance/LogParserPerformance";
+import VisualizationManager from "./VisualizationManager";
 
 class DOMManager {
   static sourceOptions = {
@@ -325,6 +326,10 @@ class DOMManager {
     sigmaObj.refresh();
 
     e.currentTarget.className += " active";
+  }
+
+  static handleSigmaClick(e){
+    VisualizationManager.displayAllRelations(e.data.node, e.target);
   }
 }
 

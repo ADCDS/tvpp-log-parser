@@ -113,6 +113,7 @@ document.getElementById("draw").addEventListener("click", draw);
       autoResize: false
     }
   });
+  window.sigmaPrevious.bind('clickNode', DOMManager.handleSigmaClick);
 
   window.sigmaComparision = new Sigma({
     renderer: {
@@ -124,6 +125,7 @@ document.getElementById("draw").addEventListener("click", draw);
       autoResize: false
     }
   });
+  window.sigmaComparision.bind('clickNode', DOMManager.handleSigmaClick);
 
   window.sigmaCurrent = new Sigma({
     renderer: {
@@ -135,6 +137,7 @@ document.getElementById("draw").addEventListener("click", draw);
       autoResize: false
     }
   });
+  window.sigmaCurrent.bind('clickNode', DOMManager.handleSigmaClick);
 
   DOMManager.init();
   console.log("App started");
