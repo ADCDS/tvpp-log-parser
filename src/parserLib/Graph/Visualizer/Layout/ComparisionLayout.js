@@ -8,7 +8,7 @@ class ComparisionLayout extends Layout {
     this.mainGraphHolder = filterResultMain.graphHolder;
     this.secondaryGraphHolder = filterResultSec.graphHolder;
 
-    console.log("ComparisionLayout initialized", this.mainGraphHolder, this.secondaryGraphHolder);
+    //console.log("ComparisionLayout initialized", this.mainGraphHolder, this.secondaryGraphHolder);
   }
 
   updatePositions() {

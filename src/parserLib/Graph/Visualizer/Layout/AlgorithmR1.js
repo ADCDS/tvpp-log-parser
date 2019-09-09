@@ -141,7 +141,7 @@ class AlgorithmR1 extends Layout {
         iterNum++;
       });
     }
-    console.log("Done AlgorithmR1");
+    //console.log("Done AlgorithmR1");
   }
 
   static getOptions() {

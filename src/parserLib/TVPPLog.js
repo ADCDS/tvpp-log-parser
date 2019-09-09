@@ -51,7 +51,7 @@ class TVPPLog {
 
         // If we do, lets check the latest event state
         const latestEvent = machineRef.events[machineRef.events.length - 1];
-        currEvent.compareWithOldEvent(latestEvent);
+        //currEvent.compareWithOldEvent(latestEvent);
         machineRef.addEvent(currEvent);
       } else {
         // No entry, this the first time we are seeing this machine on the logs

@@ -1,8 +1,6 @@
 import DOMManager from "./DOMManager";
 import ComparisionLayout from "../../parserLib/Graph/Visualizer/Layout/ComparisionLayout";
 
-const Sigma = require("sigma");
-
 class VisualizationManager {
   static drawGraph(goToState, filterOptions, layoutOptions) {
     if (!DOMManager.selectedLayoutFilter) {
@@ -46,9 +44,18 @@ class VisualizationManager {
     const layoutObj = new layoutClass(subFilterResult, graphManager.getMachines(), layoutOptions);
     layoutObj.updatePositions();
 
+
     // Apply filter
-    const filterObj = new filterClass(filterOptions);
-    const filterResult = filterObj.applyFilter(graphHolder);
+
+    let filterResult;
+    // We do not need to apply the same filter twice, if they are the same
+    if(layoutFilterClass === filterClass && JSON.stringify(layoutOptions.filter) === JSON.stringify(filterOptions)){
+      filterResult = subFilterResult;
+      console.log("Main filter and Layout filter are the same, reusing result...")
+    }else {
+      const filterObj = new filterClass(filterOptions);
+      filterResult = filterObj.applyFilter(graphHolder);
+    }
     window.sigmaCurrent.helperHolder.graphHolder.filtered = filterResult.graphHolder;
 
     // Apply comparision layout

@@ -202,7 +202,12 @@ class DOMManager {
   static updateClassifications() {
     Object.keys(window.logEntity.machines).forEach(index => {
       const value = window.logEntity.machines[index];
-      document.getElementById("machClassification_" + value.address).innerHTML = value.bandwidthClassification;
+      const element = document.getElementById("machClassification_" + value.address);
+      if(!element) {
+        console.log("Machine " + value.address + " appears on Perfomance Log but doesn't appear mainly at Overlay Log");
+      }else {
+        element.innerHTML = value.bandwidthClassification;
+      }
     });
   }
 
