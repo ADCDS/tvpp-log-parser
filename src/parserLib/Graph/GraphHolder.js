@@ -56,6 +56,15 @@ class GraphHolder {
     return ret;
   }
 
+  getMachinesThatPointTo(node){
+    const ret = [];
+    Object.keys(this.graph).forEach(index => {
+        if(this.graph[index][node])
+          ret.push(index);
+    });
+    return ret;
+  }
+
   getEdges(machine) {
     return this.graph[machine];
   }

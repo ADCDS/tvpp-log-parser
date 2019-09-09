@@ -93,6 +93,15 @@ html(lang='pt')
       .tab button.active {
         background-color: #ccc;
       }
+
+      table, th, td {
+        border: 1px solid black;
+      }
+
+      tr.active {
+        background-color: #00ff0254;
+      }
+
 body
   h1 TVPP Log viewer
   div#panelHolder
@@ -128,7 +137,15 @@ body
         input(readonly=true, value=0)#currentEvent
       div#machineList
         b Machine List
-        ul#machineListUl
+        table
+          thead
+            tr
+              td ID
+              td Address
+              td Type
+              td Actions
+          tbody#machineListTable
+
     div#controller
       label(for='selectedEventNumber') Ir para evento:
         input#selectedEventNumber(type='number')

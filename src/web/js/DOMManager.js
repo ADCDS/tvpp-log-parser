@@ -17,6 +17,10 @@ class DOMManager {
 
   static selectedLayoutFilter = null;
 
+  static selectedNode = null;
+
+  static selectedSigma = null;
+
   static init() {
     // Show starting options
 
@@ -87,7 +91,7 @@ class DOMManager {
   }
 
   static parseInputValue(configType, element) {
-    const { value } = element;
+    const {value} = element;
     if (configType === String) return String(value);
     if (configType === Number) return Number(value);
     if (configType === Boolean) return element.checked;
@@ -182,13 +186,23 @@ class DOMManager {
   }
 
   static syncMachinesList() {
-    document.getElementById("machineListUl").innerHTML = "";
+    let resHTML = "";
+    document.getElementById("machineListTable").innerHTML = "";
     let i = 1;
     Object.keys(window.logEntity.machines).forEach(index => {
       const value = window.logEntity.machines[index];
-      document.getElementById("machineListUl").innerHTML += `<li>${i++} - ${
-        value.address
-      } Type: ${value.bandwidthClassification}</li>`;
+      resHTML += `<tr id="machRow_${value.address}" data-addr="${value.address}"><td>${i++}</td><td>${value.address}</td><td id="machClassification_${value.address}">${value.bandwidthClassification}</td><td>
+<button data-type="in">In</button>
+<button data-type="out">Out</button>
+</td></tr>`;
+    });
+    document.getElementById("machineListTable").innerHTML = resHTML;
+  }
+
+  static updateClassifications() {
+    Object.keys(window.logEntity.machines).forEach(index => {
+      const value = window.logEntity.machines[index];
+      document.getElementById("machClassification_" + value.address).innerHTML = value.bandwidthClassification;
     });
   }
 
@@ -212,35 +226,29 @@ class DOMManager {
     );
   }
 
-  static parseOverlayLog(e) {
+  static async parseOverlayLog(e) {
     console.log("Overlay log read.");
-    LogParserOverlay.parse(e.currentTarget.result.split("\n")).then(
-      entryArray => {
-        console.log(`Parsed ${entryArray.length} lines from overlay log`);
-        window.logEntity.addOverlayEntries(entryArray);
-        window.graphManager.syncMachines();
-        document.getElementById("numberOfEvents").value =
-          window.logEntity.sourceApparitionLocations.length;
-        document.getElementById("numberOfNodes").value = Object.keys(
-          window.logEntity.machines
-        ).length;
-        DOMManager.syncMachinesList();
+    const entryArray = await LogParserOverlay.parse(e.currentTarget.result.split("\n"));
+    console.log(`Parsed ${entryArray.length} lines from overlay log`);
+    window.logEntity.addOverlayEntries(entryArray);
+    window.graphManager.syncMachines();
+    document.getElementById("numberOfEvents").value =
+      window.logEntity.sourceApparitionLocations.length;
+    document.getElementById("numberOfNodes").value = Object.keys(
+      window.logEntity.machines
+    ).length;
+    DOMManager.syncMachinesList();
 
-        // Update defaults ::src
-        DOMManager.updateDefaultsOptionValues();
-      }
-    );
+    // Update defaults ::src
+    DOMManager.updateDefaultsOptionValues();
   }
 
-  static parsePerformanceLog(e) {
+  static async parsePerformanceLog(e) {
     console.log("Performance log read.");
-    LogParserPerformance.parse(e.currentTarget.result.split("\n")).then(
-      entryArray => {
-        console.log(`Parsed ${entryArray.length} lines from performance log`);
-        window.logEntity.addPerformanceEntries(entryArray);
-        DOMManager.syncMachinesList();
-      }
-    );
+    const entryArray = await LogParserPerformance.parse(e.currentTarget.result.split("\n"));
+    console.log(`Parsed ${entryArray.length} lines from performance log`);
+    window.logEntity.addPerformanceEntries(entryArray);
+    DOMManager.updateClassifications();
   }
 
   static getOptions(formHolderId, options) {
@@ -254,13 +262,18 @@ class DOMManager {
     return resObj;
   }
 
-  static synchronizeSigma(graphHolder, nodeHolder, sigma) {
+  static synchronizeSigma(sigma) {
+    const graphHolder = sigma.helperHolder.graphHolder.filtered;
+    const unfilteredGraphHolder = sigma.helperHolder.graphHolder.original;
+    const nodeHolder = sigma.helperHolder.nodeHolder;
+    const byPassInNodes = sigma.helperHolder.byPassInNodes;
+    const byPassOutNodes = sigma.helperHolder.byPassOutNodes;
+
     sigma.graph.clear();
 
     // Add nodes
     Object.keys(nodeHolder).forEach(machineKey => {
-      const node = { ...nodeHolder[machineKey] };
-      node.id = machineKey;
+      const node = {...nodeHolder[machineKey]};
       sigma.graph.addNode(node);
     });
 
@@ -273,6 +286,43 @@ class DOMManager {
             id: `${machineKey}_>_${machineDest}`,
             source: machineKey,
             target: machineDest,
+            size: 2,
+            type: "arrow"
+          });
+        } catch (e) {
+          console.log("Something bad happnd");
+        }
+      });
+    });
+
+    // Update bypasses
+    byPassOutNodes.forEach(machineKey => {
+      const edgesTo = unfilteredGraphHolder.getOutgoingEdges(machineKey);
+      edgesTo.forEach(machineDest => {
+        try {
+          sigma.graph.addEdge({
+            id: `${machineKey}_>_${machineDest}`,
+            source: machineKey,
+            target: machineDest,
+            size: 2,
+            type: "arrow"
+          });
+        } catch (e) {
+          console.log("Something bad happnd");
+        }
+      });
+    });
+
+    // Update bypasses
+    byPassInNodes.forEach(machineTo => {
+      // Get the edges that point to me
+      const edgesTo = unfilteredGraphHolder.getMachinesThatPointTo(machineTo);
+      edgesTo.forEach(machineFrom => {
+        try {
+          sigma.graph.addEdge({
+            id: `${machineFrom}_>_${machineTo}`,
+            source: machineFrom,
+            target: machineTo,
             size: 2,
             type: "arrow"
           });
@@ -323,13 +373,74 @@ class DOMManager {
       "block";
 
     const sigmaObj = window[e.currentTarget.dataset.sigma];
+
+    if (DOMManager.selectedSigma) {
+      DOMManager.synchronizeMachineListButtons(DOMManager.selectedSigma, sigmaObj);
+    }
+
+    DOMManager.selectedSigma = sigmaObj;
     sigmaObj.refresh();
 
     e.currentTarget.className += " active";
   }
 
-  static handleSigmaClick(e){
-    VisualizationManager.displayAllRelations(e.data.node, e.target);
+  static synchronizeMachineListButtons(oldSigma, newSigma) {
+    const oldButtons = oldSigma.helperHolder.managedButtons;
+    oldButtons.forEach(button => {
+      button.style["border-style"] = "";
+    });
+
+    const newButtons = newSigma.helperHolder.managedButtons;
+    newButtons.forEach(button => {
+      button.style["border-style"] = "inset";
+    });
+  }
+
+  static handleMachineListButtonClick(e) {
+    const button = e.target;
+    const type = button.dataset.type;
+    if (!type) {
+      const node = DOMManager.selectedSigma.helperHolder.nodeHolder[button.parentElement.dataset.addr];
+      if (node)
+        DOMManager.changeSelectedNode(node);
+      return;
+    }
+    const machineId = button.parentElement.parentElement.dataset.addr;
+
+
+    const isPressed = button.style["border-style"] === "inset";
+    const helperHolder = DOMManager.selectedSigma.helperHolder;
+    if (!isPressed) {
+      if (type === "out") {
+        VisualizationManager.displayAllToRelations(machineId, DOMManager.selectedSigma);
+      } else {
+        VisualizationManager.displayAllFromRelations(machineId, DOMManager.selectedSigma);
+      }
+      helperHolder.managedButtons.push(button);
+
+      button.style["border-style"] = "inset";
+    } else {
+      if (type === "out") {
+        VisualizationManager.hideAllToRelations(machineId, DOMManager.selectedSigma);
+      } else {
+        VisualizationManager.hideAllFromRelations(machineId, DOMManager.selectedSigma);
+      }
+      helperHolder.managedButtons.splice(helperHolder.managedButtons.indexOf(button), 1);
+      button.style["border-style"] = "";
+    }
+  }
+
+  static changeSelectedNode(node) {
+    if (DOMManager.selectedNode) {
+      document.getElementById('machRow_' + DOMManager.selectedNode.id).classList.remove('active');
+    }
+    DOMManager.selectedNode = node;
+    document.getElementById('machRow_' + node.id).classList.add('active');
+  }
+
+  static handleSigmaClick(e) {
+    DOMManager.changeSelectedNode(e.data.node);
+    // VisualizationManager.displayAllToRelations(e.data.node, e.target);
   }
 }
 

@@ -84,6 +84,8 @@ document.addEventListener("click", function (e) {
   }
 });
 
+document.getElementById('machineListTable').addEventListener("click", DOMManager.handleMachineListButtonClick);
+
 document.getElementById("nextEvent").addEventListener("click", e => {
   const drawButtonDOM = document.getElementById("draw");
   const eventNumberDOM = document.getElementById("selectedEventNumber");
@@ -114,6 +116,11 @@ document.getElementById("draw").addEventListener("click", draw);
     }
   });
   window.sigmaPrevious.bind('clickNode', DOMManager.handleSigmaClick);
+  window.sigmaPrevious.helperHolder = {
+    managedButtons: [],
+    byPassInNodes: [],
+    byPassOutNodes: [],
+  };
 
   window.sigmaComparision = new Sigma({
     renderer: {
@@ -126,6 +133,11 @@ document.getElementById("draw").addEventListener("click", draw);
     }
   });
   window.sigmaComparision.bind('clickNode', DOMManager.handleSigmaClick);
+  window.sigmaComparision.helperHolder = {
+    managedButtons: [],
+    byPassInNodes: [],
+    byPassOutNodes: [],
+  };
 
   window.sigmaCurrent = new Sigma({
     renderer: {
@@ -137,6 +149,11 @@ document.getElementById("draw").addEventListener("click", draw);
       autoResize: false
     }
   });
+  window.sigmaCurrent.helperHolder = {
+    managedButtons: [],
+    byPassInNodes: [],
+    byPassOutNodes: [],
+  };
   window.sigmaCurrent.bind('clickNode', DOMManager.handleSigmaClick);
 
   DOMManager.init();

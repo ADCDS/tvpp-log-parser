@@ -21,7 +21,8 @@ class VisualizationManager {
       edges: window.sigmaCurrent.graph.edges()
     });
     window.sigmaPrevious.refresh();
-    window.sigmaPrevious.nodeHolder = window.sigmaCurrent.nodeHolder;
+    window.sigmaPrevious.helperHolder.nodeHolder = window.sigmaCurrent.helperHolder.nodeHolder;
+    window.sigmaPrevious.helperHolder.graphHolder = {...window.sigmaCurrent.helperHolder.graphHolder};
 
     const filterClass = DOMManager.selectedFilter.class;
     const layoutClass = DOMManager.selectedLayout.class;
@@ -29,7 +30,14 @@ class VisualizationManager {
 
     graphManager.goToAbsoluteServerApparition(goToState);
     const graphHolder = graphManager.getGraphHolder();
-    window.originalCurrentGraphHolder = graphHolder;
+    if (!window.sigmaCurrent.helperHolder.graphHolder) {
+      window.sigmaCurrent.helperHolder.graphHolder = {
+        original: graphHolder,
+        filtered: null
+      }
+    } else {
+      window.sigmaCurrent.helperHolder.graphHolder.original = graphHolder;
+    }
 
     // Apply layout filter
     const subFilterObj = new layoutFilterClass(layoutOptions.filter);
@@ -41,20 +49,22 @@ class VisualizationManager {
     // Apply filter
     const filterObj = new filterClass(filterOptions);
     const filterResult = filterObj.applyFilter(graphHolder);
-    window.filteredCurrentGraphHolder = filterResult.graphHolder;
+    window.sigmaCurrent.helperHolder.graphHolder.filtered = filterResult.graphHolder;
 
     // Apply comparision layout
     if (window.oldSubFilterResult) {
       const comparisionLayout = new ComparisionLayout(subFilterResult, window.oldSubFilterResult, graphManager.getMachines());
       comparisionLayout.nodeHolder = layoutObj.cloneNodeHolder();
       comparisionLayout.updatePositions();
-      window.sigmaComparision.nodeHolder = comparisionLayout.nodeHolder;
-      DOMManager.synchronizeSigma(filterResult.graphHolder, comparisionLayout.nodeHolder, window.sigmaComparision);
+      window.sigmaComparision.helperHolder.nodeHolder = comparisionLayout.nodeHolder;
+      window.sigmaComparision.helperHolder.graphHolder = window.sigmaCurrent.helperHolder.graphHolder;
+
+      DOMManager.synchronizeSigma(window.sigmaComparision);
     }
     window.oldSubFilterResult = subFilterResult;
 
-    DOMManager.synchronizeSigma(filterResult.graphHolder, layoutObj.nodeHolder, window.sigmaCurrent);
-    window.sigmaCurrent.nodeHolder = layoutObj.nodeHolder;
+    window.sigmaCurrent.helperHolder.nodeHolder = layoutObj.nodeHolder;
+    DOMManager.synchronizeSigma(window.sigmaCurrent);
 
     /**
      * Update DOM
@@ -62,17 +72,27 @@ class VisualizationManager {
      */
     document.getElementById('currentEvent').value = graphManager.currentEventIndex;
     document.getElementById('currentStateEventId').innerHTML = '(' + graphManager.currentEventIndex + ')';
-
     document.getElementById('comparisionStateEventId').innerHTML = '(' + lastEventIndex + '/' + graphManager.currentEventIndex + ')';
   }
 
-  static displayAllRelations(node, sigma){
-    const oldGraphHolder = window.originalCurrentGraphHolder;
-    const filteredGraphHolder =  window.filteredCurrentGraphHolder;
+  static displayAllToRelations(node, sigma) {
+    sigma.helperHolder.byPassOutNodes.push(node);
+    DOMManager.synchronizeSigma(sigma);
+  }
 
-    filteredGraphHolder.graph[node.id] = oldGraphHolder.getEdges(node.id);
+  static displayAllFromRelations(node, sigma) {
+    sigma.helperHolder.byPassInNodes.push(node);
+    DOMManager.synchronizeSigma(sigma);
+  }
 
-    DOMManager.synchronizeSigma(filteredGraphHolder, sigma.nodeHolder, sigma);
+  static hideAllToRelations(node, sigma) {
+    sigma.helperHolder.byPassOutNodes.splice(sigma.helperHolder.byPassOutNodes.indexOf(node), 1);
+    DOMManager.synchronizeSigma(sigma);
+  }
+
+  static hideAllFromRelations(node, sigma) {
+    sigma.helperHolder.byPassInNodes.splice(sigma.helperHolder.byPassInNodes.indexOf(node), 1);
+    DOMManager.synchronizeSigma(sigma);
   }
 }
 

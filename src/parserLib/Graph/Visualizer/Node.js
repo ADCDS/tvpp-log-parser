@@ -1,5 +1,6 @@
 class Node {
-  constructor(label, x, y, color, size) {
+  constructor(id, label, x, y, color, size) {
+    this.id = id;
     this.label = label;
     this.x = x;
     this.y = y;

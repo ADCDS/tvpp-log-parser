@@ -28,7 +28,7 @@ class Layout {
     // Setup node holders
     Object.keys(machines).forEach(machineKey => {
       if (this.machines[machineKey].hasOwnProperty("bandwidthClassification")) {
-        this.nodeHolder[machineKey] = new Node(machineKey);
+        this.nodeHolder[machineKey] = new Node(machineKey, machineKey);
         this.nodeHolder[machineKey].color = this.options.colorMap[
           this.machines[machineKey].bandwidthClassification
           ];
