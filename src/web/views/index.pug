@@ -147,11 +147,16 @@ body
           tbody#machineListTable
 
     div#controller
-      label(for='selectedEventNumber') Ir para evento:
-        input#selectedEventNumber(type='number')
-      input#draw(type='button', value='Go!')
-      input#prevEvent(type='button', value='< Prev')
-      input#nextEvent(type='button', value='Next >')
+      div
+        label(for='selectedEventNumber') Ir para evento:
+          input#selectedEventNumber(type='number')
+        input#draw(type='button', value='Go!')
+        input#prevEvent(type='button', value='< Prev')
+        input#nextEvent(type='button', value='Next >')
+      div
+        label(for='preserveCurrentLayout') Preservar Layout:
+        input#preserveCurrentLayout(type='Checkbox', checked=false)
+
 
 div#graphContainer
   div#graphController.tab

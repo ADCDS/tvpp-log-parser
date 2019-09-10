@@ -21,6 +21,8 @@ class DOMManager {
 
   static selectedSigma = null;
 
+  static layoutPreservation = false;
+
   static init() {
     // Show starting options
 
@@ -459,6 +461,10 @@ class DOMManager {
   static handleSigmaClick(e) {
     DOMManager.changeSelectedNode(e.data.node);
     // VisualizationManager.displayAllToRelations(e.data.node, e.target);
+  }
+
+  static handleLayoutPreservationChange(e){
+    DOMManager.layoutPreservation = e.target.checked;
   }
 }
 

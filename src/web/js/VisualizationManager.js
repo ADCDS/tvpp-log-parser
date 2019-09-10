@@ -2,6 +2,8 @@ import DOMManager from "./DOMManager";
 import ComparisionLayout from "../../parserLib/Graph/Visualizer/Layout/ComparisionLayout";
 
 class VisualizationManager {
+  static isFirstIteration = true;
+
   static drawGraph(goToState, filterOptions, layoutOptions) {
     if (!DOMManager.selectedLayoutFilter) {
       throw "Layout Options missing subfilter"
@@ -13,15 +15,14 @@ class VisualizationManager {
     document.getElementById('previousEvent').value = lastEventIndex;
     document.getElementById('previousStateEventId').innerHTML = '(' + lastEventIndex + ')';
 
-    window.sigmaPrevious.graph.clear();
-    window.sigmaPrevious.graph.read({
-      nodes: window.sigmaCurrent.graph.nodes(),
-      edges: window.sigmaCurrent.graph.edges()
-    });
-    window.sigmaPrevious.refresh();
-    window.sigmaPrevious.helperHolder.nodeHolder = window.sigmaCurrent.helperHolder.nodeHolder;
-    window.sigmaPrevious.helperHolder.edgesHolder = window.sigmaCurrent.helperHolder.edgesHolder;
-    window.sigmaPrevious.helperHolder.graphHolder = {...window.sigmaCurrent.helperHolder.graphHolder};
+    if (!VisualizationManager.isFirstIteration) {
+      window.sigmaPrevious.helperHolder.nodeHolder = window.sigmaCurrent.helperHolder.nodeHolder;
+      window.sigmaPrevious.helperHolder.edgesHolder = window.sigmaCurrent.helperHolder.edgesHolder;
+      window.sigmaPrevious.helperHolder.graphHolder = {...window.sigmaCurrent.helperHolder.graphHolder};
+      if (!DOMManager.layoutPreservation) {
+        DOMManager.synchronizeSigma(window.sigmaPrevious);
+      }
+    }
 
     const filterClass = DOMManager.selectedFilter.class;
     const layoutClass = DOMManager.selectedLayout.class;
@@ -46,15 +47,27 @@ class VisualizationManager {
     layoutObj.updatePositions();
     window.sigmaCurrent.helperHolder.edgesHolder = layoutObj.edgesOverride;
 
+    if (!VisualizationManager.isFirstIteration && DOMManager.layoutPreservation) {
+      // Previous Sigma's nodes should have the same position as the Current Sigma
+      Object.keys(window.sigmaPrevious.helperHolder.nodeHolder).forEach(index => {
+        const node = window.sigmaPrevious.helperHolder.nodeHolder[index];
+        const currentNode = layoutObj.nodeHolder[index];
+        if (currentNode) {
+          node.x = currentNode.x;
+          node.y = currentNode.y;
+        }
+      });
+      DOMManager.synchronizeSigma(window.sigmaPrevious);
+    }
 
     // Apply filter
 
     let filterResult;
     // We do not need to apply the same filter twice, if they are the same
-    if(layoutFilterClass === filterClass && JSON.stringify(layoutOptions.filter) === JSON.stringify(filterOptions)){
+    if (layoutFilterClass === filterClass && JSON.stringify(layoutOptions.filter) === JSON.stringify(filterOptions)) {
       filterResult = subFilterResult;
       console.log("Main filter and Layout filter are the same, reusing result...")
-    }else {
+    } else {
       const filterObj = new filterClass(filterOptions);
       filterResult = filterObj.applyFilter(graphHolder);
     }
@@ -83,6 +96,8 @@ class VisualizationManager {
     document.getElementById('currentEvent').value = graphManager.currentEventIndex;
     document.getElementById('currentStateEventId').innerHTML = '(' + graphManager.currentEventIndex + ')';
     document.getElementById('comparisionStateEventId').innerHTML = '(' + lastEventIndex + '/' + graphManager.currentEventIndex + ')';
+
+    VisualizationManager.isFirstIteration = false;
   }
 
   static displayAllToRelations(node, sigma) {

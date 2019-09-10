@@ -104,6 +104,8 @@ document.getElementById("prevEvent").addEventListener("click", e => {
 
 document.getElementById("draw").addEventListener("click", draw);
 
+document.getElementById("preserveCurrentLayout").addEventListener("change", DOMManager.handleLayoutPreservationChange);
+
 (function () {
   window.sigmaPrevious = new Sigma({
     renderer: {
