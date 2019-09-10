@@ -203,9 +203,9 @@ class DOMManager {
     Object.keys(window.logEntity.machines).forEach(index => {
       const value = window.logEntity.machines[index];
       const element = document.getElementById("machClassification_" + value.address);
-      if(!element) {
+      if (!element) {
         console.log("Machine " + value.address + " appears on Perfomance Log but doesn't appear mainly at Overlay Log");
-      }else {
+      } else {
         element.innerHTML = value.bandwidthClassification;
       }
     });
@@ -271,6 +271,7 @@ class DOMManager {
     const graphHolder = sigma.helperHolder.graphHolder.filtered;
     const unfilteredGraphHolder = sigma.helperHolder.graphHolder.original;
     const nodeHolder = sigma.helperHolder.nodeHolder;
+    const edgesHolder = sigma.helperHolder.edgesHolder;
     const byPassInNodes = sigma.helperHolder.byPassInNodes;
     const byPassOutNodes = sigma.helperHolder.byPassOutNodes;
 
@@ -287,13 +288,17 @@ class DOMManager {
       const edgesTo = graphHolder.getOutgoingEdges(machineKey);
       edgesTo.forEach(machineDest => {
         try {
-          sigma.graph.addEdge({
+          const edge = {
             id: `${machineKey}_>_${machineDest}`,
             source: machineKey,
             target: machineDest,
             size: 2,
             type: "arrow"
-          });
+          };
+          if (edgesHolder[machineKey] && edgesHolder[machineKey][machineDest]) {
+            Object.assign(edge, edgesHolder[machineKey][machineDest]);
+          }
+          sigma.graph.addEdge(edge);
         } catch (e) {
           console.log("Something bad happnd");
         }
@@ -305,13 +310,17 @@ class DOMManager {
       const edgesTo = unfilteredGraphHolder.getOutgoingEdges(machineKey);
       edgesTo.forEach(machineDest => {
         try {
-          sigma.graph.addEdge({
+          const edge = {
             id: `${machineKey}_>_${machineDest}`,
             source: machineKey,
             target: machineDest,
             size: 2,
             type: "arrow"
-          });
+          };
+          if (edgesHolder[machineKey] && edgesHolder[machineKey][machineDest]) {
+            Object.assign(edge, edgesHolder[machineKey][machineDest]);
+          }
+          sigma.graph.addEdge(edge);
         } catch (e) {
           console.log("Something bad happnd");
         }
@@ -324,13 +333,17 @@ class DOMManager {
       const edgesTo = unfilteredGraphHolder.getMachinesThatPointTo(machineTo);
       edgesTo.forEach(machineFrom => {
         try {
-          sigma.graph.addEdge({
+          let edge = {
             id: `${machineFrom}_>_${machineTo}`,
             source: machineFrom,
             target: machineTo,
             size: 2,
             type: "arrow"
-          });
+          };
+          if (edgesHolder[machineFrom] && edgesHolder[machineFrom][machineTo]) {
+            Object.assign(edge, edgesHolder[machineFrom][machineTo]);
+          }
+          sigma.graph.addEdge(edge);
         } catch (e) {
           console.log("Something bad happnd");
         }

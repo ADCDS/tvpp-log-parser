@@ -20,6 +20,7 @@ class VisualizationManager {
     });
     window.sigmaPrevious.refresh();
     window.sigmaPrevious.helperHolder.nodeHolder = window.sigmaCurrent.helperHolder.nodeHolder;
+    window.sigmaPrevious.helperHolder.edgesHolder = window.sigmaCurrent.helperHolder.edgesHolder;
     window.sigmaPrevious.helperHolder.graphHolder = {...window.sigmaCurrent.helperHolder.graphHolder};
 
     const filterClass = DOMManager.selectedFilter.class;
@@ -43,6 +44,7 @@ class VisualizationManager {
 
     const layoutObj = new layoutClass(subFilterResult, graphManager.getMachines(), layoutOptions);
     layoutObj.updatePositions();
+    window.sigmaPrevious.helperHolder.edgesHolder = layoutObj.edgesHolder;
 
 
     // Apply filter
@@ -64,6 +66,7 @@ class VisualizationManager {
       comparisionLayout.nodeHolder = layoutObj.cloneNodeHolder();
       comparisionLayout.updatePositions();
       window.sigmaComparision.helperHolder.nodeHolder = comparisionLayout.nodeHolder;
+      window.sigmaComparision.helperHolder.edgesHolder = comparisionLayout.edgesOverride;
       window.sigmaComparision.helperHolder.graphHolder = window.sigmaCurrent.helperHolder.graphHolder;
 
       DOMManager.synchronizeSigma(window.sigmaComparision);

@@ -9,6 +9,7 @@ class Layout {
     this.graphHolder = filterResult.graphHolder;
     this.machines = machines;
     this.nodeHolder = {};
+    this.edgesOverride = {};
 
     const defaultOptions = {
       filter: null,

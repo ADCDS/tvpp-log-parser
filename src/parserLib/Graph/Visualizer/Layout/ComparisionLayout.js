@@ -23,7 +23,14 @@ class ComparisionLayout extends Layout {
       Object.keys(adjacentEdges).forEach(to => {
         const value = adjacentEdges[to];
         if (value) {
-          // We have a graph modification here, lets paint both nodes
+          if(!this.edgesOverride[machineKey]){
+            this.edgesOverride[machineKey] = {};
+          }
+          this.edgesOverride[machineKey][to] = {
+            color: this.options.colorMap[this.machines[machineKey].bandwidthClassification]
+          };
+
+          // We have a graph modification here, lets paint destination node and the edge itself
           // this.nodeHolder[machineKey].color = this.options.colorMap[this.machines[machineKey].bandwidthClassification];
 
           if(this.nodeHolder[to])

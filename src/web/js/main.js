@@ -117,6 +117,7 @@ document.getElementById("draw").addEventListener("click", draw);
   });
   window.sigmaPrevious.bind('clickNode', DOMManager.handleSigmaClick);
   window.sigmaPrevious.helperHolder = {
+    edgesHolder: {},
     managedButtons: [],
     byPassInNodes: [],
     byPassOutNodes: [],
@@ -134,6 +135,7 @@ document.getElementById("draw").addEventListener("click", draw);
   });
   window.sigmaComparision.bind('clickNode', DOMManager.handleSigmaClick);
   window.sigmaComparision.helperHolder = {
+    edgesHolder: {},
     managedButtons: [],
     byPassInNodes: [],
     byPassOutNodes: [],
@@ -150,6 +152,7 @@ document.getElementById("draw").addEventListener("click", draw);
     }
   });
   window.sigmaCurrent.helperHolder = {
+    edgesHolder: {},
     managedButtons: [],
     byPassInNodes: [],
     byPassOutNodes: [],
