@@ -287,7 +287,6 @@ class DOMManager {
     Object.keys(nodeHolder).forEach(machineKey => {
       const edgesTo = graphHolder.getOutgoingEdges(machineKey);
       edgesTo.forEach(machineDest => {
-        try {
           const edge = {
             id: `${machineKey}_>_${machineDest}`,
             source: machineKey,
@@ -298,9 +297,10 @@ class DOMManager {
           if (edgesHolder[machineKey] && edgesHolder[machineKey][machineDest]) {
             Object.assign(edge, edgesHolder[machineKey][machineDest]);
           }
+        try {
           sigma.graph.addEdge(edge);
         } catch (e) {
-          console.log("Something bad happnd");
+          console.log("Sigma exception: " + e);
         }
       });
     });
@@ -309,7 +309,6 @@ class DOMManager {
     byPassOutNodes.forEach(machineKey => {
       const edgesTo = unfilteredGraphHolder.getOutgoingEdges(machineKey);
       edgesTo.forEach(machineDest => {
-        try {
           const edge = {
             id: `${machineKey}_>_${machineDest}`,
             source: machineKey,
@@ -320,9 +319,10 @@ class DOMManager {
           if (edgesHolder[machineKey] && edgesHolder[machineKey][machineDest]) {
             Object.assign(edge, edgesHolder[machineKey][machineDest]);
           }
+        try {
           sigma.graph.addEdge(edge);
         } catch (e) {
-          console.log("Something bad happnd");
+          console.log("Sigma exception: " + e);
         }
       });
     });
@@ -332,7 +332,6 @@ class DOMManager {
       // Get the edges that point to me
       const edgesTo = unfilteredGraphHolder.getMachinesThatPointTo(machineTo);
       edgesTo.forEach(machineFrom => {
-        try {
           let edge = {
             id: `${machineFrom}_>_${machineTo}`,
             source: machineFrom,
@@ -343,9 +342,10 @@ class DOMManager {
           if (edgesHolder[machineFrom] && edgesHolder[machineFrom][machineTo]) {
             Object.assign(edge, edgesHolder[machineFrom][machineTo]);
           }
+        try {
           sigma.graph.addEdge(edge);
         } catch (e) {
-          console.log("Something bad happnd");
+          console.log("Sigma exception: " + e);
         }
       });
     });

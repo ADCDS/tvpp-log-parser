@@ -44,7 +44,7 @@ class VisualizationManager {
 
     const layoutObj = new layoutClass(subFilterResult, graphManager.getMachines(), layoutOptions);
     layoutObj.updatePositions();
-    window.sigmaPrevious.helperHolder.edgesHolder = layoutObj.edgesHolder;
+    window.sigmaCurrent.helperHolder.edgesHolder = layoutObj.edgesOverride;
 
 
     // Apply filter
