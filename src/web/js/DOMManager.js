@@ -82,8 +82,8 @@ class DOMManager {
 
     // Generate sub filter config option
     // Default filter
-    [DOMManager.selectedLayoutFilte] = availableFilters;
-    const filter = this.selectedLayoutFilter;
+    [DOMManager.selectedLayoutFilter] = availableFilters;
+    const filter = DOMManager.selectedLayoutFilter;
     res += "<div id='subFilterOptionsHolder'>";
     res += DOMManager.generateOptionsForm(
       "subFilterOptions",
