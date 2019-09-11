@@ -1,5 +1,3 @@
-import TreeFilter from "./Filter/Tree/TreeFilter";
-
 class GraphHolder {
   constructor(machines) {
     // Preallocate graph
@@ -15,11 +13,13 @@ class GraphHolder {
   }
 
   hasNode(machine) {
-    return this.graph.hasOwnProperty(machine);
+    return Object.prototype.hasOwnProperty.call(this.graph, machine);
   }
 
   insertNode(machine) {
-    if (this.hasNode(machine)) throw `Graph already has node ${machine}`;
+    if (this.hasNode(machine)) {
+      throw new Error(`Graph already has node ${machine}`);
+    }
 
     this.graph[machine] = {};
     Object.keys(this.graph).forEach(machineKey => {
@@ -56,11 +56,10 @@ class GraphHolder {
     return ret;
   }
 
-  getMachinesThatPointTo(node){
+  getMachinesThatPointTo(node) {
     const ret = [];
     Object.keys(this.graph).forEach(index => {
-        if(this.graph[index][node])
-          ret.push(index);
+      if (this.graph[index][node]) ret.push(index);
     });
     return ret;
   }
@@ -78,14 +77,14 @@ class GraphHolder {
     return newObj;
   }
 
-  compareWith(anotherGraph){
+  compareWith(anotherGraph) {
     const newGraph = new GraphHolder(Object.keys(this.graph));
     Object.keys(this.graph).forEach(from => {
-        const fromRes = this.graph[from];
-        Object.keys(fromRes).forEach(to => {
-            const value = fromRes[to]; // Boolean
-            newGraph.graph[from][to] = (value !== anotherGraph.graph[from][to]);
-        });
+      const fromRes = this.graph[from];
+      Object.keys(fromRes).forEach(to => {
+        const value = fromRes[to]; // Boolean
+        newGraph.graph[from][to] = value !== anotherGraph.graph[from][to];
+      });
     });
 
     return newGraph;

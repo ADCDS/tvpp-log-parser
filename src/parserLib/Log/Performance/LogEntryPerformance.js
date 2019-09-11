@@ -1,6 +1,6 @@
 class LogEntryPerformance {
   constructor(
-  	logId,
+    logId,
     machine,
     port,
     pkGen,

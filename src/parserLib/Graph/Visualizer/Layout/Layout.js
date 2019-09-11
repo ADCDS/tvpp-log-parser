@@ -28,26 +28,40 @@ class Layout {
 
     // Setup node holders
     Object.keys(machines).forEach(machineKey => {
-      if (this.machines[machineKey].hasOwnProperty("bandwidthClassification")) {
+      if (
+        Object.prototype.hasOwnProperty.call(
+          this.machines[machineKey],
+          "bandwidthClassification"
+        )
+      ) {
         this.nodeHolder[machineKey] = new Node(machineKey, machineKey);
         this.nodeHolder[machineKey].color = this.options.colorMap[
           this.machines[machineKey].bandwidthClassification
-          ];
+        ];
         this.nodeHolder[machineKey].size = 5;
       } else {
-        throw `Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`;
+        throw new Error(
+          `Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`
+        );
       }
     });
   }
 
   updateNodeColors() {
     Object.keys(this.machines).forEach(machineKey => {
-      if (this.machines[machineKey].hasOwnProperty("bandwidthClassification")) {
+      if (
+        Object.prototype.hasOwnProperty.call(
+          this.machines[machineKey],
+          "bandwidthClassification"
+        )
+      ) {
         this.nodeHolder[machineKey].color = this.options.colorMap[
           this.machines[machineKey].bandwidthClassification
-          ];
+        ];
       } else {
-        throw `Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`;
+        throw new Error(
+          `Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`
+        );
       }
     });
   }
@@ -60,8 +74,7 @@ class Layout {
     this.graphHolder = graphHolder;
   }
 
-  updatePositions() {
-  }
+  updatePositions() {}
 
   static getOptions() {
     return {
@@ -73,10 +86,10 @@ class Layout {
   }
 
   cloneNodeHolder() {
-    let resObj = {};
+    const resObj = {};
     Object.keys(this.nodeHolder).forEach(index => {
       const node = this.nodeHolder[index]; // Node
-      resObj[index] = {...node};
+      resObj[index] = { ...node };
     });
 
     return resObj;

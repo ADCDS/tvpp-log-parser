@@ -15,11 +15,11 @@ class AlgorithmR1 extends Layout {
     super(filterResult, machines, options);
 
     if (this.options.source === null) {
-      throw "Algorithm R1 initialized without a source";
+      throw new Error("Algorithm R1 initialized without a source");
     }
 
     if (!(filterResult instanceof TreeFilterResult)) {
-      throw "Algorithm R1 initialized without a tree";
+      throw new Error("Algorithm R1 initialized without a tree");
     }
   }
 
@@ -94,10 +94,6 @@ class AlgorithmR1 extends Layout {
     });
   }
 
-  calculateNumberOfNodesAtRing(ringIndex) {
-    if (ringIndex === 0) return 1;
-  }
-
   updatePositions() {
     super.updatePositions();
     this.drawSubTree1(
@@ -141,7 +137,7 @@ class AlgorithmR1 extends Layout {
         iterNum++;
       });
     }
-    //console.log("Done AlgorithmR1");
+    // console.log("Done AlgorithmR1");
   }
 
   static getOptions() {

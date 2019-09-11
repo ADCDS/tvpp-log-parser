@@ -2,7 +2,7 @@ import Utils from "../../utils";
 import Filter from "../../parserLib/Graph/Filter/Filter";
 import LogParserOverlay from "../../parserLib/Log/Overlay/LogParserOverlay";
 import LogParserPerformance from "../../parserLib/Log/Performance/LogParserPerformance";
-import VisualizationManager from "./VisualizationManager";
+import ComparisionLayout from "../../parserLib/Graph/Visualizer/Layout/ComparisionLayout";
 
 class DOMManager {
   static sourceOptions = {
@@ -82,7 +82,8 @@ class DOMManager {
 
     // Generate sub filter config option
     // Default filter
-    const filter = (this.selectedLayoutFilter = availableFilters[0]);
+    [DOMManager.selectedLayoutFilte] = availableFilters;
+    const filter = this.selectedLayoutFilter;
     res += "<div id='subFilterOptionsHolder'>";
     res += DOMManager.generateOptionsForm(
       "subFilterOptions",
@@ -93,7 +94,7 @@ class DOMManager {
   }
 
   static parseInputValue(configType, element) {
-    const {value} = element;
+    const { value } = element;
     if (configType === String) return String(value);
     if (configType === Number) return Number(value);
     if (configType === Boolean) return element.checked;
@@ -105,12 +106,15 @@ class DOMManager {
         DOMManager.selectedLayoutFilter.class.getOptions()
       );
     }
+    throw new Error(`Invalid configType: ${configType}`);
   }
 
   static getInputType(configType) {
     if (configType === String) return "text";
     if (configType === Number) return "number";
     if (configType === Boolean) return "checkbox";
+
+    throw new Error(`Invalid configType: ${configType}`);
   }
 
   static getDefaultAttr(configType, defaultValue) {
@@ -123,6 +127,7 @@ class DOMManager {
     if (configType === String || configType === Number) {
       return `value = '${defaultValue}'`;
     }
+    throw new Error(`Invalid configType: ${configType}`);
   }
 
   static generateOptionsForm(formHolderId, options) {
@@ -193,7 +198,11 @@ class DOMManager {
     let i = 1;
     Object.keys(window.logEntity.machines).forEach(index => {
       const value = window.logEntity.machines[index];
-      resHTML += `<tr id="machRow_${value.address}" data-addr="${value.address}"><td>${i++}</td><td>${value.address}</td><td id="machClassification_${value.address}">${value.bandwidthClassification}</td><td>
+      resHTML += `<tr id="machRow_${value.address}" data-addr="${
+        value.address
+      }"><td>${i++}</td><td>${value.address}</td><td id="machClassification_${
+        value.address
+      }">${value.bandwidthClassification}</td><td>
 <button data-type="in">In</button>
 <button data-type="out">Out</button>
 </td></tr>`;
@@ -204,9 +213,13 @@ class DOMManager {
   static updateClassifications() {
     Object.keys(window.logEntity.machines).forEach(index => {
       const value = window.logEntity.machines[index];
-      const element = document.getElementById("machClassification_" + value.address);
+      const element = document.getElementById(
+        `machClassification_${value.address}`
+      );
       if (!element) {
-        console.log("Machine " + value.address + " appears on Perfomance Log but doesn't appear mainly at Overlay Log");
+        console.log(
+          `Machine ${value.address} appears on Perfomance Log but doesn't appear mainly at Overlay Log`
+        );
       } else {
         element.innerHTML = value.bandwidthClassification;
       }
@@ -235,7 +248,9 @@ class DOMManager {
 
   static async parseOverlayLog(e) {
     console.log("Overlay log read.");
-    const entryArray = await LogParserOverlay.parse(e.currentTarget.result.split("\n"));
+    const entryArray = await LogParserOverlay.parse(
+      e.currentTarget.result.split("\n")
+    );
     console.log(`Parsed ${entryArray.length} lines from overlay log`);
     window.logEntity.addOverlayEntries(entryArray);
     window.graphManager.syncMachines();
@@ -252,7 +267,9 @@ class DOMManager {
 
   static async parsePerformanceLog(e) {
     console.log("Performance log read.");
-    const entryArray = await LogParserPerformance.parse(e.currentTarget.result.split("\n"));
+    const entryArray = await LogParserPerformance.parse(
+      e.currentTarget.result.split("\n")
+    );
     console.log(`Parsed ${entryArray.length} lines from performance log`);
     window.logEntity.addPerformanceEntries(entryArray);
     DOMManager.updateClassifications();
@@ -272,16 +289,16 @@ class DOMManager {
   static synchronizeSigma(sigma) {
     const graphHolder = sigma.helperHolder.graphHolder.filtered;
     const unfilteredGraphHolder = sigma.helperHolder.graphHolder.original;
-    const nodeHolder = sigma.helperHolder.nodeHolder;
-    const edgesHolder = sigma.helperHolder.edgesHolder;
-    const byPassInNodes = sigma.helperHolder.byPassInNodes;
-    const byPassOutNodes = sigma.helperHolder.byPassOutNodes;
+    const { nodeHolder } = sigma.helperHolder;
+    const { edgesHolder } = sigma.helperHolder;
+    const { byPassInNodes } = sigma.helperHolder;
+    const { byPassOutNodes } = sigma.helperHolder;
 
     sigma.graph.clear();
 
     // Add nodes
     Object.keys(nodeHolder).forEach(machineKey => {
-      const node = {...nodeHolder[machineKey]};
+      const node = { ...nodeHolder[machineKey] };
       sigma.graph.addNode(node);
     });
 
@@ -289,20 +306,20 @@ class DOMManager {
     Object.keys(nodeHolder).forEach(machineKey => {
       const edgesTo = graphHolder.getOutgoingEdges(machineKey);
       edgesTo.forEach(machineDest => {
-          const edge = {
-            id: `${machineKey}_>_${machineDest}`,
-            source: machineKey,
-            target: machineDest,
-            size: 2,
-            type: "arrow"
-          };
-          if (edgesHolder[machineKey] && edgesHolder[machineKey][machineDest]) {
-            Object.assign(edge, edgesHolder[machineKey][machineDest]);
-          }
+        const edge = {
+          id: `${machineKey}_>_${machineDest}`,
+          source: machineKey,
+          target: machineDest,
+          size: 2,
+          type: "arrow"
+        };
+        if (edgesHolder[machineKey] && edgesHolder[machineKey][machineDest]) {
+          Object.assign(edge, edgesHolder[machineKey][machineDest]);
+        }
         try {
           sigma.graph.addEdge(edge);
         } catch (e) {
-          console.log("Sigma exception: " + e);
+          console.log(`Sigma exception: ${e}`);
         }
       });
     });
@@ -311,20 +328,20 @@ class DOMManager {
     byPassOutNodes.forEach(machineKey => {
       const edgesTo = unfilteredGraphHolder.getOutgoingEdges(machineKey);
       edgesTo.forEach(machineDest => {
-          const edge = {
-            id: `${machineKey}_>_${machineDest}`,
-            source: machineKey,
-            target: machineDest,
-            size: 2,
-            type: "arrow"
-          };
-          if (edgesHolder[machineKey] && edgesHolder[machineKey][machineDest]) {
-            Object.assign(edge, edgesHolder[machineKey][machineDest]);
-          }
+        const edge = {
+          id: `${machineKey}_>_${machineDest}`,
+          source: machineKey,
+          target: machineDest,
+          size: 2,
+          type: "arrow"
+        };
+        if (edgesHolder[machineKey] && edgesHolder[machineKey][machineDest]) {
+          Object.assign(edge, edgesHolder[machineKey][machineDest]);
+        }
         try {
           sigma.graph.addEdge(edge);
         } catch (e) {
-          console.log("Sigma exception: " + e);
+          console.log(`Sigma exception: ${e}`);
         }
       });
     });
@@ -334,20 +351,20 @@ class DOMManager {
       // Get the edges that point to me
       const edgesTo = unfilteredGraphHolder.getMachinesThatPointTo(machineTo);
       edgesTo.forEach(machineFrom => {
-          let edge = {
-            id: `${machineFrom}_>_${machineTo}`,
-            source: machineFrom,
-            target: machineTo,
-            size: 2,
-            type: "arrow"
-          };
-          if (edgesHolder[machineFrom] && edgesHolder[machineFrom][machineTo]) {
-            Object.assign(edge, edgesHolder[machineFrom][machineTo]);
-          }
+        const edge = {
+          id: `${machineFrom}_>_${machineTo}`,
+          source: machineFrom,
+          target: machineTo,
+          size: 2,
+          type: "arrow"
+        };
+        if (edgesHolder[machineFrom] && edgesHolder[machineFrom][machineTo]) {
+          Object.assign(edge, edgesHolder[machineFrom][machineTo]);
+        }
         try {
           sigma.graph.addEdge(edge);
         } catch (e) {
-          console.log("Sigma exception: " + e);
+          console.log(`Sigma exception: ${e}`);
         }
       });
     });
@@ -395,7 +412,10 @@ class DOMManager {
     const sigmaObj = window[e.currentTarget.dataset.sigma];
 
     if (DOMManager.selectedSigma) {
-      DOMManager.synchronizeMachineListButtons(DOMManager.selectedSigma, sigmaObj);
+      DOMManager.synchronizeMachineListButtons(
+        DOMManager.selectedSigma,
+        sigmaObj
+      );
     }
 
     DOMManager.selectedSigma = sigmaObj;
@@ -418,53 +438,213 @@ class DOMManager {
 
   static handleMachineListButtonClick(e) {
     const button = e.target;
-    const type = button.dataset.type;
+    const { type } = button.dataset;
     if (!type) {
-      const node = DOMManager.selectedSigma.helperHolder.nodeHolder[button.parentElement.dataset.addr];
-      if (node)
-        DOMManager.changeSelectedNode(node);
+      const node =
+        DOMManager.selectedSigma.helperHolder.nodeHolder[
+          button.parentElement.dataset.addr
+        ];
+      if (node) DOMManager.changeSelectedNode(node);
       return;
     }
     const machineId = button.parentElement.parentElement.dataset.addr;
 
-
     const isPressed = button.style["border-style"] === "inset";
-    const helperHolder = DOMManager.selectedSigma.helperHolder;
+    const { helperHolder } = DOMManager.selectedSigma;
     if (!isPressed) {
       if (type === "out") {
-        VisualizationManager.displayAllToRelations(machineId, DOMManager.selectedSigma);
+        DOMManager.displayAllToRelations(machineId, DOMManager.selectedSigma);
       } else {
-        VisualizationManager.displayAllFromRelations(machineId, DOMManager.selectedSigma);
+        DOMManager.displayAllFromRelations(machineId, DOMManager.selectedSigma);
       }
       helperHolder.managedButtons.push(button);
 
       button.style["border-style"] = "inset";
     } else {
       if (type === "out") {
-        VisualizationManager.hideAllToRelations(machineId, DOMManager.selectedSigma);
+        DOMManager.hideAllToRelations(machineId, DOMManager.selectedSigma);
       } else {
-        VisualizationManager.hideAllFromRelations(machineId, DOMManager.selectedSigma);
+        DOMManager.hideAllFromRelations(machineId, DOMManager.selectedSigma);
       }
-      helperHolder.managedButtons.splice(helperHolder.managedButtons.indexOf(button), 1);
+      helperHolder.managedButtons.splice(
+        helperHolder.managedButtons.indexOf(button),
+        1
+      );
       button.style["border-style"] = "";
     }
   }
 
   static changeSelectedNode(node) {
     if (DOMManager.selectedNode) {
-      document.getElementById('machRow_' + DOMManager.selectedNode.id).classList.remove('active');
+      document
+        .getElementById(`machRow_${DOMManager.selectedNode.id}`)
+        .classList.remove("active");
     }
     DOMManager.selectedNode = node;
-    document.getElementById('machRow_' + node.id).classList.add('active');
+    document.getElementById(`machRow_${node.id}`).classList.add("active");
   }
 
   static handleSigmaClick(e) {
     DOMManager.changeSelectedNode(e.data.node);
-    // VisualizationManager.displayAllToRelations(e.data.node, e.target);
+    // DOMManager.displayAllToRelations(e.data.node, e.target);
   }
 
-  static handleLayoutPreservationChange(e){
+  static handleLayoutPreservationChange(e) {
     DOMManager.layoutPreservation = e.target.checked;
+  }
+
+  static isFirstIteration = true;
+
+  static drawGraph(goToState, filterOptions, layoutOptions) {
+    if (!DOMManager.selectedLayoutFilter)
+      throw new Error("Layout Options missing subfilter");
+
+    const { graphManager } = window;
+
+    const lastEventIndex = graphManager.currentEventIndex;
+    // We should store the last state on 'Previous Graph'
+    document.getElementById("previousEvent").value = lastEventIndex;
+    document.getElementById(
+      "previousStateEventId"
+    ).innerHTML = `(${lastEventIndex})`;
+
+    if (!DOMManager.isFirstIteration) {
+      window.sigmaPrevious.helperHolder.nodeHolder =
+        window.sigmaCurrent.helperHolder.nodeHolder;
+      window.sigmaPrevious.helperHolder.edgesHolder =
+        window.sigmaCurrent.helperHolder.edgesHolder;
+      window.sigmaPrevious.helperHolder.graphHolder = {
+        ...window.sigmaCurrent.helperHolder.graphHolder
+      };
+      if (!DOMManager.layoutPreservation) {
+        DOMManager.synchronizeSigma(window.sigmaPrevious);
+      }
+    }
+
+    const FilterClass = DOMManager.selectedFilter.class;
+    const LayoutClass = DOMManager.selectedLayout.class;
+    const LayoutFilterClass = DOMManager.selectedLayoutFilter.class;
+
+    graphManager.goToAbsoluteServerApparition(goToState);
+    const graphHolder = graphManager.getGraphHolder();
+    if (!window.sigmaCurrent.helperHolder.graphHolder) {
+      window.sigmaCurrent.helperHolder.graphHolder = {
+        original: graphHolder,
+        filtered: null
+      };
+    } else {
+      window.sigmaCurrent.helperHolder.graphHolder.original = graphHolder;
+    }
+
+    // Apply layout filter
+    const subFilterObj = new LayoutFilterClass(layoutOptions.filter);
+    const subFilterResult = subFilterObj.applyFilter(graphHolder);
+
+    const layoutObj = new LayoutClass(
+      subFilterResult,
+      graphManager.getMachines(),
+      layoutOptions
+    );
+    layoutObj.updatePositions();
+    window.sigmaCurrent.helperHolder.edgesHolder = layoutObj.edgesOverride;
+
+    if (!DOMManager.isFirstIteration && DOMManager.layoutPreservation) {
+      // Previous Sigma's nodes should have the same position as the Current Sigma
+      Object.keys(window.sigmaPrevious.helperHolder.nodeHolder).forEach(
+        index => {
+          const node = window.sigmaPrevious.helperHolder.nodeHolder[index];
+          const currentNode = layoutObj.nodeHolder[index];
+          if (currentNode) {
+            node.x = currentNode.x;
+            node.y = currentNode.y;
+          }
+        }
+      );
+      DOMManager.synchronizeSigma(window.sigmaPrevious);
+    }
+
+    // Apply filter
+
+    let filterResult;
+    // We do not need to apply the same filter twice, if they are the same
+    if (
+      LayoutFilterClass === FilterClass &&
+      JSON.stringify(layoutOptions.filter) === JSON.stringify(filterOptions)
+    ) {
+      filterResult = subFilterResult;
+      console.log(
+        "Main filter and Layout filter are the same, reusing result..."
+      );
+    } else {
+      const filterObj = new FilterClass(filterOptions);
+      filterResult = filterObj.applyFilter(graphHolder);
+    }
+    window.sigmaCurrent.helperHolder.graphHolder.filtered =
+      filterResult.graphHolder;
+
+    // Apply comparision layout
+    if (window.oldSubFilterResult) {
+      const comparisionLayout = new ComparisionLayout(
+        subFilterResult,
+        window.oldSubFilterResult,
+        graphManager.getMachines()
+      );
+      comparisionLayout.nodeHolder = layoutObj.cloneNodeHolder();
+      comparisionLayout.updatePositions();
+      window.sigmaComparision.helperHolder.nodeHolder =
+        comparisionLayout.nodeHolder;
+      window.sigmaComparision.helperHolder.edgesHolder =
+        comparisionLayout.edgesOverride;
+      window.sigmaComparision.helperHolder.graphHolder =
+        window.sigmaCurrent.helperHolder.graphHolder;
+
+      DOMManager.synchronizeSigma(window.sigmaComparision);
+    }
+    window.oldSubFilterResult = subFilterResult;
+
+    window.sigmaCurrent.helperHolder.nodeHolder = layoutObj.nodeHolder;
+    DOMManager.synchronizeSigma(window.sigmaCurrent);
+
+    /**
+     * Update DOM
+     * Maybe this should be in DOMManager
+     */
+    document.getElementById("currentEvent").value =
+      graphManager.currentEventIndex;
+    document.getElementById(
+      "currentStateEventId"
+    ).innerHTML = `(${graphManager.currentEventIndex})`;
+    document.getElementById(
+      "comparisionStateEventId"
+    ).innerHTML = `(${lastEventIndex}/${graphManager.currentEventIndex})`;
+
+    DOMManager.isFirstIteration = false;
+  }
+
+  static displayAllToRelations(node, sigma) {
+    sigma.helperHolder.byPassOutNodes.push(node);
+    DOMManager.synchronizeSigma(sigma);
+  }
+
+  static displayAllFromRelations(node, sigma) {
+    sigma.helperHolder.byPassInNodes.push(node);
+    DOMManager.synchronizeSigma(sigma);
+  }
+
+  static hideAllToRelations(node, sigma) {
+    sigma.helperHolder.byPassOutNodes.splice(
+      sigma.helperHolder.byPassOutNodes.indexOf(node),
+      1
+    );
+    DOMManager.synchronizeSigma(sigma);
+  }
+
+  static hideAllFromRelations(node, sigma) {
+    sigma.helperHolder.byPassInNodes.splice(
+      sigma.helperHolder.byPassInNodes.indexOf(node),
+      1
+    );
+    DOMManager.synchronizeSigma(sigma);
   }
 }
 

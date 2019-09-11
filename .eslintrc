@@ -16,6 +16,7 @@
 		"node": true
 	},
 	"rules": {
+    "no-console": "off",
 		"flowtype-errors/show-errors": "error",
 		"no-plusplus": "off",
 		"no-param-reassign": "off",

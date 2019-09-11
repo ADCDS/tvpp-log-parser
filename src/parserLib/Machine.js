@@ -33,7 +33,6 @@ class Machine {
 		  this.statusesOrdered[key] = sortStatuses(key, this.statusesOrdered[key]);
 		}); */
   }
-
 }
 
 export default Machine;

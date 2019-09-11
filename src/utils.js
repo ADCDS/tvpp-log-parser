@@ -47,29 +47,30 @@ class Utils {
       name: "Spring Layout",
       class: SpringLayout,
       graphConstraint: Filter
-    },
+    }
   };
 
-  static getFilter(filter){
+  static getFilter(filter) {
     const retFilter = this.filters[filter];
-    if(!retFilter)
-      throw "Unknown filter name " + filter;
+    if (!retFilter) throw new Error(`Unknown filter name ${filter}`);
 
     return retFilter;
   }
 
-  static getLayout(layout){
+  static getLayout(layout) {
     const retLayout = this.layouts[layout];
-    if(!retLayout)
-      throw "Unknown layout name " + layout;
+    if (!retLayout) throw new Error(`Unknown layout name ${layout}`);
 
     return retLayout;
   }
 
-  static getFiltersByType(type){
-    let retFilters = [];
+  static getFiltersByType(type) {
+    const retFilters = [];
     Object.keys(this.filters).forEach(el => {
-      if((this.filters[el].type.prototype instanceof type) || this.filters[el].type === type)
+      if (
+        this.filters[el].type.prototype instanceof type ||
+        this.filters[el].type === type
+      )
         retFilters.push(this.filters[el]);
     });
     return retFilters;

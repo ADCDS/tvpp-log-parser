@@ -51,7 +51,7 @@ class TVPPLog {
 
         // If we do, lets check the latest event state
         const latestEvent = machineRef.events[machineRef.events.length - 1];
-        //currEvent.compareWithOldEvent(latestEvent);
+        // currEvent.compareWithOldEvent(latestEvent);
         machineRef.addEvent(currEvent);
       } else {
         // No entry, this the first time we are seeing this machine on the logs
@@ -110,14 +110,14 @@ class TVPPLog {
       const machineObj = this.getMachine(logEntry.machine, logEntry.port);
       machineObj.addStatus(logEntry);
 
-      if (logEntry.hasOwnProperty("bandwidth")) {
+      if (Object.prototype.hasOwnProperty.call(logEntry, "bandwidth")) {
         foundBandwidths[logEntry.bandwidth] = true;
         if (
-          machineObj.hasOwnProperty("bandwidth") &&
+          Object.prototype.hasOwnProperty.call(machineObj, "bandwidth") &&
           machineObj.bandwidth !== null &&
           machineObj.bandwidth !== logEntry.bandwidth
         ) {
-          throw `Machine ${machineObj.address} bandwidth from ${machineObj.bandwidth} to ${logEntry.bandwidth} changed at line ${logEntry.logId}`;
+          throw new `Machine ${machineObj.address} bandwidth from ${machineObj.bandwidth} to ${logEntry.bandwidth} changed at line ${logEntry.logId}`();
         }
         machineObj.bandwidth = logEntry.bandwidth;
       }

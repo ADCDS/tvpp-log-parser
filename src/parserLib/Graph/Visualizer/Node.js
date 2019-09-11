@@ -8,11 +8,11 @@ class Node {
     this.size = size;
     this.polar = {
       angle: 0,
-      radius: 0,
-    }
+      radius: 0
+    };
   }
 
-  setPolarCoordinate(radius, angle){
+  setPolarCoordinate(radius, angle) {
     this.polar.angle = angle;
     this.polar.radius = radius;
     this.x = radius * Math.cos(angle);
