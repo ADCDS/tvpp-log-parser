@@ -21,8 +21,10 @@ function compileFrontend() {
 function nodemonStart() {
   let started = false;
   return nodemon({
-    script: "./src/web/index.js"
-  }).on("start", function() {
+    script: "./src/web/index.js",
+    watch: "./src/web/index.js",
+    verbose: true
+  }).on("start", () => {
     if (!started) {
       browserSync.init(null, {
         proxy: "http://localhost:3000",
@@ -38,6 +40,7 @@ function nodemonStart() {
 function watch() {
   gulp.watch(
     [
+      "./src/*.js",
       "./src/web/js/**/*.js",
       "./src/web/views/index.pug",
       "./src/parserLib/**/*.js"
@@ -46,5 +49,7 @@ function watch() {
   );
 }
 
-exports.nodemonStart = nodemonStart;
-exports.default = gulp.parallel(nodemonStart, watch);
+exports.default = gulp.series(
+  compileFrontend,
+  gulp.parallel(nodemonStart, watch)
+);
