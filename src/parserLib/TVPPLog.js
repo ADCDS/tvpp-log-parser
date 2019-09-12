@@ -2,109 +2,106 @@
 import Machine from "./Machine";
 import LogEntryOverlay from "./Log/Overlay/LogEntryOverlay";
 import LogEntryPerformance from "./Log/Performance/LogEntryPerformance";
+import OverlayState from "./Log/Overlay/OverlayState";
+import PerformanceState from "./Log/Performance/PerformanceState";
 
 class TVPPLog {
 	options: { [string]: any };
 	machines: Map<string, Machine>;
-	eventList: Array<Event>;
+	overlayEntryList: Array<LogEntryOverlay>;
+	performanceEntryList: Array<LogEntryPerformance>;
+
 	sourceMachineKey: string;
 	sourceApparitionLocations: Array<number>;
 
 	constructor(options: { [string]: any }) {
 		const defaultOptions = {
-			discriminateByPort: false,
 			forceAddGhostNodes: false,
 			iterateTroughServerApparition: true
 		};
 
 		this.options = Object.assign(defaultOptions, options);
-
-		this.eventList = [];
 		this.machines = new Map<string, Machine>();
-
-		this.sourceMachineKey = null;
+		this.overlayEntryList = [];
+		this.performanceEntryList = [];
+		this.sourceMachineKey = "";
 		this.sourceApparitionLocations = [];
 	}
 
 	addOverlayEntries(entries: Array<LogEntryOverlay>) {
-		this.sourceMachineKey = this.getMachineName(entries[0].machine, entries[0].port);
+		this.sourceMachineKey = entries[0].machineId;
 
 		let iterNum = 0;
 		entries.forEach(logEntry => {
-			const currMachineName = this.getMachineName(logEntry.machine, logEntry.port);
-			if (currMachineName === this.sourceMachineKey) this.sourceApparitionLocations.push(iterNum);
+			this.overlayEntryList.push(logEntry);
+			const currMachineName = logEntry.machineId;
+
+			if (currMachineName === this.sourceMachineKey) {
+				this.sourceApparitionLocations.push(iterNum);
+			}
 
 			const currEvent = logEntry.toOverlayState();
 
-			// Rename address based on the configuration of TVPPLog
-			["in", "out"].forEach(type => {
-				currEvent.state[type] = currEvent.state[type].map(el => {
-					return this.getMachineName(el.address, el.port);
-				});
-			});
-
-			if (this.hasMachine(logEntry.machine, logEntry.port)) {
-				// If it exists, we need to check its latest state
-				const machineRef = this.getMachine(logEntry.machine, logEntry.port);
-				machineRef.addOverlayStatus(currEvent);
+			if (this.hasMachine(logEntry.machineId)) {
+				const machineRef = this.getMachine(logEntry.machineId);
+				if (machineRef) machineRef.addOverlayStatus(currEvent);
 			} else {
-				// Create the address reference with the first event
-				this.addMachine(logEntry.machine, logEntry.port, [currEvent]);
+				// Create the address reference with the first overlay status
+				this.addMachine(logEntry.machineId, [currEvent], []);
 			}
-			this.eventList.push(currEvent);
 			iterNum++;
 		});
 	}
 
-	addRawMachine(machineName: string, events: Array<Event>) {
-		this.machines.set(machineName, new Machine(machineName, events));
+	addRawMachine(machineId: string, overlayStatus: Array<OverlayState>, performanceStatus: Array<PerformanceState>) {
+		this.machines.set(machineId, new Machine(machineId, overlayStatus, performanceStatus));
 	}
 
-	hasRawMachine(machineName: string) {
-		return Object.prototype.hasOwnProperty.call(this.machines, machineName);
+	hasRawMachine(machineId: string) {
+		return Object.prototype.hasOwnProperty.call(this.machines, machineId);
 	}
 
-	getRawMachine(machineName: string) {
-		return this.machines.get(machineName);
+	getRawMachine(machineId: string) {
+		return this.machines.get(machineId);
 	}
 
-	addMachine(address: string, port: number, events: Array<Event>) {
-		const machineName = this.getMachineName(address, port);
-		this.machines.set(machineName, new Machine(machineName, events));
+	addMachine(machineId: string, overlayStates: Array<OverlayState>, performanceStatus: Array<PerformanceState>) {
+		this.machines.set(machineId, new Machine(machineId, overlayStates, performanceStatus));
 	}
 
-	getMachineName(address: string, port: number) {
-		return address + (this.options.discriminateByPort ? `:${port}` : "");
+	hasMachine(machineId: string): boolean {
+		return this.machines.has(machineId);
 	}
 
-	hasMachine(address: string, port: number) {
-		const machineName = this.getMachineName(address, port);
-		return this.machines.has(machineName);
-	}
-
-	getMachine(address: string, port: number): Machine {
-		const machineName = this.getMachineName(address, port);
-		return this.machines.get(machineName);
+	getMachine(machineId: string): Machine | void {
+		return this.machines.get(machineId);
 	}
 
 	addPerformanceEntries(entries: Array<LogEntryPerformance>) {
 		const foundBandwidths = {};
 		entries.forEach(logEntry => {
-			if (!this.hasMachine(logEntry.machine, logEntry.port)) {
-				this.addMachine(logEntry.machine, logEntry.port);
+			const performanceState = logEntry.toState();
+
+			if (!this.hasMachine(logEntry.machineId)) {
+				this.addMachine(logEntry.machineId, [], [performanceState]);
 			}
 
-			const machineObj = this.getMachine(logEntry.machine, logEntry.port);
-			machineObj.addPerformanceStatus(logEntry);
+			const machineObj = this.getMachine(logEntry.machineId);
+
+			if (!machineObj) return;
+
+			machineObj.addPerformanceStatus(performanceState);
 
 			if (Object.prototype.hasOwnProperty.call(logEntry, "bandwidth")) {
 				foundBandwidths[logEntry.bandwidth] = true;
 				if (
 					Object.prototype.hasOwnProperty.call(machineObj, "bandwidth") &&
-					machineObj.bandwidth !== null &&
+					machineObj.bandwidth !== -1 &&
 					machineObj.bandwidth !== logEntry.bandwidth
 				) {
-					throw new `Machine ${machineObj.address} bandwidth from ${machineObj.bandwidth} to ${logEntry.bandwidth} changed at line ${logEntry.logId}`();
+					throw new Error(
+						`Machine ${machineObj.address} bandwidth from ${machineObj.bandwidth} to ${logEntry.bandwidth} changed at line ${logEntry.logId}`
+					);
 				}
 				machineObj.bandwidth = logEntry.bandwidth;
 			}

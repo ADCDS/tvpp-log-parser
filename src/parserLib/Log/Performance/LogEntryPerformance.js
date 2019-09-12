@@ -3,6 +3,7 @@ import PerformanceState from "./PerformanceState";
 
 class LogEntryPerformance {
 	logId: number;
+	machineId: string;
 	machine: string;
 	port: number;
 	pkGen: number;
@@ -32,9 +33,39 @@ class LogEntryPerformance {
 	bandwidth: number;
 	ingressRequest: number;
 
-
-	constructor(logId: number, machine: string, port: number, pkGen: number, pkSent: number, pkRecv: number, pkOver: number, requestSent: number, requestRecv: number, requestRetries: number, pkMissed: number, pkExpected: number, hopMedio: number, triesMedio: number, triesPerRequestMedio: number, media1: string, media2: string, mediaHop: number, mediaTries: number, mediaTime: number, msgTime: number, bootTime: number, partnerIn: number, partnerOut: number, partnerOutFREE: number, sizePeerOut: number, sizePeerOutFREE: number, bandwidth: number, ingressRequest: number) {
+	constructor(
+		logId: number,
+		machine: string,
+		port: number,
+		pkGen: number,
+		pkSent: number,
+		pkRecv: number,
+		pkOver: number,
+		requestSent: number,
+		requestRecv: number,
+		requestRetries: number,
+		pkMissed: number,
+		pkExpected: number,
+		hopMedio: number,
+		triesMedio: number,
+		triesPerRequestMedio: number,
+		media1: string,
+		media2: string,
+		mediaHop: number,
+		mediaTries: number,
+		mediaTime: number,
+		msgTime: number,
+		bootTime: number,
+		partnerIn: number,
+		partnerOut: number,
+		partnerOutFREE: number,
+		sizePeerOut: number,
+		sizePeerOutFREE: number,
+		bandwidth: number,
+		ingressRequest: number
+	) {
 		this.logId = logId;
+		this.machineId = `${machine}:${port}`;
 		this.machine = machine;
 		this.port = port;
 		this.pkGen = pkGen;
@@ -65,7 +96,7 @@ class LogEntryPerformance {
 		this.ingressRequest = ingressRequest;
 	}
 
-	toState(): PerformanceState{
+	toState(): PerformanceState {
 		return new PerformanceState(this.bandwidth);
 	}
 }

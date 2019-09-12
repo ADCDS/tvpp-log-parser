@@ -2,6 +2,7 @@
 import OverlayState from "./OverlayState";
 
 class LogEntryOverlay {
+	machineId: string;
 	machine: string;
 	port: number;
 	timestamp: number;
@@ -9,6 +10,7 @@ class LogEntryOverlay {
 	partnersOut: Array<string>;
 
 	constructor(machine: string, port: number, timestamp: number, partnersIn: Array<string>, partnersOut: Array<string>) {
+		this.machineId = `${machine}:${port}`;
 		this.machine = machine;
 		this.port = port;
 		this.timestamp = timestamp;

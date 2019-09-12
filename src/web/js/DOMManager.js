@@ -81,7 +81,7 @@ class DOMManager {
 		// Default filter
 		[DOMManager.selectedLayoutFilter] = availableFilters;
 		const filter = DOMManager.selectedLayoutFilter;
-		res += "<div id='subFilterOptionsHolder'>";
+		res += "<div machineId='subFilterOptionsHolder'>";
 		res += DOMManager.generateOptionsForm("subFilterOptions", filter.class.getOptions());
 		res += "</div></div>";
 		return res;
@@ -184,7 +184,7 @@ class DOMManager {
 	}
 
 	static updateClassifications() {
-		for (const [index, value] of window.logEntity.machines.entries()) {
+		for (const value of window.logEntity.machines.values()) {
 			const element = document.getElementById(`machClassification_${value.address}`);
 			if (!element) {
 				console.log(`Machine ${value.address} appears on Perfomance Log but doesn't appear mainly at Overlay Log`);
@@ -202,7 +202,7 @@ class DOMManager {
 					DOMManager.sourceOptions[optionType].splice(index, 1);
 					return;
 				}
-				if (window.logEntity.sourceMachineKey !== null && el.value === "::src") {
+				if (window.logEntity.sourceMachineKey !== "" && el.value === "::src") {
 					el.value = window.logEntity.sourceMachineKey;
 				}
 			});

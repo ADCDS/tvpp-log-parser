@@ -9,25 +9,20 @@ class Machine {
 	bandwidth: number;
 	bandwidthClassification: number;
 
-
 	constructor(address: string, overlayStatus: Array<OverlayState>, performanceStatus: Array<PerformanceState>) {
 		this.address = address;
 		this.overlayStatus = overlayStatus || [];
 		this.performanceStatus = performanceStatus || [];
 
-		this.bandwidth = null;
-		this.bandwidthClassification = null;
+		this.bandwidth = -1;
+		this.bandwidthClassification = -1;
 	}
 
-	/**
-	 * Adds an event to address's event list
-	 * @param {OverlayState} event
-	 */
-	addOverlayStatus(event) {
+	addOverlayStatus(event: OverlayState): void {
 		this.overlayStatus.push(event);
 	}
 
-	addPerformanceStatus(status) {
+	addPerformanceStatus(status: PerformanceState): void {
 		this.performanceStatus.push(status);
 	}
 }

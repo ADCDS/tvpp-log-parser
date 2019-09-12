@@ -74,47 +74,43 @@ class GraphManager {
 	}
 
 	goToNextEvent(): void {
-		const currentEvent = this.logEntity.eventList[this.currentEventIndex];
-		if (this.currentEventIndex >= this.logEntity.eventList.length) return;
+		const overlayEntry = this.logEntity.overlayEntryList[this.currentEventIndex];
+		if (this.currentEventIndex >= this.logEntity.overlayEntryList.length) return;
 		this.currentEventIndex += 1;
 
-		const currentMachine = this.logEntity.getMachineName(currentEvent.address, currentEvent.port);
+		const currentMachine = overlayEntry.machineId;
 
 		// Outgoing edges
-		if (currentEvent.state.out.length > 0) {
-			currentEvent.state.out.forEach(targetMachine => {
-				if (this.graphHolder.hasNode(targetMachine)) {
-					this.graphHolder.addEdge(currentMachine, targetMachine);
-				} else if (this.logEntity.options.forceAddGhostNodes) {
-					// One of the machines is mentioned by another, but it doesn't have a single log of its own
-					console.log(`Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`);
-					this.graphHolder.insertNode(targetMachine);
-					this.graphHolder.addEdge(currentMachine, targetMachine);
-					this.logEntity.addRawMachine(targetMachine);
-				}
-			});
-		}
+		overlayEntry.partnersOut.forEach(targetMachine => {
+			if (this.graphHolder.hasNode(targetMachine)) {
+				this.graphHolder.addEdge(currentMachine, targetMachine);
+			} else if (this.logEntity.options.forceAddGhostNodes) {
+				// One of the machines is mentioned by another, but it doesn't have a single log of its own
+				console.log(`Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`);
+				this.graphHolder.insertNode(targetMachine);
+				this.graphHolder.addEdge(currentMachine, targetMachine);
+				this.logEntity.addRawMachine(targetMachine, [], []);
+			}
+		});
 
 		// Incoming edges
-		if (currentEvent.state.in.length > 0) {
-			currentEvent.state.in.forEach(targetMachine => {
-				if (this.graphHolder.hasNode(targetMachine)) {
-					this.graphHolder.addEdge(targetMachine, currentMachine);
-				} else if (this.logEntity.options.forceAddGhostNodes) {
-					// One of the machines is mentioned by another, but it doesn't have a single log of its own
-					console.log(`Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`);
-					this.graphHolder.insertNode(targetMachine);
-					this.graphHolder.addEdge(targetMachine, currentMachine);
-					this.logEntity.addRawMachine(targetMachine);
-				}
-			});
-		}
+		overlayEntry.partnersIn.forEach(targetMachine => {
+			if (this.graphHolder.hasNode(targetMachine)) {
+				this.graphHolder.addEdge(targetMachine, currentMachine);
+			} else if (this.logEntity.options.forceAddGhostNodes) {
+				// One of the machines is mentioned by another, but it doesn't have a single log of its own
+				console.log(`Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`);
+				this.graphHolder.insertNode(targetMachine);
+				this.graphHolder.addEdge(targetMachine, currentMachine);
+				this.logEntity.addRawMachine(targetMachine, [], []);
+			}
+		});
 	}
 
 	goToAbsoluteEventState(statePos: number): void {
-		if (this.currentEventIndex >= this.logEntity.eventList.length) {
+		if (this.currentEventIndex >= this.logEntity.overlayEntryList.length) {
 			// Requested position is beyond log size
-			statePos = this.logEntity.eventList.length - 1;
+			statePos = this.logEntity.overlayEntryList.length - 1;
 		}
 		if (statePos < 0) statePos = 0;
 
@@ -130,7 +126,7 @@ class GraphManager {
 	}
 
 	goToLastEventState(): void {
-		while (this.currentEventIndex < this.logEntity.eventList.length) this.goToNextEvent();
+		while (this.currentEventIndex < this.logEntity.overlayEntryList.length) this.goToNextEvent();
 	}
 
 	getMachines(): Map<string, Machine> {

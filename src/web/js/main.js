@@ -138,4 +138,14 @@ document.getElementById("preserveCurrentLayout").addEventListener("change", DOMM
 
 	DOMManager.init();
 	console.log("App started");
+
+	const overlayFileEl = document.getElementById("logOverlayFile");
+	const performanceFileEl = document.getElementById("logPerformanceFile");
+
+	if (overlayFileEl.files.length !== 0) {
+		overlayFileEl.dispatchEvent(new Event("change"));
+	}
+	if (performanceFileEl.files.length !== 0) {
+		performanceFileEl.dispatchEvent(new Event("change"));
+	}
 })();

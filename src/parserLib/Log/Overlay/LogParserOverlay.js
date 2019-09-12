@@ -24,25 +24,15 @@ class LogParserOverlay {
 		const timestamp = firstHalf[1];
 		firstHalf.splice(0, 2);
 
-		let partnersIn = firstHalf.filter(value => {
+		const partnersIn = firstHalf.filter(value => {
 			return !(value === "" || value === "\r");
 		});
 
-		let partnersOut = secondHalf.filter(value => {
+		const partnersOut = secondHalf.filter(value => {
 			return !(value === "" || value === "\r");
 		});
 
-		partnersIn = partnersIn.map(el => {
-			const addressPort = el.split(":");
-			return { address: addressPort[0], port: addressPort[1] };
-		});
-
-		partnersOut = partnersOut.map(el => {
-			const addressPort = el.split(":");
-			return { address: addressPort[0], port: addressPort[1] };
-		});
-
-		return new LogEntryOverlay(hostAddress[0], hostAddress[1], timestamp, partnersIn, partnersOut);
+		return new LogEntryOverlay(hostAddress[0], Number(hostAddress[1]), Number(timestamp), partnersIn, partnersOut);
 	}
 }
 

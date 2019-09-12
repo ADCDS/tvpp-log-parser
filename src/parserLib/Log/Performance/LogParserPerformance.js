@@ -11,15 +11,14 @@ class LogParserPerformance {
 	}
 
 	static lineToEntry(lineId, line) {
-
 		const pieces = line.split(" ");
 		const machine = pieces[0];
 		const split = machine.split(":");
 
 		return new LogEntryPerformance(
-			lineId,
+			Number(lineId),
 			split[0],
-			split[1],
+			Number(split[1]),
 			pieces[1],
 			pieces[2],
 			pieces[3],
@@ -43,8 +42,8 @@ class LogParserPerformance {
 			pieces[21],
 			pieces[22],
 			pieces[23],
-			pieces[24],
-			pieces[25]
+			Number(pieces[24]),
+			Number(pieces[25])
 		);
 	}
 }
