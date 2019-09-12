@@ -1,15 +1,21 @@
+// @flow
 import GraphHolder from "../GraphHolder";
+import FilterResult from "./Results/FilterResult";
 
 class Filter {
-  constructor(options) {
-    this.options = options || {};
-  }
+	options: {[string]: any};
 
-  applyFilter(graphHolder) {}
+	constructor(options: {[string]: any}) {
+		this.options = options || {};
+	}
 
-  static getOptions() {
-    return {};
-  }
+	applyFilter(graphHolder: GraphHolder): FilterResult<Filter> {
+		return new FilterResult<Filter>(graphHolder);
+	}
+
+	static getOptions(): {[string]: any} {
+		return new {};
+	}
 }
 
 export default Filter;

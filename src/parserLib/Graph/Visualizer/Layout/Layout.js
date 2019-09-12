@@ -1,99 +1,117 @@
-// TODO: Define position of each node (machine)
+// @flow
+// TODO: Define position of each node (address)
 
 import Node from "../Node";
+import Edge from "../Edge";
 import Filter from "../../Filter/Filter";
+import FilterResult from "../../Filter/Results/FilterResult";
+import GraphHolder from "../../GraphHolder";
+import Machine from "../../../Machine";
 
 class Layout {
-  constructor(filterResult, machines, options) {
-    this.filterResult = filterResult;
-    this.graphHolder = filterResult.graphHolder;
-    this.machines = machines;
-    this.nodeHolder = {};
-    this.edgesOverride = {};
+	filterResult: FilterResult;
+	graphHolder: GraphHolder;
+	machines: Map<string, Machine>;
+	nodeHolder: Map<string, Node>;
+	edgesOverride: Map<string, Map<string, Edge>>;
+	options: { [string]: any };
 
-    const defaultOptions = {
-      filter: null,
-      colorMap: {
-        "0": "#ff0000",
-        "1": "#0000ff",
-        "2": "#ff7b00",
-        "3": "#fff400",
-        "4": "#64ff00"
-      }
-    };
+	constructor(
+		filterResult: FilterResult,
+		machines: Map<string, Machine>,
+		options: { [string]: any }
+	) {
+		this.filterResult = filterResult;
+		this.graphHolder = filterResult.graphHolder;
+		this.machines = machines;
+		this.nodeHolder = new Map<string, Node>();
+		this.edgesOverride = new Map<string, Map<string, Edge>>();
 
-    this.options = Object.assign(defaultOptions, options);
+		const defaultOptions = {
+			filter: null,
+			colorMap: {
+				"0": "#ff0000",
+				"1": "#0000ff",
+				"2": "#ff7b00",
+				"3": "#fff400",
+				"4": "#64ff00"
+			}
+		};
 
-    this.bandwidths = {};
+		this.options = Object.assign(defaultOptions, options);
 
-    // Setup node holders
-    Object.keys(machines).forEach(machineKey => {
-      if (
-        Object.prototype.hasOwnProperty.call(
-          this.machines[machineKey],
-          "bandwidthClassification"
-        )
-      ) {
-        this.nodeHolder[machineKey] = new Node(machineKey, machineKey);
-        this.nodeHolder[machineKey].color = this.options.colorMap[
-          this.machines[machineKey].bandwidthClassification
-        ];
-        this.nodeHolder[machineKey].size = 5;
-      } else {
-        throw new Error(
-          `Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`
-        );
-      }
-    });
-  }
+		this.bandwidths = {};
 
-  updateNodeColors() {
-    Object.keys(this.machines).forEach(machineKey => {
-      if (
-        Object.prototype.hasOwnProperty.call(
-          this.machines[machineKey],
-          "bandwidthClassification"
-        )
-      ) {
-        this.nodeHolder[machineKey].color = this.options.colorMap[
-          this.machines[machineKey].bandwidthClassification
-        ];
-      } else {
-        throw new Error(
-          `Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`
-        );
-      }
-    });
-  }
+		// Setup node holders
+		for (let machineKey of machines.keys()) {
+			if (
+				Object.prototype.hasOwnProperty.call(
+					this.machines.get(machineKey),
+					"bandwidthClassification"
+				)
+			) {
+				const node = new Node(machineKey, machineKey);
+				node.color = this.options.colorMap[
+					this.machines.get(machineKey).bandwidthClassification
+				];
+				node.size = 5;
 
-  setMachines(machines) {
-    this.machines = machines;
-  }
+				this.nodeHolder.set(machineKey, node);
+			} else {
+				throw new Error(
+					`Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`
+				);
+			}
+		}
+	}
 
-  setGraphHolder(graphHolder) {
-    this.graphHolder = graphHolder;
-  }
+	updateNodeColors(): void {
+		for (let machineKey of this.machines.keys()) {
+			if (
+				Object.prototype.hasOwnProperty.call(
+					this.machines[machineKey],
+					"bandwidthClassification"
+				)
+			) {
+				this.nodeHolder[machineKey].color = this.options.colorMap[
+					this.machines[machineKey].bandwidthClassification
+				];
+			} else {
+				throw new Error(
+					`Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`
+				);
+			}
+		}
+	}
 
-  updatePositions() {}
+	setMachines(machines: Map<string, Machine>): void {
+		this.machines = machines;
+	}
 
-  static getOptions() {
-    return {
-      filter: {
-        name: "Filter",
-        type: Filter
-      }
-    };
-  }
+	setGraphHolder(graphHolder) {
+		this.graphHolder = graphHolder;
+	}
 
-  cloneNodeHolder() {
-    const resObj = {};
-    Object.keys(this.nodeHolder).forEach(index => {
-      const node = this.nodeHolder[index]; // Node
-      resObj[index] = { ...node };
-    });
+	updatePositions(): void {}
 
-    return resObj;
-  }
+	static getOptions(): {} {
+		return {
+			filter: {
+				name: "Filter",
+				type: Filter
+			}
+		};
+	}
+
+	cloneNodeHolder(): Map<string, Node> {
+		const resObj = new Map<string, Node>();
+		Object.keys(this.nodeHolder).forEach(index => {
+			const node = this.nodeHolder[index]; // Node
+			resObj.set(index, { ...node });
+		});
+
+		return resObj;
+	}
 }
 
 export default Layout;

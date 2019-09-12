@@ -1,20 +1,33 @@
+// @flow
 import Event from "../../Event";
 
 class LogEntryOverlay {
-  constructor(machine, port, timestamp, partnersIn, partnersOut) {
-    this.machine = machine;
-    this.port = port;
-    this.timestamp = timestamp;
-    this.partnersIn = partnersIn || [];
-    this.partnersOut = partnersOut || [];
-  }
+	machine: string;
+	port: number;
+	timestamp: number;
+	partnersIn: Array<string>;
+	partnersOut: Array<string>;
 
-  toEvent() {
-    return new Event(this.machine, this.timestamp, this.port, {
-      in: this.partnersIn,
-      out: this.partnersOut
-    });
-  }
+	constructor(
+		machine: string,
+		port: number,
+		timestamp: number,
+		partnersIn: Array<string>,
+		partnersOut: Array<string>
+	) {
+		this.machine = machine;
+		this.port = port;
+		this.timestamp = timestamp;
+		this.partnersIn = partnersIn || [];
+		this.partnersOut = partnersOut || [];
+	}
+
+	toEvent(): Event {
+		return new Event(this.machine, this.timestamp, this.port, {
+			in: this.partnersIn,
+			out: this.partnersOut
+		});
+	}
 }
 
 export default LogEntryOverlay;

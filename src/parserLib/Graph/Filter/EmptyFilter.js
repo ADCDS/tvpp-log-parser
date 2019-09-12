@@ -1,14 +1,12 @@
+// @flow
 import Filter from "./Filter";
 import FilterResult from "./Results/FilterResult";
+import GraphHolder from "../GraphHolder";
 
 class EmptyFilter extends Filter {
-  constructor(options) {
-    super(options);
-  }
-
-  applyFilter(graphHolder) {
-    return new FilterResult(graphHolder, EmptyFilter);
-  }
+	applyFilter(graphHolder: GraphHolder): FilterResult<Filter> {
+		return new FilterResult(graphHolder);
+	}
 }
 
 export default EmptyFilter;

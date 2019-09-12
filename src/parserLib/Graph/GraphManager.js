@@ -1,176 +1,184 @@
+// @flow
 import GraphHolder from "./GraphHolder";
+import TVPPLog from "../TVPPLog";
+import Machine from "../Machine";
 
 class GraphManager {
-  constructor(logEntity) {
-    this.logEntity = logEntity;
-    this.currentEventIndex = 0;
-    this.currentSourceIndex = 0;
-    this.graphHolder = new GraphHolder(Object.keys(this.logEntity.machines));
-  }
+	logEntity: TVPPLog;
+	currentEventIndex: number;
+	currentSourceIndex: number;
+	graphHolder: GraphHolder;
 
-  syncMachines() {
-    this.graphHolder = new GraphHolder(Object.keys(this.logEntity.machines));
-  }
+	constructor(logEntity: TVPPLog) {
+		this.logEntity = logEntity;
+		this.currentEventIndex = 0;
+		this.currentSourceIndex = 0;
+		this.graphHolder = new GraphHolder(
+			Object.keys(this.logEntity.machines)
+		);
+	}
 
-  goToNextState() {
-    if (this.logEntity.options.iterateTroughServerApparition) {
-      this.goToNextServerApparition();
-    } else {
-      this.goToNextEvent();
-    }
-  }
+	syncMachines(): void {
+		this.graphHolder = new GraphHolder(
+			Array.from(this.logEntity.machines.keys())
+		);
+	}
 
-  goToPrevState() {
-    if (this.logEntity.options.iterateTroughServerApparition) {
-      this.goToPrevServerApparition();
-    } else {
-      this.goToPrevEvent();
-    }
-  }
+	goToNextState(): void {
+		if (this.logEntity.options.iterateTroughServerApparition) {
+			this.goToNextServerApparition();
+		} else {
+			this.goToNextEvent();
+		}
+	}
 
-  goToAbsoluteServerApparition(index) {
-    if (
-      this.currentSourceIndex >= this.logEntity.sourceApparitionLocations.length
-    )
-      throw new Error(
-        `goToNextServerApparition Invalid index: ${this.currentSourceIndex}`
-      );
+	goToPrevState(): void {
+		if (this.logEntity.options.iterateTroughServerApparition) {
+			this.goToPrevServerApparition();
+		} else {
+			this.goToPrevEvent();
+		}
+	}
 
-    this.syncMachines();
-    this.currentSourceIndex = index;
+	goToAbsoluteServerApparition(index: number): void {
+		if (
+			this.currentSourceIndex >=
+			this.logEntity.sourceApparitionLocations.length
+		)
+			throw new Error(
+				`goToNextServerApparition Invalid index: ${this.currentSourceIndex}`
+			);
 
-    // TODO improve this
-    if (index !== 0) {
-      this.currentEventIndex = this.logEntity.sourceApparitionLocations[
-        this.currentSourceIndex - 1
-      ];
-      const nextEventIndex = this.logEntity.sourceApparitionLocations[
-        this.currentSourceIndex
-      ];
-      this.goToAbsoluteEventState(nextEventIndex);
-    } else {
-      const nextEventIndex = this.logEntity.sourceApparitionLocations[
-        this.currentSourceIndex
-      ];
-      this.goToAbsoluteEventState(nextEventIndex);
-    }
-  }
+		this.syncMachines();
+		this.currentSourceIndex = index;
 
-  goToNextServerApparition() {
-    if (
-      this.currentSourceIndex >= this.logEntity.sourceApparitionLocations.length
-    )
-      throw new Error(
-        `goToNextServerApparition Invalid index: ${this.currentSourceIndex}`
-      );
+		// TODO improve this
+		if (index !== 0) {
+			this.currentEventIndex = this.logEntity.sourceApparitionLocations[
+				this.currentSourceIndex - 1
+			];
+			const nextEventIndex = this.logEntity.sourceApparitionLocations[
+				this.currentSourceIndex
+			];
+			this.goToAbsoluteEventState(nextEventIndex);
+		} else {
+			const nextEventIndex = this.logEntity.sourceApparitionLocations[
+				this.currentSourceIndex
+			];
+			this.goToAbsoluteEventState(nextEventIndex);
+		}
+	}
 
-    this.syncMachines();
-    this.currentEventIndex = this.logEntity.sourceApparitionLocations[
-      this.currentSourceIndex++
-    ];
-    const nextEventIndex = this.logEntity.sourceApparitionLocations[
-      this.currentSourceIndex
-    ];
-    this.goToAbsoluteEventState(nextEventIndex);
-  }
+	goToNextServerApparition(): void {
+		if (
+			this.currentSourceIndex >=
+			this.logEntity.sourceApparitionLocations.length
+		)
+			throw new Error(
+				`goToNextServerApparition Invalid index: ${this.currentSourceIndex}`
+			);
 
-  goToPrevServerApparition() {
-    if (this.currentSourceIndex <= 0)
-      throw new Error(
-        `goToPrevServerApparition Invalid index: ${this.currentSourceIndex}`
-      );
+		this.syncMachines();
+		this.currentEventIndex = this.logEntity.sourceApparitionLocations[
+			this.currentSourceIndex++
+		];
+		const nextEventIndex = this.logEntity.sourceApparitionLocations[
+			this.currentSourceIndex
+		];
+		this.goToAbsoluteEventState(nextEventIndex);
+	}
 
-    this.syncMachines();
-    const nextEventIndex = this.logEntity.sourceApparitionLocations[
-      this.currentSourceIndex--
-    ];
-    this.currentEventIndex = this.logEntity.sourceApparitionLocations[
-      this.currentSourceIndex
-    ];
-    this.goToAbsoluteEventState(nextEventIndex);
-  }
+	goToPrevServerApparition(): void {
+		if (this.currentSourceIndex <= 0)
+			throw new Error(
+				`goToPrevServerApparition Invalid index: ${this.currentSourceIndex}`
+			);
 
-  goToNextEvent() {
-    const currentEvent = this.logEntity.eventList[this.currentEventIndex];
-    if (this.currentEventIndex >= this.logEntity.eventList.length) return;
-    this.currentEventIndex += 1;
+		this.syncMachines();
+		const nextEventIndex = this.logEntity.sourceApparitionLocations[
+			this.currentSourceIndex--
+		];
+		this.currentEventIndex = this.logEntity.sourceApparitionLocations[
+			this.currentSourceIndex
+		];
+		this.goToAbsoluteEventState(nextEventIndex);
+	}
 
-    const currentMachine = this.logEntity.getMachineName(
-      currentEvent.machine,
-      currentEvent.port
-    );
+	goToNextEvent(): void {
+		const currentEvent = this.logEntity.eventList[this.currentEventIndex];
+		if (this.currentEventIndex >= this.logEntity.eventList.length) return;
+		this.currentEventIndex += 1;
 
-    // Outgoing edges
-    if (currentEvent.state.out.length > 0) {
-      currentEvent.state.out.forEach(targetMachine => {
-        if (this.graphHolder.hasNode(targetMachine)) {
-          this.graphHolder.addEdge(currentMachine, targetMachine);
-        } else if (this.logEntity.options.forceAddGhostNodes) {
-          // One of the machines is mentioned by another, but it doesn't have a single log of its own
-          console.log(
-            `Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
-          );
-          this.graphHolder.insertNode(targetMachine);
-          this.graphHolder.addEdge(currentMachine, targetMachine);
-          this.logEntity.addRawMachine(targetMachine);
-        }
-      });
-    }
+		const currentMachine = this.logEntity.getMachineName(
+			currentEvent.address,
+			currentEvent.port
+		);
 
-    // Incoming edges
-    if (currentEvent.state.in.length > 0) {
-      currentEvent.added.in.forEach(targetMachine => {
-        if (this.graphHolder.hasNode(targetMachine)) {
-          this.graphHolder.addEdge(targetMachine, currentMachine);
-        } else if (this.logEntity.options.forceAddGhostNodes) {
-          // One of the machines is mentioned by another, but it doesn't have a single log of its own
-          console.log(
-            `Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
-          );
-          this.graphHolder.insertNode(targetMachine);
-          this.graphHolder.addEdge(targetMachine, currentMachine);
-          this.logEntity.addRawMachine(targetMachine);
-        }
-      });
-    }
-  }
+		// Outgoing edges
+		if (currentEvent.state.out.length > 0) {
+			currentEvent.state.out.forEach(targetMachine => {
+				if (this.graphHolder.hasNode(targetMachine)) {
+					this.graphHolder.addEdge(currentMachine, targetMachine);
+				} else if (this.logEntity.options.forceAddGhostNodes) {
+					// One of the machines is mentioned by another, but it doesn't have a single log of its own
+					console.log(
+						`Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
+					);
+					this.graphHolder.insertNode(targetMachine);
+					this.graphHolder.addEdge(currentMachine, targetMachine);
+					this.logEntity.addRawMachine(targetMachine);
+				}
+			});
+		}
 
-  // TODO THIS
-  goToPrevEvent() {
-    if (this.currentEventIndex === 0) return;
-    this.currentEventIndex -= 1;
-  }
+		// Incoming edges
+		if (currentEvent.state.in.length > 0) {
+			currentEvent.state.in.forEach(targetMachine => {
+				if (this.graphHolder.hasNode(targetMachine)) {
+					this.graphHolder.addEdge(targetMachine, currentMachine);
+				} else if (this.logEntity.options.forceAddGhostNodes) {
+					// One of the machines is mentioned by another, but it doesn't have a single log of its own
+					console.log(
+						`Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
+					);
+					this.graphHolder.insertNode(targetMachine);
+					this.graphHolder.addEdge(targetMachine, currentMachine);
+					this.logEntity.addRawMachine(targetMachine);
+				}
+			});
+		}
+	}
 
-  goToAbsoluteEventState(statePos) {
-    if (this.currentEventIndex >= this.logEntity.eventList.length) {
-      // Requested position is beyond log size
-      statePos = this.logEntity.eventList.length - 1;
-    }
-    if (statePos < 0) statePos = 0;
+	goToAbsoluteEventState(statePos: number): void {
+		if (this.currentEventIndex >= this.logEntity.eventList.length) {
+			// Requested position is beyond log size
+			statePos = this.logEntity.eventList.length - 1;
+		}
+		if (statePos < 0) statePos = 0;
 
-    if (statePos < this.currentEventIndex) {
-      while (this.currentEventIndex !== statePos) {
-        this.goToPrevEvent();
-      }
-    } else if (statePos > this.currentEventIndex) {
-      while (this.currentEventIndex !== statePos) {
-        this.goToNextEvent();
-      }
-    }
-  }
+		if (statePos < this.currentEventIndex) {
+			while (this.currentEventIndex !== statePos) {
+				this.goToPrevEvent();
+			}
+		} else if (statePos > this.currentEventIndex) {
+			while (this.currentEventIndex !== statePos) {
+				this.goToNextEvent();
+			}
+		}
+	}
 
-  goToLastEventState() {
-    while (this.currentEventIndex < this.logEntity.eventList.length)
-      this.goToNextEvent();
-  }
+	goToLastEventState(): void {
+		while (this.currentEventIndex < this.logEntity.eventList.length)
+			this.goToNextEvent();
+	}
 
-  getMachines() {
-    return this.logEntity.machines;
-  }
+	getMachines(): Map<string, Machine> {
+		return this.logEntity.machines;
+	}
 
-  getGraphHolder() {
-    return this.graphHolder;
-  }
+	getGraphHolder(): GraphHolder {
+		return this.graphHolder;
+	}
 }
 
 export default GraphManager;

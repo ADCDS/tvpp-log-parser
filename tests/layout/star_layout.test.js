@@ -3,7 +3,7 @@ import TVPPLog from "../../src/parserLib/TVPPLog";
 import GraphManager from "../../src/parserLib/Graph/GraphManager";
 import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserPerformance";
 import RingLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayout";
-import RingLayeredLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayeredLayout";
+import RingLayeredLayout from "../../src/parserLib/Graph/Visualizer/Layout/Tree/RingLayeredLayout";
 import DijkstraFilter from "../../src/parserLib/Graph/Filter/Tree/DijkstraFilter";
 
 test("starLayoutTest", async () => {

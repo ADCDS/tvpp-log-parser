@@ -1,135 +1,149 @@
+// @flow
 import Machine from "./Machine";
+import LogEntryOverlay from "./Log/Overlay/LogEntryOverlay";
+import LogEntryPerformance from "./Log/Performance/LogEntryPerformance";
 
 class TVPPLog {
-  constructor(options) {
-    const defaultOptions = {
-      discriminateByPort: false,
-      forceAddGhostNodes: false,
-      iterateTroughServerApparition: true
-    };
+	options: { [string]: any };
+	machines: Map<string, Machine>;
+	eventList: Array<Event>;
+	sourceMachineKey: string;
+	sourceApparitionLocations: Array<number>;
 
-    this.options = Object.assign(defaultOptions, options);
+	constructor(options) {
+		const defaultOptions = {
+			discriminateByPort: false,
+			forceAddGhostNodes: false,
+			iterateTroughServerApparition: true
+		};
 
-    this.eventList = [];
-    this.machines = {};
+		this.options = Object.assign(defaultOptions, options);
 
-    this.sourceMachineKey = null;
-    this.sourceApparitionLocations = [];
-  }
+		this.eventList = [];
+		this.machines = new Map<string, Machine>();
 
-  /**
-   *
-   * @param entries
-   */
-  addOverlayEntries(entries) {
-    this.sourceMachineKey = this.getMachineName(
-      entries[0].machine,
-      entries[0].port
-    );
+		this.sourceMachineKey = null;
+		this.sourceApparitionLocations = [];
+	}
 
-    let iterNum = 0;
-    entries.forEach(logEntry => {
-      const currMachineName = this.getMachineName(
-        logEntry.machine,
-        logEntry.port
-      );
-      if (currMachineName === this.sourceMachineKey)
-        this.sourceApparitionLocations.push(iterNum);
+	addOverlayEntries(entries: Array<LogEntryOverlay>) {
+		this.sourceMachineKey = this.getMachineName(
+			entries[0].machine,
+			entries[0].port
+		);
 
-      const currEvent = logEntry.toEvent();
+		let iterNum = 0;
+		entries.forEach(logEntry => {
+			const currMachineName = this.getMachineName(
+				logEntry.machine,
+				logEntry.port
+			);
+			if (currMachineName === this.sourceMachineKey)
+				this.sourceApparitionLocations.push(iterNum);
 
-      // Rename machine based on the configuration of TVPPLog
-      ["in", "out"].forEach(type => {
-        currEvent.state[type] = currEvent.state[type].map(el => {
-          return this.getMachineName(el.address, el.port);
-        });
-      });
+			const currEvent = logEntry.toEvent();
 
-      if (this.hasMachine(logEntry.machine, logEntry.port)) {
-        // If it exists, we need to check its latest state
-        const machineRef = this.getMachine(logEntry.machine, logEntry.port);
+			// Rename address based on the configuration of TVPPLog
+			["in", "out"].forEach(type => {
+				currEvent.state[type] = currEvent.state[type].map(el => {
+					return this.getMachineName(el.address, el.port);
+				});
+			});
 
-        // If we do, lets check the latest event state
-        const latestEvent = machineRef.events[machineRef.events.length - 1];
-        // currEvent.compareWithOldEvent(latestEvent);
-        machineRef.addEvent(currEvent);
-      } else {
-        // No entry, this the first time we are seeing this machine on the logs
-        // This is the first event, no need to remove nodes
-        currEvent.added = {
-          in: currEvent.state.in,
-          out: currEvent.state.out
-        };
+			if (this.hasMachine(logEntry.machine, logEntry.port)) {
+				// If it exists, we need to check its latest state
+				const machineRef = this.getMachine(
+					logEntry.machine,
+					logEntry.port
+				);
 
-        // Create the machine reference with the first event
-        this.addMachine(logEntry.machine, logEntry.port, [currEvent]);
-      }
-      this.eventList.push(currEvent);
-      iterNum++;
-    });
-  }
+				// If we do, lets check the latest event state
+				const latestEvent =
+					machineRef.events[machineRef.events.length - 1];
+				// currEvent.compareWithOldEvent(latestEvent);
+				machineRef.addEvent(currEvent);
+			} else {
+				// No entry, this the first time we are seeing this address on the logs
+				// This is the first event, no need to remove nodes
+				currEvent.added = {
+					in: currEvent.state.in,
+					out: currEvent.state.out
+				};
 
-  addRawMachine(machineName, events) {
-    this.machines[machineName] = new Machine(machineName, events);
-  }
+				// Create the address reference with the first event
+				this.addMachine(logEntry.machine, logEntry.port, [currEvent]);
+			}
+			this.eventList.push(currEvent);
+			iterNum++;
+		});
+	}
 
-  hasRawMachine(machineName) {
-    return Object.prototype.hasOwnProperty.call(this.machines, machineName);
-  }
+	addRawMachine(machineName: string, events: Array<Event>) {
+		this.machines.set(machineName, new Machine(machineName, events));
+	}
 
-  getRawMachine(machineName) {
-    return this.machines[machineName];
-  }
+	hasRawMachine(machineName: string) {
+		return Object.prototype.hasOwnProperty.call(this.machines, machineName);
+	}
 
-  addMachine(address, port, events) {
-    const machineName = this.getMachineName(address, port);
-    this.machines[machineName] = new Machine(machineName, events);
-  }
+	getRawMachine(machineName: string) {
+		return this.machines.get(machineName);
+	}
 
-  getMachineName(address, port) {
-    return address + (this.options.discriminateByPort ? `:${port}` : "");
-  }
+	addMachine(address: string, port: number, events: Array<Event>) {
+		const machineName = this.getMachineName(address, port);
+		this.machines.set(machineName, new Machine(machineName, events));
+	}
 
-  hasMachine(address, port) {
-    const machineName = this.getMachineName(address, port);
-    return Object.prototype.hasOwnProperty.call(this.machines, machineName);
-  }
+	getMachineName(address: string, port: number) {
+		return address + (this.options.discriminateByPort ? `:${port}` : "");
+	}
 
-  getMachine(address, port) {
-    const machineName = this.getMachineName(address, port);
-    return this.machines[machineName];
-  }
+	hasMachine(address: string, port: number) {
+		const machineName = this.getMachineName(address, port);
+		return this.machines.has(machineName)
+	}
 
-  addPerformanceEntries(entries) {
-    const foundBandwidths = {};
-    entries.forEach(logEntry => {
-      if (!this.hasMachine(logEntry.machine, logEntry.port)) {
-        this.addMachine(logEntry.machine, logEntry.port);
-      }
+	getMachine(address: string, port: number) {
+		const machineName = this.getMachineName(address, port);
+		return this.machines.get(machineName);
+	}
 
-      const machineObj = this.getMachine(logEntry.machine, logEntry.port);
-      machineObj.addStatus(logEntry);
+	addPerformanceEntries(entries: Array<LogEntryPerformance>) {
+		const foundBandwidths = {};
+		entries.forEach(logEntry => {
+			if (!this.hasMachine(logEntry.machine, logEntry.port)) {
+				this.addMachine(logEntry.machine, logEntry.port);
+			}
 
-      if (Object.prototype.hasOwnProperty.call(logEntry, "bandwidth")) {
-        foundBandwidths[logEntry.bandwidth] = true;
-        if (
-          Object.prototype.hasOwnProperty.call(machineObj, "bandwidth") &&
-          machineObj.bandwidth !== null &&
-          machineObj.bandwidth !== logEntry.bandwidth
-        ) {
-          throw new `Machine ${machineObj.address} bandwidth from ${machineObj.bandwidth} to ${logEntry.bandwidth} changed at line ${logEntry.logId}`();
-        }
-        machineObj.bandwidth = logEntry.bandwidth;
-      }
-    });
-    const bandwidths = Object.keys(foundBandwidths)
-      .sort()
-      .map(Number);
-    Object.keys(this.machines).forEach(machineKey => {
-      const machine = this.machines[machineKey];
-      machine.bandwidthClassification = bandwidths.indexOf(machine.bandwidth);
-    });
-  }
+			const machineObj = this.getMachine(logEntry.machine, logEntry.port);
+			machineObj.addStatus(logEntry);
+
+			if (Object.prototype.hasOwnProperty.call(logEntry, "bandwidth")) {
+				foundBandwidths[logEntry.bandwidth] = true;
+				if (
+					Object.prototype.hasOwnProperty.call(
+						machineObj,
+						"bandwidth"
+					) &&
+					machineObj.bandwidth !== null &&
+					machineObj.bandwidth !== logEntry.bandwidth
+				) {
+					throw new `Machine ${machineObj.address} bandwidth from ${machineObj.bandwidth} to ${logEntry.bandwidth} changed at line ${logEntry.logId}`();
+				}
+				machineObj.bandwidth = logEntry.bandwidth;
+			}
+		});
+		const bandwidths = Object.keys(foundBandwidths)
+			.sort()
+			.map(Number);
+
+		for(let machine of this.machines.values()){
+			machine.bandwidthClassification = bandwidths.indexOf(
+				machine.bandwidth
+			);
+		}
+	}
 }
 
 export default TVPPLog;

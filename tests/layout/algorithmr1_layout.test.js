@@ -3,9 +3,9 @@ import TVPPLog from "../../src/parserLib/TVPPLog";
 import GraphManager from "../../src/parserLib/Graph/GraphManager";
 import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserPerformance";
 import RingLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayout";
-import RingLayeredLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayeredLayout";
+import RingLayeredLayout from "../../src/parserLib/Graph/Visualizer/Layout/Tree/RingLayeredLayout";
 import SpringLayout from "../../src/parserLib/Graph/Visualizer/Layout/SpringLayout";
-import AlgorithmR1 from "../../src/parserLib/Graph/Visualizer/Layout/AlgorithmR1";
+import AlgorithmR1 from "../../src/parserLib/Graph/Visualizer/Layout/Tree/AlgorithmR1";
 import DijkstraFilter from "../../src/parserLib/Graph/Filter/Tree/DijkstraFilter";
 
 test("algorithmR1LayoutTest", async () => {

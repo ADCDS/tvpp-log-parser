@@ -1,176 +1,167 @@
+// @flow
 import Layout from "./Layout";
+import FilterResult from "../../Filter/Results/FilterResult";
+import Machine from "../../../Machine";
 
 class SpringLayout extends Layout {
-  constructor(filterResult, machines, options) {
-    const defaultOptions = {
-      c1: 2,
-      c2: 1,
-      c3: 1,
-      c4: 0.1,
-      drawUndefinedNodes: false
-    };
+	constructor(
+		filterResult: FilterResult,
+		machines: Map<string, Machine>,
+		options: { [string]: any }
+	) {
+		const defaultOptions = {
+			c1: 2,
+			c2: 1,
+			c3: 1,
+			c4: 0.1,
+			drawUndefinedNodes: false
+		};
 
-    options = Object.assign(defaultOptions, options);
+		options = Object.assign(defaultOptions, options);
 
-    super(filterResult, machines, options);
-  }
+		super(filterResult, machines, options);
+	}
 
-  calculateForcesOnNode(machineKey) {
-    const resultantForce = { x: 0, y: 0 };
-    const edges = this.graphHolder.getEdges(machineKey);
+	calculateForcesOnNode(machineKey: string): void {
+		const nodeHolderElement = this.nodeHolder.get(machineKey);
+		const resultantForce = { x: 0, y: 0 };
+		const edges = this.graphHolder.getEdges(machineKey);
 
-    const adjacentVertices = Object.keys(edges).filter(el => {
-      return edges[el];
-    });
+		const adjacentVertices = Object.keys(edges).filter(el => {
+			return edges[el];
+		});
 
-    adjacentVertices.forEach(adjacentMachine => {
-      const d = Math.sqrt(
-        Math.pow(
-          this.nodeHolder[machineKey].x - this.nodeHolder[adjacentMachine].x,
-          2
-        ) +
-          Math.pow(
-            this.nodeHolder[machineKey].y - this.nodeHolder[adjacentMachine].y,
-            2
-          )
-      );
-      if (d === 0) return;
+		adjacentVertices.forEach(adjacentMachine => {
+			const adjacentNodeHolderElement = this.nodeHolder.get(
+				adjacentMachine
+			);
+			const d = Math.sqrt(
+				Math.pow(nodeHolderElement.x - adjacentNodeHolderElement.x, 2) +
+					Math.pow(
+						nodeHolderElement.y - adjacentNodeHolderElement.y,
+						2
+					)
+			);
+			if (d === 0) return;
 
-      const force = this.options.c1 * Math.log(d / this.options.c2);
+			const force = this.options.c1 * Math.log(d / this.options.c2);
 
-      // get the direction where the force is applied
-      const dir = {
-        x:
-          (this.nodeHolder[adjacentMachine].x - this.nodeHolder[machineKey].x) /
-          d,
-        y:
-          (this.nodeHolder[adjacentMachine].y - this.nodeHolder[machineKey].y) /
-          d
-      };
+			// get the direction where the force is applied
+			const dir = {
+				x: (adjacentNodeHolderElement.x - nodeHolderElement.x) / d,
+				y: (adjacentNodeHolderElement.y - nodeHolderElement.y) / d
+			};
 
-      // apply the force in the normalized vector
-      dir.x *= force;
-      dir.y *= force;
+			// apply the force in the normalized vector
+			dir.x *= force;
+			dir.y *= force;
 
-      resultantForce.x += dir.x;
-      resultantForce.y += dir.y;
-    });
+			resultantForce.x += dir.x;
+			resultantForce.y += dir.y;
+		});
 
-    // Forces that repel
-    const nonAdjacentVertices = Object.keys(edges).filter(el => {
-      return !edges[el];
-    });
-    nonAdjacentVertices.forEach(nonAdjacentMachine => {
-      const d = Math.sqrt(
-        Math.pow(
-          this.nodeHolder[machineKey].x - this.nodeHolder[nonAdjacentMachine].x,
-          2
-        ) +
-          Math.pow(
-            this.nodeHolder[machineKey].y -
-              this.nodeHolder[nonAdjacentMachine].y,
-            2
-          )
-      );
-      if (d === 0) return;
+		// Forces that repel
+		const nonAdjacentVertices = Object.keys(edges).filter(el => {
+			return !edges[el];
+		});
 
-      const force = this.options.c3 / Math.pow(d, 2);
+		nonAdjacentVertices.forEach(nonAdjacentMachine => {
+			const nonAdjacentNodeHolderElement = this.nodeHolder.get(
+				nonAdjacentMachine
+			);
+			const d = Math.sqrt(
+				Math.pow(
+					nodeHolderElement.x - nonAdjacentNodeHolderElement.x,
+					2
+				) +
+					Math.pow(
+						nodeHolderElement.y - nonAdjacentNodeHolderElement.y,
+						2
+					)
+			);
+			if (d === 0) return;
 
-      // get the direction where the force is applied
-      const dir = {
-        x:
-          (this.nodeHolder[machineKey].x -
-            this.nodeHolder[nonAdjacentMachine].x) /
-          d,
-        y:
-          (this.nodeHolder[machineKey].y -
-            this.nodeHolder[nonAdjacentMachine].y) /
-          d
-      };
+			const force = this.options.c3 / Math.pow(d, 2);
 
-      // apply the force in the normalized vector
-      dir.x *= force;
-      dir.y *= force;
+			// get the direction where the force is applied
+			const dir = {
+				x: (nodeHolderElement.x - nonAdjacentNodeHolderElement.x) / d,
+				y: (nodeHolderElement.y - nonAdjacentNodeHolderElement.y) / d
+			};
 
-      resultantForce.x += dir.x;
-      resultantForce.y += dir.y;
-    });
+			// apply the force in the normalized vector
+			dir.x *= force;
+			dir.y *= force;
 
-    const oldX = this.nodeHolder[machineKey].x;
-    const oldY = this.nodeHolder[machineKey].y;
+			resultantForce.x += dir.x;
+			resultantForce.y += dir.y;
+		});
 
-    resultantForce.x *= this.options.c4;
-    resultantForce.y *= this.options.c4;
+		resultantForce.x *= this.options.c4;
+		resultantForce.y *= this.options.c4;
 
-    this.nodeHolder[machineKey].ResX =
-      this.nodeHolder[machineKey].x + resultantForce.x;
-    this.nodeHolder[machineKey].ResY =
-      this.nodeHolder[machineKey].y + resultantForce.y;
+		nodeHolderElement.ResX = nodeHolderElement.x + resultantForce.x;
+		nodeHolderElement.ResY = nodeHolderElement.y + resultantForce.y;
+	}
 
-    const newX = this.nodeHolder[machineKey].x;
-    const newY = this.nodeHolder[machineKey].y;
+	updatePositions(): void {
+		super.updatePositions();
+		let i = 0;
 
-    console.log(
-      `SpringLayout: ${machineKey}: OLD {x: ${oldX}, y: ${oldY}}, NEW {x: ${newX}, y: ${newY}}`
-    );
-  }
+		// Put nodes at random positions, initially
+		for (let node of this.nodeHolder.values()) {
+			node.x = Math.floor(Math.random() * 1000);
+			node.y = Math.floor(Math.random() * 1000);
+		}
 
-  updatePositions() {
-    super.updatePositions();
-    let i = 0;
+		while (i++ < this.options.iterNum) {
+			for(let machineKey of this.nodeHolder.keys()) {
+				this.calculateForcesOnNode(machineKey);
+			}
 
-    // Put nodes at random positions, initially
-    Object.keys(this.nodeHolder).forEach(machineKey => {
-      this.nodeHolder[machineKey].x = Math.floor(Math.random() * 1000);
-      this.nodeHolder[machineKey].y = Math.floor(Math.random() * 1000);
-    });
-    while (i++ < this.options.iterNum) {
-      Object.keys(this.nodeHolder).forEach(machineKey => {
-        this.calculateForcesOnNode(machineKey);
-      });
-      Object.keys(this.nodeHolder).forEach(machineKey => {
-        this.nodeHolder[machineKey].x = this.nodeHolder[machineKey].ResX;
-        this.nodeHolder[machineKey].y = this.nodeHolder[machineKey].ResY;
-      });
-    }
-  }
+			for(let node of this.nodeHolder.values()) {
+				node.x = node.ResX;
+				node.y = node.ResY;
+			}
+		}
+	}
 
-  static getOptions() {
-    let options = super.getOptions();
-    options = Object.assign(options, {
-      c1: {
-        name: "C1",
-        type: Number,
-        default: 2
-      },
-      c2: {
-        name: "C2",
-        type: Number,
-        default: 1
-      },
-      c3: {
-        name: "C3",
-        type: Number,
-        default: 1
-      },
-      c4: {
-        name: "C4",
-        type: Number,
-        default: 0.1
-      },
-      iterNum: {
-        name: "Iteration Number",
-        type: Number,
-        default: 100
-      },
-      drawUndefinedNodes: {
-        name: "Draw undefined nodes",
-        type: Boolean,
-        default: false
-      }
-    });
-    return options;
-  }
+	static getOptions(): { [string]: any } {
+		let options = super.getOptions();
+		options = Object.assign(options, {
+			c1: {
+				name: "C1",
+				type: Number,
+				default: 2
+			},
+			c2: {
+				name: "C2",
+				type: Number,
+				default: 1
+			},
+			c3: {
+				name: "C3",
+				type: Number,
+				default: 1
+			},
+			c4: {
+				name: "C4",
+				type: Number,
+				default: 0.1
+			},
+			iterNum: {
+				name: "Iteration Number",
+				type: Number,
+				default: 100
+			},
+			drawUndefinedNodes: {
+				name: "Draw undefined nodes",
+				type: Boolean,
+				default: false
+			}
+		});
+		return options;
+	}
 }
 
 export default SpringLayout;
