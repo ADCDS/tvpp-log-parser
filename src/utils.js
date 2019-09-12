@@ -68,14 +68,28 @@ class Utils {
 	static getFiltersByType(type) {
 		const retFilters = [];
 		Object.keys(this.filters).forEach(el => {
-			if (
-				this.filters[el].type.prototype instanceof type ||
-				this.filters[el].type === type
-			)
-				retFilters.push(this.filters[el]);
+			if (this.filters[el].type.prototype instanceof type || this.filters[el].type === type) retFilters.push(this.filters[el]);
 		});
 		return retFilters;
 	}
+
+	static async readLog(filePath) {
+		return new Promise((resolve, reject) => {
+			fs.readFile(filePath, (err, fd) => {
+				if (err) {
+					if (err.code === "ENOENT") {
+						console.error("file doesnt exists");
+						return;
+					}
+
+					reject(err);
+				}
+
+				resolve(fd.toString("utf8").split("\n"));
+			});
+		});
+	}
 }
+
 
 export default Utils;

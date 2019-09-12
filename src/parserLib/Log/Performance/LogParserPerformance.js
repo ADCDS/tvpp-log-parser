@@ -1,40 +1,16 @@
 // @flow
 import LogEntryPerformance from "./LogEntryPerformance";
 
-const fs = require("fs");
-
 class LogParserPerformance {
-	static async readLog(filePath) {
-		// Lets read the entire file at first, todo read chunk by chunk
-		return new Promise((resolve, reject) => {
-			fs.readFile(filePath, (err, fd) => {
-				if (err) {
-					if (err.code === "ENOENT") {
-						console.error("file doesnt exists");
-						return;
-					}
-
-					reject(err);
-				}
-
-				resolve(fd.toString("utf8").split("\n"));
-			});
-		});
-	}
-
 	static async parse(lineArray, discriminateByPort) {
 		const ret = [];
 		for (let i = 0; i < lineArray.length; i += 1) {
-			if (lineArray[i] !== "")
-				ret.push(this.lineToEntry(i, lineArray[i], discriminateByPort));
+			if (lineArray[i] !== "") ret.push(this.lineToEntry(i, lineArray[i], discriminateByPort));
 		}
 		return ret;
 	}
 
-	static lineToEntry(lineId, line, discriminateByPort) {
-		if (discriminateByPort == null) {
-			discriminateByPort = false;
-		}
+	static lineToEntry(lineId, line) {
 
 		const pieces = line.split(" ");
 		const machine = pieces[0];

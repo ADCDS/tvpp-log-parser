@@ -6,11 +6,7 @@ import TreeLayout from "./TreeLayout";
 import Machine from "../../../../Machine";
 
 class RingLayeredLayout extends TreeLayout {
-	constructor(
-		filterResult: TreeFilterResult,
-		machines: Map<string, Machine>,
-		options: { [string]: any }
-	) {
+	constructor(filterResult: TreeFilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
 		const defaultOptions = {
 			radius: 100,
 			drawUndefinedNodes: false
@@ -37,35 +33,17 @@ class RingLayeredLayout extends TreeLayout {
 		for (let el of this.filterResult.distancesFromSource.value()) {
 			if (el === Infinity) el = -Infinity;
 		}
-		const nodes = this.filterResult.distancesFromSource
-			.keys()
-			.sort((e1, e2) => {
-				return (
-					this.filterResult.distancesFromSource[e1] -
-					this.filterResult.distancesFromSource[e2]
-				);
-			});
+		const nodes = this.filterResult.distancesFromSource.keys().sort((e1, e2) => {
+			return this.filterResult.distancesFromSource[e1] - this.filterResult.distancesFromSource[e2];
+		});
 
-		const highestSourceDistance = this.filterResult.distancesFromSource.get(
-			nodes[nodes.length - 1]
-		);
+		const highestSourceDistance = this.filterResult.distancesFromSource.get(nodes[nodes.length - 1]);
 
 		nodes.forEach(el => {
 			// Treat vertices that are not connected to the source node
-			const distanceFromSourceEl = this.filterResult.distancesFromSource.get(
-				el
-			);
-			if (distanceFromSourceEl === -Infinity)
-				this.filterResult.distancesFromSource.set(
-					el,
-					highestSourceDistance + 1
-				);
-			if (
-				Object.prototype.hasOwnProperty.call(
-					numberOfNodesAtRing,
-					distanceFromSourceEl
-				)
-			) {
+			const distanceFromSourceEl = this.filterResult.distancesFromSource.get(el);
+			if (distanceFromSourceEl === -Infinity) this.filterResult.distancesFromSource.set(el, highestSourceDistance + 1);
+			if (Object.prototype.hasOwnProperty.call(numberOfNodesAtRing, distanceFromSourceEl)) {
 				numberOfNodesAtRing[distanceFromSourceEl]++;
 			} else {
 				numberOfNodesAtRing[distanceFromSourceEl] = 1;
@@ -76,22 +54,15 @@ class RingLayeredLayout extends TreeLayout {
 		nodes.forEach(machineKey => {
 			const node = this.nodeHolder.get(machineKey);
 
-			const distancesFromSourceElement = this.filterResult
-				.distancesFromSource[machineKey];
+			const distancesFromSourceElement = this.filterResult.distancesFromSource[machineKey];
 			node.x =
 				this.options.radius *
 				distancesFromSourceElement *
-				Math.cos(
-					(2 * iterNumRing[distancesFromSourceElement] * Math.PI) /
-						numberOfNodesAtRing[distancesFromSourceElement]
-				);
+				Math.cos((2 * iterNumRing[distancesFromSourceElement] * Math.PI) / numberOfNodesAtRing[distancesFromSourceElement]);
 			node.y =
 				this.options.radius *
 				distancesFromSourceElement *
-				Math.sin(
-					(2 * iterNumRing[distancesFromSourceElement] * Math.PI) /
-						numberOfNodesAtRing[distancesFromSourceElement]
-				);
+				Math.sin((2 * iterNumRing[distancesFromSourceElement] * Math.PI) / numberOfNodesAtRing[distancesFromSourceElement]);
 			iterNumRing[distancesFromSourceElement]++;
 		});
 	}

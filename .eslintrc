@@ -1,26 +1,35 @@
 {
-	"parser": "babel-eslint",
-	"extends": [
-		"airbnb-base",
-		"plugin:flowtype/recommended",
-		"plugin:prettier/recommended",
-		"prettier/flowtype"
+  "parser": "babel-eslint",
+  "extends": [
+	"airbnb-base",
+	"plugin:flowtype/recommended",
+	"plugin:prettier/recommended",
+	"prettier/flowtype"
+  ],
+  "plugins": [
+	"flowtype",
+	"flowtype-errors"
+  ],
+  "env": {
+	"jest": true,
+	"browser": true,
+	"node": true
+  },
+  "rules": {
+	"max-len": ["error", { "code": 150, "ignoreUrls": true }],
+	"flowtype/require-valid-file-annotation": [
+	  2,
+	  "always"
 	],
-	"plugins": [
-		"flowtype",
-		"flowtype-errors"
-	],
-	"env": {
-		"jest": true,
-		"browser": true,
-		"node": true
-	},
-	"rules": {
-    "no-console": "off",
-		"flowtype-errors/show-errors": "error",
-		"no-plusplus": "off",
-		"no-param-reassign": "off",
-		"class-methods-use-this": "off",
-		"no-unused-vars": "off"
-	}
+	"no-restricted-properties": "off",
+	"no-tabs": ["error", {"allowIndentationTabs": true}],
+	"lines-between-class-members": "off",
+	"indent": [2, "tab"],
+	"no-console": "off",
+	"flowtype-errors/show-errors": "error",
+	"no-plusplus": "off",
+	"no-param-reassign": "off",
+	"class-methods-use-this": "off",
+	"no-unused-vars": "off"
+  }
 }

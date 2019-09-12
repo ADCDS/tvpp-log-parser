@@ -1,36 +1,39 @@
 // @flow
+import PerformanceState from "./PerformanceState";
+
 class LogEntryPerformance {
-	constructor(
-		logId,
-		machine,
-		port,
-		pkGen,
-		pkSent,
-		pkRecv,
-		pkOver,
-		requestSent,
-		requestRecv,
-		requestRetries,
-		pkMissed,
-		pkExpected,
-		hopMedio,
-		triesMedio,
-		triesPerRequestMedio,
-		media1,
-		media2,
-		mediaHop,
-		mediaTries,
-		mediaTime,
-		msgTime,
-		bootTime,
-		partnerIn,
-		partnerOut,
-		partnerOutFREE,
-		sizePeerOut,
-		sizePeerOutFREE,
-		bandwidth,
-		ingressRequest
-	) {
+	logId: number;
+	machine: string;
+	port: number;
+	pkGen: number;
+	pkSent: number;
+	pkRecv: number;
+	pkOver: number;
+	requestSent: number;
+	requestRecv: number;
+	requestRetries: number;
+	pkMissed: number;
+	pkExpected: number;
+	hopMedio: number;
+	triesMedio: number;
+	triesPerRequestMedio: number;
+	media1: string;
+	media2: string;
+	mediaHop: number;
+	mediaTries: number;
+	mediaTime: number;
+	msgTime: number;
+	bootTime: number;
+	partnerIn: number;
+	partnerOut: number;
+	partnerOutFREE: number;
+	sizePeerOut: number;
+	sizePeerOutFREE: number;
+	bandwidth: number;
+	ingressRequest: number;
+
+
+	constructor(logId: number, machine: string, port: number, pkGen: number, pkSent: number, pkRecv: number, pkOver: number, requestSent: number, requestRecv: number, requestRetries: number, pkMissed: number, pkExpected: number, hopMedio: number, triesMedio: number, triesPerRequestMedio: number, media1: string, media2: string, mediaHop: number, mediaTries: number, mediaTime: number, msgTime: number, bootTime: number, partnerIn: number, partnerOut: number, partnerOutFREE: number, sizePeerOut: number, sizePeerOutFREE: number, bandwidth: number, ingressRequest: number) {
 		this.logId = logId;
 		this.machine = machine;
 		this.port = port;
@@ -58,8 +61,12 @@ class LogEntryPerformance {
 		this.partnerOutFREE = partnerOutFREE;
 		this.sizePeerOut = sizePeerOut;
 		this.sizePeerOutFREE = sizePeerOutFREE;
-		this.bandwidth = Number(bandwidth);
+		this.bandwidth = bandwidth;
 		this.ingressRequest = ingressRequest;
+	}
+
+	toState(): PerformanceState{
+		return new PerformanceState(this.bandwidth);
 	}
 }
 

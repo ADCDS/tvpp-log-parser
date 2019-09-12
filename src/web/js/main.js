@@ -39,33 +39,15 @@ function createHandler(onLoadCb) {
 	};
 }
 
-document
-	.getElementById("logOverlayFile")
-	.addEventListener(
-		"change",
-		createHandler(DOMManager.parseOverlayLog),
-		false
-	);
+document.getElementById("logOverlayFile").addEventListener("change", createHandler(DOMManager.parseOverlayLog), false);
 
-document
-	.getElementById("logPerformanceFile")
-	.addEventListener(
-		"change",
-		createHandler(DOMManager.parsePerformanceLog),
-		false
-	);
+document.getElementById("logPerformanceFile").addEventListener("change", createHandler(DOMManager.parsePerformanceLog), false);
 
-document
-	.getElementById("filterType")
-	.addEventListener("change", DOMManager.handleMainFilterChange);
+document.getElementById("filterType").addEventListener("change", DOMManager.handleMainFilterChange);
 
-document
-	.getElementById("layoutType")
-	.addEventListener("change", DOMManager.handleLayoutChange);
+document.getElementById("layoutType").addEventListener("change", DOMManager.handleLayoutChange);
 
-document
-	.getElementById("selectedEventNumber")
-	.addEventListener("change", DOMManager.handleSelectedEventChange);
+document.getElementById("selectedEventNumber").addEventListener("change", DOMManager.handleSelectedEventChange);
 
 Array.from(document.getElementsByClassName("tablinks")).forEach(el => {
 	el.addEventListener("click", DOMManager.handleStateGraphChange);
@@ -77,9 +59,7 @@ document.addEventListener("click", e => {
 	}
 });
 
-document
-	.getElementById("machineListTable")
-	.addEventListener("click", DOMManager.handleMachineListButtonClick);
+document.getElementById("machineListTable").addEventListener("click", DOMManager.handleMachineListButtonClick);
 
 document.getElementById("nextEvent").addEventListener("click", e => {
 	const drawButtonDOM = document.getElementById("draw");
@@ -99,9 +79,7 @@ document.getElementById("prevEvent").addEventListener("click", e => {
 
 document.getElementById("draw").addEventListener("click", draw);
 
-document
-	.getElementById("preserveCurrentLayout")
-	.addEventListener("change", DOMManager.handleLayoutPreservationChange);
+document.getElementById("preserveCurrentLayout").addEventListener("change", DOMManager.handleLayoutPreservationChange);
 
 (() => {
 	window.sigmaPrevious = new Sigma({

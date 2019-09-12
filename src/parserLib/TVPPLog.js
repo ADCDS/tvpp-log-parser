@@ -10,7 +10,7 @@ class TVPPLog {
 	sourceMachineKey: string;
 	sourceApparitionLocations: Array<number>;
 
-	constructor(options) {
+	constructor(options: { [string]: any }) {
 		const defaultOptions = {
 			discriminateByPort: false,
 			forceAddGhostNodes: false,
@@ -27,21 +27,14 @@ class TVPPLog {
 	}
 
 	addOverlayEntries(entries: Array<LogEntryOverlay>) {
-		this.sourceMachineKey = this.getMachineName(
-			entries[0].machine,
-			entries[0].port
-		);
+		this.sourceMachineKey = this.getMachineName(entries[0].machine, entries[0].port);
 
 		let iterNum = 0;
 		entries.forEach(logEntry => {
-			const currMachineName = this.getMachineName(
-				logEntry.machine,
-				logEntry.port
-			);
-			if (currMachineName === this.sourceMachineKey)
-				this.sourceApparitionLocations.push(iterNum);
+			const currMachineName = this.getMachineName(logEntry.machine, logEntry.port);
+			if (currMachineName === this.sourceMachineKey) this.sourceApparitionLocations.push(iterNum);
 
-			const currEvent = logEntry.toEvent();
+			const currEvent = logEntry.toOverlayState();
 
 			// Rename address based on the configuration of TVPPLog
 			["in", "out"].forEach(type => {
@@ -52,24 +45,9 @@ class TVPPLog {
 
 			if (this.hasMachine(logEntry.machine, logEntry.port)) {
 				// If it exists, we need to check its latest state
-				const machineRef = this.getMachine(
-					logEntry.machine,
-					logEntry.port
-				);
-
-				// If we do, lets check the latest event state
-				const latestEvent =
-					machineRef.events[machineRef.events.length - 1];
-				// currEvent.compareWithOldEvent(latestEvent);
-				machineRef.addEvent(currEvent);
+				const machineRef = this.getMachine(logEntry.machine, logEntry.port);
+				machineRef.addOverlayStatus(currEvent);
 			} else {
-				// No entry, this the first time we are seeing this address on the logs
-				// This is the first event, no need to remove nodes
-				currEvent.added = {
-					in: currEvent.state.in,
-					out: currEvent.state.out
-				};
-
 				// Create the address reference with the first event
 				this.addMachine(logEntry.machine, logEntry.port, [currEvent]);
 			}
@@ -101,10 +79,10 @@ class TVPPLog {
 
 	hasMachine(address: string, port: number) {
 		const machineName = this.getMachineName(address, port);
-		return this.machines.has(machineName)
+		return this.machines.has(machineName);
 	}
 
-	getMachine(address: string, port: number) {
+	getMachine(address: string, port: number): Machine {
 		const machineName = this.getMachineName(address, port);
 		return this.machines.get(machineName);
 	}
@@ -117,15 +95,12 @@ class TVPPLog {
 			}
 
 			const machineObj = this.getMachine(logEntry.machine, logEntry.port);
-			machineObj.addStatus(logEntry);
+			machineObj.addPerformanceStatus(logEntry);
 
 			if (Object.prototype.hasOwnProperty.call(logEntry, "bandwidth")) {
 				foundBandwidths[logEntry.bandwidth] = true;
 				if (
-					Object.prototype.hasOwnProperty.call(
-						machineObj,
-						"bandwidth"
-					) &&
+					Object.prototype.hasOwnProperty.call(machineObj, "bandwidth") &&
 					machineObj.bandwidth !== null &&
 					machineObj.bandwidth !== logEntry.bandwidth
 				) {
@@ -138,10 +113,8 @@ class TVPPLog {
 			.sort()
 			.map(Number);
 
-		for(let machine of this.machines.values()){
-			machine.bandwidthClassification = bandwidths.indexOf(
-				machine.bandwidth
-			);
+		for (const machine of this.machines.values()) {
+			machine.bandwidthClassification = bandwidths.indexOf(machine.bandwidth);
 		}
 	}
 }

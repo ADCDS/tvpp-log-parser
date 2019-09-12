@@ -11,14 +11,7 @@ class Node {
 		radius: number
 	};
 
-	constructor(
-		id: string,
-		label: string,
-		x: number,
-		y: number,
-		color: string,
-		size: number
-	) {
+	constructor(id: string, label: string, x: number, y: number, color: string, size: number) {
 		this.id = id;
 		this.label = label;
 		this.x = x;

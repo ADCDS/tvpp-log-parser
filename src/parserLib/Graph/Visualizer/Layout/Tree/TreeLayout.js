@@ -1,8 +1,9 @@
+// @flow
 import Layout from "../Layout";
 import TreeFilterResult from "../../../Filter/Results/TreeFilterResult";
 import Machine from "../../../../Machine";
 
-class TreeLayout extends Layout{
+class TreeLayout extends Layout {
 	filterResult: TreeFilterResult;
 
 	constructor(filterResult: TreeFilterResult, machines: Map<string, Machine>, options: { [p: string]: * }) {

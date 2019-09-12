@@ -1,32 +1,11 @@
 // @flow
 import LogEntryOverlay from "./LogEntryOverlay";
 
-const fs = require("fs");
-
 class LogParserOverlay {
-	static async readLog(filePath) {
-		// Lets read the entire file at first, todo read chunk by chunk
-		return new Promise((resolve, reject) => {
-			fs.readFile(filePath, (err, fd) => {
-				if (err) {
-					if (err.code === "ENOENT") {
-						console.error("file doesnt exists");
-						return;
-					}
-
-					reject(err);
-				}
-
-				resolve(fd.toString("utf8").split("\n"));
-			});
-		});
-	}
-
-	static async parse(lineArray, discriminateByPort) {
+	static async parse(lineArray) {
 		const ret = [];
 		for (let i = 0; i < lineArray.length; i += 1) {
-			if (lineArray[i] !== "")
-				ret.push(this.lineToEntry(lineArray[i], discriminateByPort));
+			if (lineArray[i] !== "") ret.push(this.lineToEntry(lineArray[i]));
 		}
 		return ret;
 	}
@@ -63,13 +42,7 @@ class LogParserOverlay {
 			return { address: addressPort[0], port: addressPort[1] };
 		});
 
-		return new LogEntryOverlay(
-			hostAddress[0],
-			hostAddress[1],
-			timestamp,
-			partnersIn,
-			partnersOut
-		);
+		return new LogEntryOverlay(hostAddress[0], hostAddress[1], timestamp, partnersIn, partnersOut);
 	}
 }
 

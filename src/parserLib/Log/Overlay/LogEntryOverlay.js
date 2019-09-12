@@ -1,5 +1,5 @@
 // @flow
-import Event from "../../Event";
+import OverlayState from "./OverlayState";
 
 class LogEntryOverlay {
 	machine: string;
@@ -8,13 +8,7 @@ class LogEntryOverlay {
 	partnersIn: Array<string>;
 	partnersOut: Array<string>;
 
-	constructor(
-		machine: string,
-		port: number,
-		timestamp: number,
-		partnersIn: Array<string>,
-		partnersOut: Array<string>
-	) {
+	constructor(machine: string, port: number, timestamp: number, partnersIn: Array<string>, partnersOut: Array<string>) {
 		this.machine = machine;
 		this.port = port;
 		this.timestamp = timestamp;
@@ -22,8 +16,8 @@ class LogEntryOverlay {
 		this.partnersOut = partnersOut || [];
 	}
 
-	toEvent(): Event {
-		return new Event(this.machine, this.timestamp, this.port, {
+	toOverlayState(): OverlayState {
+		return new OverlayState(this.timestamp, {
 			in: this.partnersIn,
 			out: this.partnersOut
 		});

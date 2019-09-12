@@ -16,11 +16,7 @@ class Layout {
 	edgesOverride: Map<string, Map<string, Edge>>;
 	options: { [string]: any };
 
-	constructor(
-		filterResult: FilterResult,
-		machines: Map<string, Machine>,
-		options: { [string]: any }
-	) {
+	constructor(filterResult: FilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
 		this.filterResult = filterResult;
 		this.graphHolder = filterResult.graphHolder;
 		this.machines = machines;
@@ -43,43 +39,25 @@ class Layout {
 		this.bandwidths = {};
 
 		// Setup node holders
-		for (let machineKey of machines.keys()) {
-			if (
-				Object.prototype.hasOwnProperty.call(
-					this.machines.get(machineKey),
-					"bandwidthClassification"
-				)
-			) {
+		for (const machineKey of machines.keys()) {
+			if (Object.prototype.hasOwnProperty.call(this.machines.get(machineKey), "bandwidthClassification")) {
 				const node = new Node(machineKey, machineKey);
-				node.color = this.options.colorMap[
-					this.machines.get(machineKey).bandwidthClassification
-				];
+				node.color = this.options.colorMap[this.machines.get(machineKey).bandwidthClassification];
 				node.size = 5;
 
 				this.nodeHolder.set(machineKey, node);
 			} else {
-				throw new Error(
-					`Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`
-				);
+				throw new Error(`Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`);
 			}
 		}
 	}
 
 	updateNodeColors(): void {
-		for (let machineKey of this.machines.keys()) {
-			if (
-				Object.prototype.hasOwnProperty.call(
-					this.machines[machineKey],
-					"bandwidthClassification"
-				)
-			) {
-				this.nodeHolder[machineKey].color = this.options.colorMap[
-					this.machines[machineKey].bandwidthClassification
-				];
+		for (const machineKey of this.machines.keys()) {
+			if (Object.prototype.hasOwnProperty.call(this.machines[machineKey], "bandwidthClassification")) {
+				this.nodeHolder[machineKey].color = this.options.colorMap[this.machines[machineKey].bandwidthClassification];
 			} else {
-				throw new Error(
-					`Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`
-				);
+				throw new Error(`Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`);
 			}
 		}
 	}

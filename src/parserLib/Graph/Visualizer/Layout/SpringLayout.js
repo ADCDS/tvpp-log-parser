@@ -4,11 +4,7 @@ import FilterResult from "../../Filter/Results/FilterResult";
 import Machine from "../../../Machine";
 
 class SpringLayout extends Layout {
-	constructor(
-		filterResult: FilterResult,
-		machines: Map<string, Machine>,
-		options: { [string]: any }
-	) {
+	constructor(filterResult: FilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
 		const defaultOptions = {
 			c1: 2,
 			c2: 1,
@@ -32,15 +28,9 @@ class SpringLayout extends Layout {
 		});
 
 		adjacentVertices.forEach(adjacentMachine => {
-			const adjacentNodeHolderElement = this.nodeHolder.get(
-				adjacentMachine
-			);
+			const adjacentNodeHolderElement = this.nodeHolder.get(adjacentMachine);
 			const d = Math.sqrt(
-				Math.pow(nodeHolderElement.x - adjacentNodeHolderElement.x, 2) +
-					Math.pow(
-						nodeHolderElement.y - adjacentNodeHolderElement.y,
-						2
-					)
+				Math.pow(nodeHolderElement.x - adjacentNodeHolderElement.x, 2) + Math.pow(nodeHolderElement.y - adjacentNodeHolderElement.y, 2)
 			);
 			if (d === 0) return;
 
@@ -66,18 +56,9 @@ class SpringLayout extends Layout {
 		});
 
 		nonAdjacentVertices.forEach(nonAdjacentMachine => {
-			const nonAdjacentNodeHolderElement = this.nodeHolder.get(
-				nonAdjacentMachine
-			);
+			const nonAdjacentNodeHolderElement = this.nodeHolder.get(nonAdjacentMachine);
 			const d = Math.sqrt(
-				Math.pow(
-					nodeHolderElement.x - nonAdjacentNodeHolderElement.x,
-					2
-				) +
-					Math.pow(
-						nodeHolderElement.y - nonAdjacentNodeHolderElement.y,
-						2
-					)
+				Math.pow(nodeHolderElement.x - nonAdjacentNodeHolderElement.x, 2) + Math.pow(nodeHolderElement.y - nonAdjacentNodeHolderElement.y, 2)
 			);
 			if (d === 0) return;
 
@@ -109,17 +90,17 @@ class SpringLayout extends Layout {
 		let i = 0;
 
 		// Put nodes at random positions, initially
-		for (let node of this.nodeHolder.values()) {
+		for (const node of this.nodeHolder.values()) {
 			node.x = Math.floor(Math.random() * 1000);
 			node.y = Math.floor(Math.random() * 1000);
 		}
 
 		while (i++ < this.options.iterNum) {
-			for(let machineKey of this.nodeHolder.keys()) {
+			for (const machineKey of this.nodeHolder.keys()) {
 				this.calculateForcesOnNode(machineKey);
 			}
 
-			for(let node of this.nodeHolder.values()) {
+			for (const node of this.nodeHolder.values()) {
 				node.x = node.ResX;
 				node.y = node.ResY;
 			}

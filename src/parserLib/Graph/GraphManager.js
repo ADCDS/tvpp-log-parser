@@ -13,15 +13,11 @@ class GraphManager {
 		this.logEntity = logEntity;
 		this.currentEventIndex = 0;
 		this.currentSourceIndex = 0;
-		this.graphHolder = new GraphHolder(
-			Object.keys(this.logEntity.machines)
-		);
+		this.graphHolder = new GraphHolder(Object.keys(this.logEntity.machines));
 	}
 
 	syncMachines(): void {
-		this.graphHolder = new GraphHolder(
-			Array.from(this.logEntity.machines.keys())
-		);
+		this.graphHolder = new GraphHolder(Array.from(this.logEntity.machines.keys()));
 	}
 
 	goToNextState(): void {
@@ -41,66 +37,39 @@ class GraphManager {
 	}
 
 	goToAbsoluteServerApparition(index: number): void {
-		if (
-			this.currentSourceIndex >=
-			this.logEntity.sourceApparitionLocations.length
-		)
-			throw new Error(
-				`goToNextServerApparition Invalid index: ${this.currentSourceIndex}`
-			);
+		if (this.currentSourceIndex >= this.logEntity.sourceApparitionLocations.length)
+			throw new Error(`goToNextServerApparition Invalid index: ${this.currentSourceIndex}`);
 
 		this.syncMachines();
 		this.currentSourceIndex = index;
 
 		// TODO improve this
 		if (index !== 0) {
-			this.currentEventIndex = this.logEntity.sourceApparitionLocations[
-				this.currentSourceIndex - 1
-			];
-			const nextEventIndex = this.logEntity.sourceApparitionLocations[
-				this.currentSourceIndex
-			];
+			this.currentEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex - 1];
+			const nextEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex];
 			this.goToAbsoluteEventState(nextEventIndex);
 		} else {
-			const nextEventIndex = this.logEntity.sourceApparitionLocations[
-				this.currentSourceIndex
-			];
+			const nextEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex];
 			this.goToAbsoluteEventState(nextEventIndex);
 		}
 	}
 
 	goToNextServerApparition(): void {
-		if (
-			this.currentSourceIndex >=
-			this.logEntity.sourceApparitionLocations.length
-		)
-			throw new Error(
-				`goToNextServerApparition Invalid index: ${this.currentSourceIndex}`
-			);
+		if (this.currentSourceIndex >= this.logEntity.sourceApparitionLocations.length)
+			throw new Error(`goToNextServerApparition Invalid index: ${this.currentSourceIndex}`);
 
 		this.syncMachines();
-		this.currentEventIndex = this.logEntity.sourceApparitionLocations[
-			this.currentSourceIndex++
-		];
-		const nextEventIndex = this.logEntity.sourceApparitionLocations[
-			this.currentSourceIndex
-		];
+		this.currentEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex++];
+		const nextEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex];
 		this.goToAbsoluteEventState(nextEventIndex);
 	}
 
 	goToPrevServerApparition(): void {
-		if (this.currentSourceIndex <= 0)
-			throw new Error(
-				`goToPrevServerApparition Invalid index: ${this.currentSourceIndex}`
-			);
+		if (this.currentSourceIndex <= 0) throw new Error(`goToPrevServerApparition Invalid index: ${this.currentSourceIndex}`);
 
 		this.syncMachines();
-		const nextEventIndex = this.logEntity.sourceApparitionLocations[
-			this.currentSourceIndex--
-		];
-		this.currentEventIndex = this.logEntity.sourceApparitionLocations[
-			this.currentSourceIndex
-		];
+		const nextEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex--];
+		this.currentEventIndex = this.logEntity.sourceApparitionLocations[this.currentSourceIndex];
 		this.goToAbsoluteEventState(nextEventIndex);
 	}
 
@@ -109,10 +78,7 @@ class GraphManager {
 		if (this.currentEventIndex >= this.logEntity.eventList.length) return;
 		this.currentEventIndex += 1;
 
-		const currentMachine = this.logEntity.getMachineName(
-			currentEvent.address,
-			currentEvent.port
-		);
+		const currentMachine = this.logEntity.getMachineName(currentEvent.address, currentEvent.port);
 
 		// Outgoing edges
 		if (currentEvent.state.out.length > 0) {
@@ -121,9 +87,7 @@ class GraphManager {
 					this.graphHolder.addEdge(currentMachine, targetMachine);
 				} else if (this.logEntity.options.forceAddGhostNodes) {
 					// One of the machines is mentioned by another, but it doesn't have a single log of its own
-					console.log(
-						`Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
-					);
+					console.log(`Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`);
 					this.graphHolder.insertNode(targetMachine);
 					this.graphHolder.addEdge(currentMachine, targetMachine);
 					this.logEntity.addRawMachine(targetMachine);
@@ -138,9 +102,7 @@ class GraphManager {
 					this.graphHolder.addEdge(targetMachine, currentMachine);
 				} else if (this.logEntity.options.forceAddGhostNodes) {
 					// One of the machines is mentioned by another, but it doesn't have a single log of its own
-					console.log(
-						`Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`
-					);
+					console.log(`Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`);
 					this.graphHolder.insertNode(targetMachine);
 					this.graphHolder.addEdge(targetMachine, currentMachine);
 					this.logEntity.addRawMachine(targetMachine);
@@ -168,8 +130,7 @@ class GraphManager {
 	}
 
 	goToLastEventState(): void {
-		while (this.currentEventIndex < this.logEntity.eventList.length)
-			this.goToNextEvent();
+		while (this.currentEventIndex < this.logEntity.eventList.length) this.goToNextEvent();
 	}
 
 	getMachines(): Map<string, Machine> {

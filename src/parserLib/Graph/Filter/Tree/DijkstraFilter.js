@@ -6,10 +6,7 @@ import type { Graph } from "../../../../types";
 import GraphHolder from "../../GraphHolder";
 
 class DijkstraFilter extends TreeFilter {
-	dijkstraShortestPath(
-		graph: Graph,
-		vertices: Array<string>
-	): { distancesFromSource: { string: number }, fathers: { string: string } } {
+	dijkstraShortestPath(graph: Graph, vertices: Array<string>): { distancesFromSource: { string: number }, fathers: { string: string } } {
 		const dist = {};
 		const prev = {};
 		const heap = new FibonacciHeap();
@@ -65,11 +62,7 @@ class DijkstraFilter extends TreeFilter {
 			if (fathers[node] != null) graph[fathers[node]][node] = true;
 		});
 
-		return new TreeFilterResult<DijkstraFilter>(
-			newGraphHolder,
-			distancesFromSource,
-			fathers
-		);
+		return new TreeFilterResult<DijkstraFilter>(newGraphHolder, distancesFromSource, fathers);
 	}
 
 	static getOptions(): {} {

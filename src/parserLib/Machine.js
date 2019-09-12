@@ -1,22 +1,19 @@
 // @flow
-function sortStatuses(by, statuses) {
-	return statuses.sort((e1, e2) => {
-		return e1[by] - e2[by];
-	});
-}
+import OverlayState from "./Log/Overlay/OverlayState";
+import PerformanceState from "./Log/Performance/PerformanceState";
 
-/**
- *  A Machine object
- *  It represents a address that appeared on the logs
- *  @param {string}   address
- *  @param {[Event]}    events
- *  @param {array}    statuses
- */
 class Machine {
-	constructor(address, events, statuses) {
+	address: string;
+	overlayStatus: Array<OverlayState>;
+	performanceStatus: Array<PerformanceState>;
+	bandwidth: number;
+	bandwidthClassification: number;
+
+
+	constructor(address: string, overlayStatus: Array<OverlayState>, performanceStatus: Array<PerformanceState>) {
 		this.address = address;
-		this.events = events || [];
-		this.statuses = statuses || [];
+		this.overlayStatus = overlayStatus || [];
+		this.performanceStatus = performanceStatus || [];
 
 		this.bandwidth = null;
 		this.bandwidthClassification = null;
@@ -24,19 +21,14 @@ class Machine {
 
 	/**
 	 * Adds an event to address's event list
-	 * @param {Event} event
+	 * @param {OverlayState} event
 	 */
-	addEvent(event) {
-		this.events.push(event);
+	addOverlayStatus(event) {
+		this.overlayStatus.push(event);
 	}
 
-	addStatus(status) {
-		this.statuses.push(status);
-
-		/* Object.keys(this.statusesOrdered).forEach(key => {
-			  this.statusesOrdered[key].push(status);
-			  this.statusesOrdered[key] = sortStatuses(key, this.statusesOrdered[key]);
-			}); */
+	addPerformanceStatus(status) {
+		this.performanceStatus.push(status);
 	}
 }
 

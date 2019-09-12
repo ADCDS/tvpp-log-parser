@@ -8,12 +8,7 @@ class ComparisionLayout extends Layout {
 	mainGraphHolder: GraphHolder;
 	secondaryGraphHolder: GraphHolder;
 
-	constructor(
-		filterResultMain: FilterResult,
-		filterResultSec: FilterResult,
-		machines: Map<string, Machine>,
-		options: { [string]: any }
-	) {
+	constructor(filterResultMain: FilterResult, filterResultSec: FilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
 		super(filterResultMain, machines, options);
 
 		this.mainGraphHolder = filterResultMain.graphHolder;
@@ -21,9 +16,7 @@ class ComparisionLayout extends Layout {
 	}
 
 	updatePositions(): void {
-		const comparisionGraph = this.mainGraphHolder.compareWith(
-			this.secondaryGraphHolder
-		);
+		const comparisionGraph = this.mainGraphHolder.compareWith(this.secondaryGraphHolder);
 
 		const nodeKeys = Object.keys(this.nodeHolder);
 		nodeKeys.forEach(machineKey => {
@@ -38,18 +31,13 @@ class ComparisionLayout extends Layout {
 						this.edgesOverride[machineKey] = {};
 					}
 					this.edgesOverride[machineKey][to] = {
-						color: this.options.colorMap[
-							this.machines[machineKey].bandwidthClassification
-						]
+						color: this.options.colorMap[this.machines[machineKey].bandwidthClassification]
 					};
 
 					// We have a graph modification here, lets paint destination node and the edge itself
 					// this.nodeHolder[machineKey].color = this.options.colorMap[this.machines[machineKey].bandwidthClassification];
 
-					if (this.nodeHolder[to])
-						this.nodeHolder[to].color = this.options.colorMap[
-							this.machines[to].bandwidthClassification
-						];
+					if (this.nodeHolder[to]) this.nodeHolder[to].color = this.options.colorMap[this.machines[to].bandwidthClassification];
 				}
 			});
 		});

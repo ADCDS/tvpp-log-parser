@@ -86,8 +86,7 @@ class GraphHolder {
 			const fromRes = this.graph[from];
 			Object.keys(fromRes).forEach(to => {
 				const value = fromRes[to]; // Boolean
-				newGraph.graph[from][to] =
-					value !== anotherGraph.graph[from][to];
+				newGraph.graph[from][to] = value !== anotherGraph.graph[from][to];
 			});
 		});
 

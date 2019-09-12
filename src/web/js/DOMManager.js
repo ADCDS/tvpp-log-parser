@@ -1,3 +1,4 @@
+// @flow
 import Utils from "../../utils";
 import Filter from "../../parserLib/Graph/Filter/Filter";
 import LogParserOverlay from "../../parserLib/Log/Overlay/LogParserOverlay";
@@ -52,21 +53,15 @@ class DOMManager {
 		layoutTypeDOM.value = availableLayouts[availableLayoutsKeys[0]].id;
 		layoutTypeDOM.dispatchEvent(new Event("change"));
 
-		document
-			.getElementById("btnCurrentState")
-			.dispatchEvent(new Event("click"));
+		document.getElementById("btnCurrentState").dispatchEvent(new Event("click"));
 	}
 
 	static getInputFromOption(inputId, option) {
-		if (
-			!(option.type.prototype instanceof Filter || option.type === Filter)
-		) {
+		if (!(option.type.prototype instanceof Filter || option.type === Filter)) {
 			// If we are not dealing with a filter
 			const inputType = DOMManager.getInputType(option.type);
 
-			return `<label for='${inputId}'>${
-				option.name
-			}</label><input id ='${inputId}' type='${inputType}' ${DOMManager.getDefaultAttr(
+			return `<label for='${inputId}'>${option.name}</label><input id ='${inputId}' type='${inputType}' ${DOMManager.getDefaultAttr(
 				option.type,
 				option.default
 			)}>`;
@@ -87,10 +82,7 @@ class DOMManager {
 		[DOMManager.selectedLayoutFilter] = availableFilters;
 		const filter = DOMManager.selectedLayoutFilter;
 		res += "<div id='subFilterOptionsHolder'>";
-		res += DOMManager.generateOptionsForm(
-			"subFilterOptions",
-			filter.class.getOptions()
-		);
+		res += DOMManager.generateOptionsForm("subFilterOptions", filter.class.getOptions());
 		res += "</div></div>";
 		return res;
 	}
@@ -103,10 +95,7 @@ class DOMManager {
 
 		if (configType.prototype instanceof Filter || configType === Filter) {
 			const layoutFilterFormHolderId = "subFilterOptions";
-			return DOMManager.getOptions(
-				layoutFilterFormHolderId,
-				DOMManager.selectedLayoutFilter.class.getOptions()
-			);
+			return DOMManager.getOptions(layoutFilterFormHolderId, DOMManager.selectedLayoutFilter.class.getOptions());
 		}
 		throw new Error(`Invalid configType: ${configType}`);
 	}
@@ -151,12 +140,7 @@ class DOMManager {
 	static handleSubFilterChange(e) {
 		const filter = Utils.getFilter(e.target.value);
 		DOMManager.selectedLayoutFilter = filter;
-		document.getElementById(
-			"subFilterOptionsHolder"
-		).innerHTML = DOMManager.generateOptionsForm(
-			"subFilterOptions",
-			filter.class.getOptions()
-		);
+		document.getElementById("subFilterOptionsHolder").innerHTML = DOMManager.generateOptionsForm("subFilterOptions", filter.class.getOptions());
 		DOMManager.updateDefaultsOptionValues();
 	}
 
@@ -165,10 +149,7 @@ class DOMManager {
 		const formHolderId = "filterOptions";
 		const filterOptions = document.getElementById(formHolderId);
 		DOMManager.selectedFilter = filter;
-		filterOptions.innerHTML = DOMManager.generateOptionsForm(
-			formHolderId,
-			filter.class.getOptions()
-		);
+		filterOptions.innerHTML = DOMManager.generateOptionsForm(formHolderId, filter.class.getOptions());
 		DOMManager.updateDefaultsOptionValues();
 	}
 
@@ -177,20 +158,13 @@ class DOMManager {
 		const formHolderId = "layoutOptions";
 		const filterOptions = document.getElementById(formHolderId);
 		DOMManager.selectedLayout = layout;
-		filterOptions.innerHTML = DOMManager.generateOptionsForm(
-			formHolderId,
-			layout.class.getOptions()
-		);
+		filterOptions.innerHTML = DOMManager.generateOptionsForm(formHolderId, layout.class.getOptions());
 		DOMManager.updateDefaultsOptionValues();
 	}
 
 	static handleSelectedEventChange(e) {
-		if (e.target.value < window.logEntity.sourceApparitionLocations.length)
-			window.selectedEvent = Number(e.target.value);
-		else
-			window.selectedEvent = Number(
-				window.logEntity.sourceApparitionLocations.length
-			);
+		if (e.target.value < window.logEntity.sourceApparitionLocations.length) window.selectedEvent = Number(e.target.value);
+		else window.selectedEvent = Number(window.logEntity.sourceApparitionLocations.length);
 		e.target.value = window.selectedEvent;
 	}
 
@@ -198,14 +172,10 @@ class DOMManager {
 		let resHTML = "";
 		document.getElementById("machineListTable").innerHTML = "";
 		let i = 1;
-		for (let [index, value] of window.logEntity.machines.entries()) {
-			resHTML += `<tr id="machRow_${value.address}" data-addr="${
+		for (const [index, value] of window.logEntity.machines.entries()) {
+			resHTML += `<tr id="machRow_${value.address}" data-addr="${value.address}"><td>${i++}</td><td>${
 				value.address
-			}"><td>${i++}</td><td>${
-				value.address
-			}</td><td id="machClassification_${value.address}">${
-				value.bandwidthClassification
-			}</td><td>
+			}</td><td id="machClassification_${value.address}">${value.bandwidthClassification}</td><td>
 <button data-type="in">In</button>
 <button data-type="out">Out</button>
 </td></tr>`;
@@ -214,14 +184,10 @@ class DOMManager {
 	}
 
 	static updateClassifications() {
-		for (let [index, value] of window.logEntity.machines.entries()) {
-			const element = document.getElementById(
-				`machClassification_${value.address}`
-			);
+		for (const [index, value] of window.logEntity.machines.entries()) {
+			const element = document.getElementById(`machClassification_${value.address}`);
 			if (!element) {
-				console.log(
-					`Machine ${value.address} appears on Perfomance Log but doesn't appear mainly at Overlay Log`
-				);
+				console.log(`Machine ${value.address} appears on Perfomance Log but doesn't appear mainly at Overlay Log`);
 			} else {
 				element.innerHTML = value.bandwidthClassification;
 			}
@@ -229,38 +195,28 @@ class DOMManager {
 	}
 
 	static updateDefaultsOptionValues() {
-		["filterOptions", "layoutOptions", "subFilterOptions"].forEach(
-			optionType => {
-				DOMManager.sourceOptions[optionType].forEach((value, index) => {
-					const el = document.getElementById(value);
-					if (!el) {
-						DOMManager.sourceOptions[optionType].splice(index, 1);
-						return;
-					}
-					if (
-						window.logEntity.sourceMachineKey !== null &&
-						el.value === "::src"
-					) {
-						el.value = window.logEntity.sourceMachineKey;
-					}
-				});
-			}
-		);
+		["filterOptions", "layoutOptions", "subFilterOptions"].forEach(optionType => {
+			DOMManager.sourceOptions[optionType].forEach((value, index) => {
+				const el = document.getElementById(value);
+				if (!el) {
+					DOMManager.sourceOptions[optionType].splice(index, 1);
+					return;
+				}
+				if (window.logEntity.sourceMachineKey !== null && el.value === "::src") {
+					el.value = window.logEntity.sourceMachineKey;
+				}
+			});
+		});
 	}
 
 	static async parseOverlayLog(e) {
 		console.log("Overlay log read.");
-		const entryArray = await LogParserOverlay.parse(
-			e.currentTarget.result.split("\n")
-		);
+		const entryArray = await LogParserOverlay.parse(e.currentTarget.result.split("\n"));
 		console.log(`Parsed ${entryArray.length} lines from overlay log`);
 		window.logEntity.addOverlayEntries(entryArray);
 		window.graphManager.syncMachines();
-		document.getElementById("numberOfEvents").value =
-			window.logEntity.sourceApparitionLocations.length;
-		document.getElementById("numberOfNodes").value = Object.keys(
-			window.logEntity.machines
-		).length;
+		document.getElementById("numberOfEvents").value = window.logEntity.sourceApparitionLocations.length;
+		document.getElementById("numberOfNodes").value = Object.keys(window.logEntity.machines).length;
 		DOMManager.syncMachinesList();
 
 		// Update defaults ::src
@@ -269,9 +225,7 @@ class DOMManager {
 
 	static async parsePerformanceLog(e) {
 		console.log("Performance log read.");
-		const entryArray = await LogParserPerformance.parse(
-			e.currentTarget.result.split("\n")
-		);
+		const entryArray = await LogParserPerformance.parse(e.currentTarget.result.split("\n"));
 		console.log(`Parsed ${entryArray.length} lines from performance log`);
 		window.logEntity.addPerformanceEntries(entryArray);
 		DOMManager.updateClassifications();
@@ -299,13 +253,12 @@ class DOMManager {
 		sigma.graph.clear();
 
 		// Add nodes
-		Object.keys(nodeHolder).forEach(machineKey => {
-			const node = { ...nodeHolder[machineKey] };
+		for (const node of nodeHolder.values()) {
 			sigma.graph.addNode(node);
-		});
+		}
 
 		// Add edges
-		Object.keys(nodeHolder).forEach(machineKey => {
+		for (const machineKey of nodeHolder.keys()) {
 			const edgesTo = graphHolder.getOutgoingEdges(machineKey);
 			edgesTo.forEach(machineDest => {
 				const edge = {
@@ -315,10 +268,7 @@ class DOMManager {
 					size: 2,
 					type: "arrow"
 				};
-				if (
-					edgesHolder[machineKey] &&
-					edgesHolder[machineKey][machineDest]
-				) {
+				if (edgesHolder[machineKey] && edgesHolder[machineKey][machineDest]) {
 					Object.assign(edge, edgesHolder[machineKey][machineDest]);
 				}
 				try {
@@ -327,7 +277,7 @@ class DOMManager {
 					console.log(`Sigma exception: ${e}`);
 				}
 			});
-		});
+		}
 
 		// Update bypasses
 		byPassOutNodes.forEach(machineKey => {
@@ -340,10 +290,7 @@ class DOMManager {
 					size: 2,
 					type: "arrow"
 				};
-				if (
-					edgesHolder[machineKey] &&
-					edgesHolder[machineKey][machineDest]
-				) {
+				if (edgesHolder[machineKey] && edgesHolder[machineKey][machineDest]) {
 					Object.assign(edge, edgesHolder[machineKey][machineDest]);
 				}
 				try {
@@ -357,9 +304,7 @@ class DOMManager {
 		// Update bypasses
 		byPassInNodes.forEach(machineTo => {
 			// Get the edges that point to me
-			const edgesTo = unfilteredGraphHolder.getMachinesThatPointTo(
-				machineTo
-			);
+			const edgesTo = unfilteredGraphHolder.getNodesThatPointTo(machineTo);
 			edgesTo.forEach(machineFrom => {
 				const edge = {
 					id: `${machineFrom}_>_${machineTo}`,
@@ -368,10 +313,7 @@ class DOMManager {
 					size: 2,
 					type: "arrow"
 				};
-				if (
-					edgesHolder[machineFrom] &&
-					edgesHolder[machineFrom][machineTo]
-				) {
+				if (edgesHolder[machineFrom] && edgesHolder[machineFrom][machineTo]) {
 					Object.assign(edge, edgesHolder[machineFrom][machineTo]);
 				}
 				try {
@@ -387,16 +329,10 @@ class DOMManager {
 
 	static extractOptions() {
 		const filterFormHolderId = "filterOptions";
-		const filterOptions = DOMManager.getOptions(
-			filterFormHolderId,
-			DOMManager.selectedFilter.class.getOptions()
-		);
+		const filterOptions = DOMManager.getOptions(filterFormHolderId, DOMManager.selectedFilter.class.getOptions());
 
 		const layoutFormHolderId = "layoutOptions";
-		const layoutOptions = DOMManager.getOptions(
-			layoutFormHolderId,
-			DOMManager.selectedLayout.class.getOptions()
-		);
+		const layoutOptions = DOMManager.getOptions(layoutFormHolderId, DOMManager.selectedLayout.class.getOptions());
 
 		return {
 			filter: filterOptions,
@@ -405,11 +341,7 @@ class DOMManager {
 	}
 
 	static handleStateGraphChange(e) {
-		const graphs = [
-			"containerPrevious",
-			"containerComparision",
-			"containerCurrent"
-		];
+		const graphs = ["containerPrevious", "containerComparision", "containerCurrent"];
 
 		graphs.forEach(el => {
 			document.getElementById(el).style.display = "none";
@@ -417,21 +349,14 @@ class DOMManager {
 
 		const tablinks = document.getElementsByClassName("tablinks");
 		for (let i = 0; i < tablinks.length; i++) {
-			tablinks[i].className = tablinks[i].className.replace(
-				" active",
-				""
-			);
+			tablinks[i].className = tablinks[i].className.replace(" active", "");
 		}
-		document.getElementById(e.currentTarget.dataset.graph).style.display =
-			"block";
+		document.getElementById(e.currentTarget.dataset.graph).style.display = "block";
 
 		const sigmaObj = window[e.currentTarget.dataset.sigma];
 
 		if (DOMManager.selectedSigma) {
-			DOMManager.synchronizeMachineListButtons(
-				DOMManager.selectedSigma,
-				sigmaObj
-			);
+			DOMManager.synchronizeMachineListButtons(DOMManager.selectedSigma, sigmaObj);
 		}
 
 		DOMManager.selectedSigma = sigmaObj;
@@ -456,10 +381,7 @@ class DOMManager {
 		const button = e.target;
 		const { type } = button.dataset;
 		if (!type) {
-			const node =
-				DOMManager.selectedSigma.helperHolder.nodeHolder[
-					button.parentElement.dataset.addr
-				];
+			const node = DOMManager.selectedSigma.helperHolder.nodeHolder[button.parentElement.dataset.addr];
 			if (node) DOMManager.changeSelectedNode(node);
 			return;
 		}
@@ -469,44 +391,27 @@ class DOMManager {
 		const { helperHolder } = DOMManager.selectedSigma;
 		if (!isPressed) {
 			if (type === "out") {
-				DOMManager.displayAllToRelations(
-					machineId,
-					DOMManager.selectedSigma
-				);
+				DOMManager.displayAllToRelations(machineId, DOMManager.selectedSigma);
 			} else {
-				DOMManager.displayAllFromRelations(
-					machineId,
-					DOMManager.selectedSigma
-				);
+				DOMManager.displayAllFromRelations(machineId, DOMManager.selectedSigma);
 			}
 			helperHolder.managedButtons.push(button);
 
 			button.style["border-style"] = "inset";
 		} else {
 			if (type === "out") {
-				DOMManager.hideAllToRelations(
-					machineId,
-					DOMManager.selectedSigma
-				);
+				DOMManager.hideAllToRelations(machineId, DOMManager.selectedSigma);
 			} else {
-				DOMManager.hideAllFromRelations(
-					machineId,
-					DOMManager.selectedSigma
-				);
+				DOMManager.hideAllFromRelations(machineId, DOMManager.selectedSigma);
 			}
-			helperHolder.managedButtons.splice(
-				helperHolder.managedButtons.indexOf(button),
-				1
-			);
+			helperHolder.managedButtons.splice(helperHolder.managedButtons.indexOf(button), 1);
 			button.style["border-style"] = "";
 		}
 	}
 
 	static changeSelectedNode(node) {
 		if (DOMManager.selectedNode) {
-			document
-				.getElementById(`machRow_${DOMManager.selectedNode.id}`)
-				.classList.remove("active");
+			document.getElementById(`machRow_${DOMManager.selectedNode.id}`).classList.remove("active");
 		}
 		DOMManager.selectedNode = node;
 		document.getElementById(`machRow_${node.id}`).classList.add("active");
@@ -524,23 +429,18 @@ class DOMManager {
 	static isFirstIteration = true;
 
 	static drawGraph(goToState, filterOptions, layoutOptions) {
-		if (!DOMManager.selectedLayoutFilter)
-			throw new Error("Layout Options missing subfilter");
+		if (!DOMManager.selectedLayoutFilter) throw new Error("Layout Options missing subfilter");
 
 		const { graphManager } = window;
 
 		const lastEventIndex = graphManager.currentEventIndex;
 		// We should store the last state on 'Previous Graph'
 		document.getElementById("previousEvent").value = lastEventIndex;
-		document.getElementById(
-			"previousStateEventId"
-		).innerHTML = `(${lastEventIndex})`;
+		document.getElementById("previousStateEventId").innerHTML = `(${lastEventIndex})`;
 
 		if (!DOMManager.isFirstIteration) {
-			window.sigmaPrevious.helperHolder.nodeHolder =
-				window.sigmaCurrent.helperHolder.nodeHolder;
-			window.sigmaPrevious.helperHolder.edgesHolder =
-				window.sigmaCurrent.helperHolder.edgesHolder;
+			window.sigmaPrevious.helperHolder.nodeHolder = window.sigmaCurrent.helperHolder.nodeHolder;
+			window.sigmaPrevious.helperHolder.edgesHolder = window.sigmaCurrent.helperHolder.edgesHolder;
 			window.sigmaPrevious.helperHolder.graphHolder = {
 				...window.sigmaCurrent.helperHolder.graphHolder
 			};
@@ -568,27 +468,20 @@ class DOMManager {
 		const subFilterObj = new LayoutFilterClass(layoutOptions.filter);
 		const subFilterResult = subFilterObj.applyFilter(graphHolder);
 
-		const layoutObj = new LayoutClass(
-			subFilterResult,
-			graphManager.getMachines(),
-			layoutOptions
-		);
+		const layoutObj = new LayoutClass(subFilterResult, graphManager.getMachines(), layoutOptions);
 		layoutObj.updatePositions();
 		window.sigmaCurrent.helperHolder.edgesHolder = layoutObj.edgesOverride;
 
 		if (!DOMManager.isFirstIteration && DOMManager.layoutPreservation) {
 			// Previous Sigma's nodes should have the same position as the Current Sigma
-			Object.keys(window.sigmaPrevious.helperHolder.nodeHolder).forEach(
-				index => {
-					const node =
-						window.sigmaPrevious.helperHolder.nodeHolder[index];
-					const currentNode = layoutObj.nodeHolder[index];
-					if (currentNode) {
-						node.x = currentNode.x;
-						node.y = currentNode.y;
-					}
+			Object.keys(window.sigmaPrevious.helperHolder.nodeHolder).forEach(index => {
+				const node = window.sigmaPrevious.helperHolder.nodeHolder[index];
+				const currentNode = layoutObj.nodeHolder[index];
+				if (currentNode) {
+					node.x = currentNode.x;
+					node.y = currentNode.y;
 				}
-			);
+			});
 			DOMManager.synchronizeSigma(window.sigmaPrevious);
 		}
 
@@ -596,37 +489,23 @@ class DOMManager {
 
 		let filterResult;
 		// We do not need to apply the same filter twice, if they are the same
-		if (
-			LayoutFilterClass === FilterClass &&
-			JSON.stringify(layoutOptions.filter) ===
-				JSON.stringify(filterOptions)
-		) {
+		if (LayoutFilterClass === FilterClass && JSON.stringify(layoutOptions.filter) === JSON.stringify(filterOptions)) {
 			filterResult = subFilterResult;
-			console.log(
-				"Main filter and Layout filter are the same, reusing result..."
-			);
+			console.log("Main filter and Layout filter are the same, reusing result...");
 		} else {
 			const filterObj = new FilterClass(filterOptions);
 			filterResult = filterObj.applyFilter(graphHolder);
 		}
-		window.sigmaCurrent.helperHolder.graphHolder.filtered =
-			filterResult.graphHolder;
+		window.sigmaCurrent.helperHolder.graphHolder.filtered = filterResult.graphHolder;
 
 		// Apply comparision layout
 		if (window.oldSubFilterResult) {
-			const comparisionLayout = new ComparisionLayout(
-				subFilterResult,
-				window.oldSubFilterResult,
-				graphManager.getMachines()
-			);
+			const comparisionLayout = new ComparisionLayout(subFilterResult, window.oldSubFilterResult, graphManager.getMachines());
 			comparisionLayout.nodeHolder = layoutObj.cloneNodeHolder();
 			comparisionLayout.updatePositions();
-			window.sigmaComparision.helperHolder.nodeHolder =
-				comparisionLayout.nodeHolder;
-			window.sigmaComparision.helperHolder.edgesHolder =
-				comparisionLayout.edgesOverride;
-			window.sigmaComparision.helperHolder.graphHolder =
-				window.sigmaCurrent.helperHolder.graphHolder;
+			window.sigmaComparision.helperHolder.nodeHolder = comparisionLayout.nodeHolder;
+			window.sigmaComparision.helperHolder.edgesHolder = comparisionLayout.edgesOverride;
+			window.sigmaComparision.helperHolder.graphHolder = window.sigmaCurrent.helperHolder.graphHolder;
 
 			DOMManager.synchronizeSigma(window.sigmaComparision);
 		}
@@ -639,14 +518,9 @@ class DOMManager {
 		 * Update DOM
 		 * Maybe this should be in DOMManager
 		 */
-		document.getElementById("currentEvent").value =
-			graphManager.currentEventIndex;
-		document.getElementById(
-			"currentStateEventId"
-		).innerHTML = `(${graphManager.currentEventIndex})`;
-		document.getElementById(
-			"comparisionStateEventId"
-		).innerHTML = `(${lastEventIndex}/${graphManager.currentEventIndex})`;
+		document.getElementById("currentEvent").value = graphManager.currentEventIndex;
+		document.getElementById("currentStateEventId").innerHTML = `(${graphManager.currentEventIndex})`;
+		document.getElementById("comparisionStateEventId").innerHTML = `(${lastEventIndex}/${graphManager.currentEventIndex})`;
 
 		DOMManager.isFirstIteration = false;
 	}
@@ -662,18 +536,12 @@ class DOMManager {
 	}
 
 	static hideAllToRelations(node, sigma) {
-		sigma.helperHolder.byPassOutNodes.splice(
-			sigma.helperHolder.byPassOutNodes.indexOf(node),
-			1
-		);
+		sigma.helperHolder.byPassOutNodes.splice(sigma.helperHolder.byPassOutNodes.indexOf(node), 1);
 		DOMManager.synchronizeSigma(sigma);
 	}
 
 	static hideAllFromRelations(node, sigma) {
-		sigma.helperHolder.byPassInNodes.splice(
-			sigma.helperHolder.byPassInNodes.indexOf(node),
-			1
-		);
+		sigma.helperHolder.byPassInNodes.splice(sigma.helperHolder.byPassInNodes.indexOf(node), 1);
 		DOMManager.synchronizeSigma(sigma);
 	}
 }

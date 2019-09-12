@@ -6,11 +6,7 @@ import Machine from "../../../../Machine";
 import TreeLayout from "./TreeLayout";
 
 class AlgorithmR1 extends TreeLayout {
-	constructor(
-		filterResult: TreeFilterResult,
-		machines: Map<string, Machine>,
-		options: { [string]: any }
-	) {
+	constructor(filterResult: TreeFilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
 		const defaultOptions = {
 			gamma: 200,
 			drawUndefinedNodes: false
@@ -59,12 +55,7 @@ class AlgorithmR1 extends TreeLayout {
 		return res;
 	}
 
-	drawSubTree1(
-		machineName: string,
-		p: number,
-		alpha1: number,
-		alpha2: number
-	): void {
+	drawSubTree1(machineName: string, p: number, alpha1: number, alpha2: number): void {
 		const v = this.nodeHolder.get(machineName);
 		v.setPolarCoordinate(p, (alpha1 + alpha2) / 2);
 		// console.log("Polar: ", p, (alpha1 + alpha2) / 2, "Cartesian: ", v.x, v.y);
@@ -86,37 +77,24 @@ class AlgorithmR1 extends TreeLayout {
 		});
 
 		childrenNodes.forEach(node => {
-			this.drawSubTree1(
-				node,
-				p + this.options.gamma,
-				alphaRes,
-				alphaRes + s * this.widthOf(node)
-			);
+			this.drawSubTree1(node, p + this.options.gamma, alphaRes, alphaRes + s * this.widthOf(node));
 			alphaRes += s * this.widthOf(node);
 		});
 	}
 
 	updatePositions(): void {
 		super.updatePositions();
-		this.drawSubTree1(
-			this.options.source,
-			0,
-			0,
-			AlgorithmR1.degreeToRadian(360)
-		);
+		this.drawSubTree1(this.options.source, 0, 0, AlgorithmR1.degreeToRadian(360));
 
 		const undefinedNodes = [];
 		if (!this.options.drawUndefinedNodes) {
-			for (let [index,node] of this.nodeHolder.entries()) {
-				if (
-					node.x === undefined ||
-					node.y === undefined
-				) {
+			for (const [index, node] of this.nodeHolder.entries()) {
+				if (node.x === undefined || node.y === undefined) {
 					this.nodeHolder.delete(index);
 				}
 			}
 		} else {
-			for (let node of this.nodeHolder.values()) {
+			for (const node of this.nodeHolder.values()) {
 				if (node.x === undefined || node.y === undefined) {
 					undefinedNodes.push(node);
 				}
@@ -126,14 +104,8 @@ class AlgorithmR1 extends TreeLayout {
 			undefinedNodes.forEach(node => {
 				const heightOfSource = this.heightOf(this.options.source);
 
-				node.x =
-					this.options.gamma *
-					heightOfSource *
-					Math.cos((2 * iterNum * Math.PI) / undefinedNodes.length);
-				node.y =
-					this.options.gamma *
-					heightOfSource *
-					Math.sin((2 * iterNum * Math.PI) / undefinedNodes.length);
+				node.x = this.options.gamma * heightOfSource * Math.cos((2 * iterNum * Math.PI) / undefinedNodes.length);
+				node.y = this.options.gamma * heightOfSource * Math.sin((2 * iterNum * Math.PI) / undefinedNodes.length);
 				iterNum++;
 			});
 		}
