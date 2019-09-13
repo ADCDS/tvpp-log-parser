@@ -14,7 +14,7 @@ class Filter {
 	}
 
 	static getOptions(): { [string]: any } {
-		return new {}();
+		return {};
 	}
 }
 

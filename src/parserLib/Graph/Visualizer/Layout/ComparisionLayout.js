@@ -3,12 +3,14 @@ import Layout from "./Layout";
 import FilterResult from "../../Filter/Results/FilterResult";
 import GraphHolder from "../../GraphHolder";
 import Machine from "../../../Machine";
+import Filter from "../../Filter/Filter";
+import Edge from "../Edge";
 
 class ComparisionLayout extends Layout {
 	mainGraphHolder: GraphHolder;
 	secondaryGraphHolder: GraphHolder;
 
-	constructor(filterResultMain: FilterResult, filterResultSec: FilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
+	constructor(filterResultMain: FilterResult<Filter>, filterResultSec: FilterResult<Filter>, machines: Map<string, Machine>, options: { [string]: any }) {
 		super(filterResultMain, machines, options);
 
 		this.mainGraphHolder = filterResultMain.graphHolder;
@@ -18,32 +20,43 @@ class ComparisionLayout extends Layout {
 	updatePositions(): void {
 		const comparisionGraph = this.mainGraphHolder.compareWith(this.secondaryGraphHolder);
 
-		const nodeKeys = Object.keys(this.nodeHolder);
-		nodeKeys.forEach(machineKey => {
-			this.nodeHolder[machineKey].color = "#484848";
-		});
-		nodeKeys.forEach(machineKey => {
+		for (const machineKey of this.nodeHolder.keys()) {
+			const node = this.nodeHolder.get(machineKey);
+			if (node) node.color = "#484848";
+		}
+		for (const machineKey of this.nodeHolder.keys()) {
 			const adjacentEdges = comparisionGraph.getEdges(machineKey);
 			Object.keys(adjacentEdges).forEach(to => {
 				const value = adjacentEdges[to];
 				if (value) {
-					if (!this.edgesOverride[machineKey]) {
-						this.edgesOverride[machineKey] = {};
-					}
-					this.edgesOverride[machineKey][to] = {
-						color: this.options.colorMap[this.machines[machineKey].bandwidthClassification]
-					};
-
-					// We have a graph modification here, lets paint destination node and the edge itself
+					// We have a graph modification here, lets paint destination node and the edgeMap itself
 					// this.nodeHolder[machineKey].color = this.options.colorMap[this.machines[machineKey].bandwidthClassification];
 
-					if (this.nodeHolder[to]) this.nodeHolder[to].color = this.options.colorMap[this.machines[to].bandwidthClassification];
+					let edgeMap = this.edgesOverride.get(machineKey);
+					if (!edgeMap) {
+						const map = new Map<string, Edge>();
+						this.edgesOverride.set(machineKey, map);
+						edgeMap = map;
+					}
+
+					const machine = this.machines.get(machineKey);
+					if (!machine) {
+						throw new Error(`Machine ${machineKey} not found `);
+					}
+
+					const edgeObj = new Edge(this.options.colorMap[machine.bandwidthClassification]);
+					edgeMap.set(to, edgeObj);
+
+					const nodeHolderElement = this.nodeHolder.get(to);
+					if (nodeHolderElement) {
+						nodeHolderElement.color = this.options.colorMap[machine.bandwidthClassification];
+					}
 				}
 			});
-		});
+		}
 	}
 
-	static getOptions() {}
+	static getOptions(): { [string]: any } {}
 }
 
 export default ComparisionLayout;

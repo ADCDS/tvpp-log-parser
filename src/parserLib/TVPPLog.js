@@ -40,14 +40,15 @@ class TVPPLog {
 				this.sourceApparitionLocations.push(iterNum);
 			}
 
-			const currEvent = logEntry.toOverlayState();
+			// const currEvent = logEntry.toOverlayState();
 
 			if (this.hasMachine(logEntry.machineId)) {
 				const machineRef = this.getMachine(logEntry.machineId);
-				if (machineRef) machineRef.addOverlayStatus(currEvent);
+				// if (machineRef) machineRef.addOverlayStatus(currEvent);
 			} else {
 				// Create the address reference with the first overlay status
-				this.addMachine(logEntry.machineId, [currEvent], []);
+				// this.addMachine(logEntry.machineId, [currEvent], []);
+				this.addMachine(logEntry.machineId, [], []);
 			}
 			iterNum++;
 		});

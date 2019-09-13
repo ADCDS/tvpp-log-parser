@@ -268,8 +268,12 @@ class DOMManager {
 					size: 2,
 					type: "arrow"
 				};
-				if (edgesHolder[machineKey] && edgesHolder[machineKey][machineDest]) {
-					Object.assign(edge, edgesHolder[machineKey][machineDest]);
+				const edgesFrom = edgesHolder.get(machineKey);
+				if(edgesFrom) {
+					const edgeObj = edgesFrom.get(machineDest);
+					if (edgeObj) {
+						Object.assign(edge, edgeObj);
+					}
 				}
 				try {
 					sigma.graph.addEdge(edge);

@@ -24,13 +24,21 @@ class LogParserOverlay {
 		const timestamp = firstHalf[1];
 		firstHalf.splice(0, 2);
 
-		const partnersIn = firstHalf.filter(value => {
-			return !(value === "" || value === "\r");
-		});
+		const partnersIn = firstHalf
+			.filter(value => {
+				return !(value === "" || value === "\r");
+			})
+			.map(str => {
+				return str.trim();
+			});
 
-		const partnersOut = secondHalf.filter(value => {
-			return !(value === "" || value === "\r");
-		});
+		const partnersOut = secondHalf
+			.filter(value => {
+				return !(value === "" || value === "\r");
+			})
+			.map(str => {
+				return str.trim();
+			});
 
 		return new LogEntryOverlay(hostAddress[0], Number(hostAddress[1]), Number(timestamp), partnersIn, partnersOut);
 	}

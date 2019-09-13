@@ -9,14 +9,14 @@ import GraphHolder from "../../GraphHolder";
 import Machine from "../../../Machine";
 
 class Layout {
-	filterResult: FilterResult;
+	filterResult: FilterResult<Filter>;
 	graphHolder: GraphHolder;
 	machines: Map<string, Machine>;
 	nodeHolder: Map<string, Node>;
 	edgesOverride: Map<string, Map<string, Edge>>;
 	options: { [string]: any };
 
-	constructor(filterResult: FilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
+	constructor(filterResult: FilterResult<Filter>, machines: Map<string, Machine>, options: { [string]: any }) {
 		this.filterResult = filterResult;
 		this.graphHolder = filterResult.graphHolder;
 		this.machines = machines;
@@ -36,13 +36,12 @@ class Layout {
 
 		this.options = Object.assign(defaultOptions, options);
 
-		this.bandwidths = {};
-
 		// Setup node holders
 		for (const machineKey of machines.keys()) {
-			if (Object.prototype.hasOwnProperty.call(this.machines.get(machineKey), "bandwidthClassification")) {
-				const node = new Node(machineKey, machineKey);
-				node.color = this.options.colorMap[this.machines.get(machineKey).bandwidthClassification];
+			const machine = this.machines.get(machineKey);
+			if (machine && Object.prototype.hasOwnProperty.call(machine, "bandwidthClassification")) {
+				const node = new Node(machineKey, machineKey, 0, 0, "#000", 1);
+				node.color = this.options.colorMap[machine.bandwidthClassification];
 				node.size = 5;
 
 				this.nodeHolder.set(machineKey, node);
@@ -53,9 +52,12 @@ class Layout {
 	}
 
 	updateNodeColors(): void {
-		for (const machineKey of this.machines.keys()) {
-			if (Object.prototype.hasOwnProperty.call(this.machines[machineKey], "bandwidthClassification")) {
-				this.nodeHolder[machineKey].color = this.options.colorMap[this.machines[machineKey].bandwidthClassification];
+		for (const [machineKey, machine] of this.machines.entries()) {
+			if (Object.prototype.hasOwnProperty.call(machine, "bandwidthClassification")) {
+				const node = this.nodeHolder.get(machineKey);
+				if (node) {
+					node.color = this.options.colorMap[machine.bandwidthClassification];
+				}
 			} else {
 				throw new Error(`Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`);
 			}
@@ -66,7 +68,7 @@ class Layout {
 		this.machines = machines;
 	}
 
-	setGraphHolder(graphHolder) {
+	setGraphHolder(graphHolder: GraphHolder): void {
 		this.graphHolder = graphHolder;
 	}
 
@@ -83,11 +85,9 @@ class Layout {
 
 	cloneNodeHolder(): Map<string, Node> {
 		const resObj = new Map<string, Node>();
-		Object.keys(this.nodeHolder).forEach(index => {
-			const node = this.nodeHolder[index]; // Node
+		for (const [index, node] of this.nodeHolder.entries()) {
 			resObj.set(index, { ...node });
-		});
-
+		}
 		return resObj;
 	}
 }
