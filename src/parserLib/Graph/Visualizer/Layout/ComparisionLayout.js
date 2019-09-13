@@ -56,7 +56,9 @@ class ComparisionLayout extends Layout {
 		}
 	}
 
-	static getOptions(): { [string]: any } {}
+	static getOptions(): { [string]: any } {
+		return {};
+	}
 }
 
 export default ComparisionLayout;

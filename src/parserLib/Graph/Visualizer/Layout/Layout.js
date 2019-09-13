@@ -9,14 +9,14 @@ import GraphHolder from "../../GraphHolder";
 import Machine from "../../../Machine";
 
 class Layout {
-	filterResult: FilterResult<Filter>;
+	filterResult: FilterResult;
 	graphHolder: GraphHolder;
 	machines: Map<string, Machine>;
 	nodeHolder: Map<string, Node>;
 	edgesOverride: Map<string, Map<string, Edge>>;
 	options: { [string]: any };
 
-	constructor(filterResult: FilterResult<Filter>, machines: Map<string, Machine>, options: { [string]: any }) {
+	constructor(filterResult: FilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
 		this.filterResult = filterResult;
 		this.graphHolder = filterResult.graphHolder;
 		this.machines = machines;

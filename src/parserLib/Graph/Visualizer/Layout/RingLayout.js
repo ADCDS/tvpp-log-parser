@@ -17,15 +17,14 @@ class RingLayout extends Layout {
 
 	updatePositions(): void {
 		super.updatePositions();
-		const nodeKeys = this.nodeHolder.keys();
-		const machineLength = nodeKeys.length;
+		const machineLength = this.nodeHolder.size;
 		let iterNum = 0;
-		nodeKeys.forEach(machineKey => {
-			const node = this.nodeHolder[machineKey];
+
+		for(let node of this.nodeHolder.values()){
 			node.x = this.options.radius * Math.cos((2 * iterNum * Math.PI) / machineLength);
 			node.y = this.options.radius * Math.sin((2 * iterNum * Math.PI) / machineLength);
 			iterNum++;
-		});
+		}
 	}
 
 	static getOptions(): { [string]: any } {

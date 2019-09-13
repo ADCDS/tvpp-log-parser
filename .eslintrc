@@ -16,7 +16,7 @@
 	"node": true
   },
   "rules": {
-	"max-len": ["error", { "code": 150, "ignoreUrls": true }],
+	"max-len": ["error", { "code": 170, "ignoreUrls": true }],
 	"flowtype/require-valid-file-annotation": [
 	  2,
 	  "always"
@@ -30,6 +30,7 @@
 	"no-plusplus": "off",
 	"no-param-reassign": "off",
 	"class-methods-use-this": "off",
-	"no-unused-vars": "off"
+	"no-unused-vars": "off",
+	"no-restricted-syntax": "off"
   }
 }

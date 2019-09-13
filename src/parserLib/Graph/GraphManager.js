@@ -13,7 +13,7 @@ class GraphManager {
 		this.logEntity = logEntity;
 		this.currentEventIndex = 0;
 		this.currentSourceIndex = 0;
-		this.graphHolder = new GraphHolder(Object.keys(this.logEntity.machines));
+		this.graphHolder = new GraphHolder(Array.from(this.logEntity.machines.keys()));
 	}
 
 	syncMachines(): void {

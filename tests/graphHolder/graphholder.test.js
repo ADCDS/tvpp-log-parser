@@ -6,5 +6,6 @@ test("graphHolderTest", async () => {
 
   graphHolder.addEdge(testMachines[0], testMachines[2]);
 
-  console.log("ok");
+  let edges = graphHolder.getEdges(testMachines[0]);
+  expect(edges.hasOwnProperty(testMachines[2]) && edges[testMachines[2]]).toBe(true);
 });

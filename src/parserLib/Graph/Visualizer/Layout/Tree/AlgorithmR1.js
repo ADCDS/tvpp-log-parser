@@ -6,7 +6,7 @@ import Machine from "../../../../Machine";
 import TreeLayout from "./TreeLayout";
 
 class AlgorithmR1 extends TreeLayout {
-	constructor(filterResult: TreeFilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
+	constructor(filterResult: TreeFilterResult<TreeFilter>, machines: Map<string, Machine>, options: { [string]: any }) {
 		const defaultOptions = {
 			gamma: 200,
 			drawUndefinedNodes: false

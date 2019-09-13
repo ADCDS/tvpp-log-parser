@@ -4,30 +4,24 @@ import GraphManager from "../src/parserLib/Graph/GraphManager";
 import LogParserPerformance from "../src/parserLib/Log/Performance/LogParserPerformance";
 import RingLayout from "../src/parserLib/Graph/Visualizer/Layout/RingLayout";
 import DijkstraFilter from "../src/parserLib/Graph/Filter/Tree/DijkstraFilter";
+import Utils from "../src/utils";
 
 test("dijkstraFilterTest", async () => {
-  const dataOverlay = await LogParserOverlay.readLog(
-    "./logs/test1_overlay.txt"
-  );
-  const dataPerformance = await LogParserPerformance.readLog(
-    "./logs/test1_perf.txt"
-  );
-  const overlayEntryArray = await LogParserOverlay.parse(dataOverlay);
-  const performanceEntryArray = await LogParserPerformance.parse(
-    dataPerformance
-  );
+	const dataOverlay = await Utils.readLog("./logs/test1_overlay.txt");
+	const dataPerformance = await Utils.readLog("./logs/test1_perf.txt");
+	const overlayEntryArray = await LogParserOverlay.parse(dataOverlay);
+	const performanceEntryArray = await LogParserPerformance.parse(dataPerformance);
 
-  const logEntity = new TVPPLog();
-  logEntity.addOverlayEntries(overlayEntryArray);
-  logEntity.addPerformanceEntries(performanceEntryArray);
-  const graphManager = new GraphManager(logEntity);
-  // graphManager.goToLastEventState();
-  graphManager.goToAbsoluteEventState(100);
-  const dijkstraFilter = new DijkstraFilter({
-    source: "150.164.3.36"
-  });
-  const filterResult = dijkstraFilter.applyFilter(
-    graphManager.getGraphHolder()
-  );
-  console.log("Done");
+	const logEntity = new TVPPLog();
+	logEntity.addOverlayEntries(overlayEntryArray);
+	logEntity.addPerformanceEntries(performanceEntryArray);
+	const graphManager = new GraphManager(logEntity);
+	// graphManager.goToLastEventState();
+	graphManager.goToAbsoluteEventState(100);
+	const dijkstraFilter = new DijkstraFilter({
+		source: "150.164.3.36:4951"
+	});
+	const filterResult = dijkstraFilter.applyFilter(graphManager.getGraphHolder());
+
+	expect(true).toBe(true);
 });

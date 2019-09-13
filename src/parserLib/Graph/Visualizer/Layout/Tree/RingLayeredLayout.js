@@ -30,19 +30,21 @@ class RingLayeredLayout extends TreeLayout {
 		 *
 		 * I believe that this can be optimized
 		 */
-		for (let el of this.filterResult.distancesFromSource.value()) {
-			if (el === Infinity) el = -Infinity;
-		}
-		const nodes = this.filterResult.distancesFromSource.keys().sort((e1, e2) => {
+		Object.keys(this.filterResult.distancesFromSource).forEach(index => {
+			if (this.filterResult.distancesFromSource[index] === Infinity)
+				this.filterResult.distancesFromSource[index] = -Infinity;
+		});
+
+		const nodes = Object.keys(this.filterResult.distancesFromSource).sort((e1, e2) => {
 			return this.filterResult.distancesFromSource[e1] - this.filterResult.distancesFromSource[e2];
 		});
 
-		const highestSourceDistance = this.filterResult.distancesFromSource.get(nodes[nodes.length - 1]);
+		const highestSourceDistance = this.filterResult.distancesFromSource[nodes[nodes.length - 1]];
 
 		nodes.forEach(el => {
 			// Treat vertices that are not connected to the source node
-			const distanceFromSourceEl = this.filterResult.distancesFromSource.get(el);
-			if (distanceFromSourceEl === -Infinity) this.filterResult.distancesFromSource.set(el, highestSourceDistance + 1);
+			const distanceFromSourceEl = this.filterResult.distancesFromSource[el];
+			if (distanceFromSourceEl === -Infinity) this.filterResult.distancesFromSource[el] = highestSourceDistance + 1;
 			if (Object.prototype.hasOwnProperty.call(numberOfNodesAtRing, distanceFromSourceEl)) {
 				numberOfNodesAtRing[distanceFromSourceEl]++;
 			} else {
