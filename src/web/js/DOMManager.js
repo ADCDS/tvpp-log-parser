@@ -4,6 +4,8 @@ import Filter from "../../parserLib/Graph/Filter/Filter";
 import LogParserOverlay from "../../parserLib/Log/Overlay/LogParserOverlay";
 import LogParserPerformance from "../../parserLib/Log/Performance/LogParserPerformance";
 import ComparisionLayout from "../../parserLib/Graph/Visualizer/Layout/ComparisionLayout";
+import Option from "../../parserLib/Option";
+import Node from "../../parserLib/Graph/Visualizer/Node";
 
 class DOMManager {
 	static sourceOptions = {
@@ -24,7 +26,9 @@ class DOMManager {
 
 	static layoutPreservation = false;
 
-	static init() {
+	static isFirstIteration = true;
+
+	static init(): void {
 		// Show starting options
 
 		// Get available layouts and filters
@@ -56,15 +60,12 @@ class DOMManager {
 		document.getElementById("btnCurrentState").dispatchEvent(new Event("click"));
 	}
 
-	static getInputFromOption(inputId, option) {
+	static getInputFromOption(inputId: string, option: Option): string {
 		if (!(option.type.prototype instanceof Filter || option.type === Filter)) {
 			// If we are not dealing with a filter
 			const inputType = DOMManager.getInputType(option.type);
 
-			return `<label for='${inputId}'>${option.name}</label><input id ='${inputId}' type='${inputType}' ${DOMManager.getDefaultAttr(
-				option.type,
-				option.default
-			)}>`;
+			return `<label for='${inputId}'>${option.name}</label><input id ='${inputId}' type='${inputType}' ${DOMManager.getDefaultAttr(option.type, option.default)}>`;
 		}
 		// If we area dealing with a filter option
 
@@ -81,13 +82,13 @@ class DOMManager {
 		// Default filter
 		[DOMManager.selectedLayoutFilter] = availableFilters;
 		const filter = DOMManager.selectedLayoutFilter;
-		res += "<div machineId='subFilterOptionsHolder'>";
+		res += "<div id='subFilterOptionsHolder'>";
 		res += DOMManager.generateOptionsForm("subFilterOptions", filter.class.getOptions());
 		res += "</div></div>";
 		return res;
 	}
 
-	static parseInputValue(configType, element) {
+	static parseInputValue(configType, element): string | number | boolean {
 		const { value } = element;
 		if (configType === String) return String(value);
 		if (configType === Number) return Number(value);
@@ -100,7 +101,7 @@ class DOMManager {
 		throw new Error(`Invalid configType: ${configType}`);
 	}
 
-	static getInputType(configType) {
+	static getInputType(configType: Class<String> | Class<Number> | Class<Boolean>): string {
 		if (configType === String) return "text";
 		if (configType === Number) return "number";
 		if (configType === Boolean) return "checkbox";
@@ -108,7 +109,7 @@ class DOMManager {
 		throw new Error(`Invalid configType: ${configType}`);
 	}
 
-	static getDefaultAttr(configType, defaultValue) {
+	static getDefaultAttr(configType: Class<String> | Class<Number> | Class<Boolean>, defaultValue: any): string {
 		if (configType === Boolean) {
 			if (defaultValue === true) {
 				return "checked = 'checked'";
@@ -121,7 +122,7 @@ class DOMManager {
 		throw new Error(`Invalid configType: ${configType}`);
 	}
 
-	static generateOptionsForm(formHolderId, options) {
+	static generateOptionsForm(formHolderId: string, options: { [string]: Option }): string {
 		DOMManager.sourceOptions[formHolderId] = [];
 
 		let resHTML = "";
@@ -137,14 +138,14 @@ class DOMManager {
 		return resHTML;
 	}
 
-	static handleSubFilterChange(e) {
+	static handleSubFilterChange(e: {}): void {
 		const filter = Utils.getFilter(e.target.value);
 		DOMManager.selectedLayoutFilter = filter;
 		document.getElementById("subFilterOptionsHolder").innerHTML = DOMManager.generateOptionsForm("subFilterOptions", filter.class.getOptions());
 		DOMManager.updateDefaultsOptionValues();
 	}
 
-	static handleMainFilterChange(e) {
+	static handleMainFilterChange(e: {}): void {
 		const filter = Utils.getFilter(e.target.value);
 		const formHolderId = "filterOptions";
 		const filterOptions = document.getElementById(formHolderId);
@@ -153,7 +154,7 @@ class DOMManager {
 		DOMManager.updateDefaultsOptionValues();
 	}
 
-	static handleLayoutChange(e) {
+	static handleLayoutChange(e: {}): void {
 		const layout = Utils.getLayout(e.target.value);
 		const formHolderId = "layoutOptions";
 		const filterOptions = document.getElementById(formHolderId);
@@ -162,20 +163,20 @@ class DOMManager {
 		DOMManager.updateDefaultsOptionValues();
 	}
 
-	static handleSelectedEventChange(e) {
+	static handleSelectedEventChange(e: {}): void {
 		if (e.target.value < window.logEntity.sourceApparitionLocations.length) window.selectedEvent = Number(e.target.value);
 		else window.selectedEvent = Number(window.logEntity.sourceApparitionLocations.length);
 		e.target.value = window.selectedEvent;
 	}
 
-	static syncMachinesList() {
+	static syncMachinesList(): void {
 		let resHTML = "";
 		document.getElementById("machineListTable").innerHTML = "";
 		let i = 1;
 		for (const [index, value] of window.logEntity.machines.entries()) {
-			resHTML += `<tr id="machRow_${value.address}" data-addr="${value.address}"><td>${i++}</td><td>${
+			resHTML += `<tr id="machRow_${value.address}" data-addr="${value.address}"><td>${i++}</td><td>${value.address}</td><td id="machClassification_${
 				value.address
-			}</td><td id="machClassification_${value.address}">${value.bandwidthClassification}</td><td>
+			}">${value.bandwidthClassification}</td><td>
 <button data-type="in">In</button>
 <button data-type="out">Out</button>
 </td></tr>`;
@@ -183,7 +184,7 @@ class DOMManager {
 		document.getElementById("machineListTable").innerHTML = resHTML;
 	}
 
-	static updateClassifications() {
+	static updateClassifications(): void {
 		for (const value of window.logEntity.machines.values()) {
 			const element = document.getElementById(`machClassification_${value.address}`);
 			if (!element) {
@@ -194,7 +195,7 @@ class DOMManager {
 		}
 	}
 
-	static updateDefaultsOptionValues() {
+	static updateDefaultsOptionValues(): void {
 		["filterOptions", "layoutOptions", "subFilterOptions"].forEach(optionType => {
 			DOMManager.sourceOptions[optionType].forEach((value, index) => {
 				const el = document.getElementById(value);
@@ -209,7 +210,7 @@ class DOMManager {
 		});
 	}
 
-	static async parseOverlayLog(e) {
+	static async parseOverlayLog(e: {}): void {
 		console.log("Overlay log read.");
 		const entryArray = await LogParserOverlay.parse(e.currentTarget.result.split("\n"));
 		console.log(`Parsed ${entryArray.length} lines from overlay log`);
@@ -223,7 +224,7 @@ class DOMManager {
 		DOMManager.updateDefaultsOptionValues();
 	}
 
-	static async parsePerformanceLog(e) {
+	static async parsePerformanceLog(e: {}): void {
 		console.log("Performance log read.");
 		const entryArray = await LogParserPerformance.parse(e.currentTarget.result.split("\n"));
 		console.log(`Parsed ${entryArray.length} lines from performance log`);
@@ -231,7 +232,7 @@ class DOMManager {
 		DOMManager.updateClassifications();
 	}
 
-	static getOptions(formHolderId, options) {
+	static getOptions(formHolderId: string, options: { [string]: Option }): { [string]: string | number | boolean } {
 		const resObj = {};
 		Object.keys(options).forEach(el => {
 			const option = options[el];
@@ -242,7 +243,7 @@ class DOMManager {
 		return resObj;
 	}
 
-	static synchronizeSigma(sigma) {
+	static synchronizeSigma(sigma: {}): void {
 		const graphHolder = sigma.helperHolder.graphHolder.filtered;
 		const unfilteredGraphHolder = sigma.helperHolder.graphHolder.original;
 		const { nodeHolder } = sigma.helperHolder;
@@ -269,7 +270,7 @@ class DOMManager {
 					type: "arrow"
 				};
 				const edgesFrom = edgesHolder.get(machineKey);
-				if(edgesFrom) {
+				if (edgesFrom) {
 					const edgeObj = edgesFrom.get(machineDest);
 					if (edgeObj) {
 						Object.assign(edge, edgeObj);
@@ -331,7 +332,7 @@ class DOMManager {
 		sigma.refresh();
 	}
 
-	static extractOptions() {
+	static extractOptions(): { filter: { [string]: string | number | boolean }, layout: { [string]: string | number | boolean } } {
 		const filterFormHolderId = "filterOptions";
 		const filterOptions = DOMManager.getOptions(filterFormHolderId, DOMManager.selectedFilter.class.getOptions());
 
@@ -344,7 +345,7 @@ class DOMManager {
 		};
 	}
 
-	static handleStateGraphChange(e) {
+	static handleStateGraphChange(e: {}): void {
 		const graphs = ["containerPrevious", "containerComparision", "containerCurrent"];
 
 		graphs.forEach(el => {
@@ -369,7 +370,7 @@ class DOMManager {
 		e.currentTarget.className += " active";
 	}
 
-	static synchronizeMachineListButtons(oldSigma, newSigma) {
+	static synchronizeMachineListButtons(oldSigma: {}, newSigma: {}): void {
 		const oldButtons = oldSigma.helperHolder.managedButtons;
 		oldButtons.forEach(button => {
 			button.style["border-style"] = "";
@@ -381,7 +382,7 @@ class DOMManager {
 		});
 	}
 
-	static handleMachineListButtonClick(e) {
+	static handleMachineListButtonClick(e: {}): void {
 		const button = e.target;
 		const { type } = button.dataset;
 		if (!type) {
@@ -413,7 +414,7 @@ class DOMManager {
 		}
 	}
 
-	static changeSelectedNode(node) {
+	static changeSelectedNode(node: Node): void {
 		if (DOMManager.selectedNode) {
 			document.getElementById(`machRow_${DOMManager.selectedNode.id}`).classList.remove("active");
 		}
@@ -421,18 +422,16 @@ class DOMManager {
 		document.getElementById(`machRow_${node.id}`).classList.add("active");
 	}
 
-	static handleSigmaClick(e) {
+	static handleSigmaClick(e: {}): void {
 		DOMManager.changeSelectedNode(e.data.node);
 		// DOMManager.displayAllToRelations(e.data.node, e.target);
 	}
 
-	static handleLayoutPreservationChange(e) {
+	static handleLayoutPreservationChange(e: {}): void {
 		DOMManager.layoutPreservation = e.target.checked;
 	}
 
-	static isFirstIteration = true;
-
-	static drawGraph(goToState, filterOptions, layoutOptions) {
+	static drawGraph(goToState: Number, filterOptions: { [string]: Option }, layoutOptions: { [string]: Option }): void {
 		if (!DOMManager.selectedLayoutFilter) throw new Error("Layout Options missing subfilter");
 
 		const { graphManager } = window;
@@ -529,22 +528,22 @@ class DOMManager {
 		DOMManager.isFirstIteration = false;
 	}
 
-	static displayAllToRelations(node, sigma) {
+	static displayAllToRelations(node: Node, sigma: {}): void {
 		sigma.helperHolder.byPassOutNodes.push(node);
 		DOMManager.synchronizeSigma(sigma);
 	}
 
-	static displayAllFromRelations(node, sigma) {
+	static displayAllFromRelations(node: Node, sigma: {}): void {
 		sigma.helperHolder.byPassInNodes.push(node);
 		DOMManager.synchronizeSigma(sigma);
 	}
 
-	static hideAllToRelations(node, sigma) {
+	static hideAllToRelations(node: Node, sigma:{}): void {
 		sigma.helperHolder.byPassOutNodes.splice(sigma.helperHolder.byPassOutNodes.indexOf(node), 1);
 		DOMManager.synchronizeSigma(sigma);
 	}
 
-	static hideAllFromRelations(node, sigma) {
+	static hideAllFromRelations(node: Node, sigma: {}): void {
 		sigma.helperHolder.byPassInNodes.splice(sigma.helperHolder.byPassInNodes.indexOf(node), 1);
 		DOMManager.synchronizeSigma(sigma);
 	}

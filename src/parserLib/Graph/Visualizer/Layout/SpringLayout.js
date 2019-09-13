@@ -2,6 +2,7 @@
 import Layout from "./Layout";
 import FilterResult from "../../Filter/Results/FilterResult";
 import Machine from "../../../Machine";
+import Option from "../../../Option";
 
 class SpringLayout extends Layout {
 	constructor(filterResult: FilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
@@ -29,9 +30,7 @@ class SpringLayout extends Layout {
 
 		adjacentVertices.forEach(adjacentMachine => {
 			const adjacentNodeHolderElement = this.nodeHolder.get(adjacentMachine);
-			const d = Math.sqrt(
-				Math.pow(nodeHolderElement.x - adjacentNodeHolderElement.x, 2) + Math.pow(nodeHolderElement.y - adjacentNodeHolderElement.y, 2)
-			);
+			const d = Math.sqrt(Math.pow(nodeHolderElement.x - adjacentNodeHolderElement.x, 2) + Math.pow(nodeHolderElement.y - adjacentNodeHolderElement.y, 2));
 			if (d === 0) return;
 
 			const force = this.options.c1 * Math.log(d / this.options.c2);
@@ -57,9 +56,7 @@ class SpringLayout extends Layout {
 
 		nonAdjacentVertices.forEach(nonAdjacentMachine => {
 			const nonAdjacentNodeHolderElement = this.nodeHolder.get(nonAdjacentMachine);
-			const d = Math.sqrt(
-				Math.pow(nodeHolderElement.x - nonAdjacentNodeHolderElement.x, 2) + Math.pow(nodeHolderElement.y - nonAdjacentNodeHolderElement.y, 2)
-			);
+			const d = Math.sqrt(Math.pow(nodeHolderElement.x - nonAdjacentNodeHolderElement.x, 2) + Math.pow(nodeHolderElement.y - nonAdjacentNodeHolderElement.y, 2));
 			if (d === 0) return;
 
 			const force = this.options.c3 / Math.pow(d, 2);
@@ -110,36 +107,12 @@ class SpringLayout extends Layout {
 	static getOptions(): { [string]: any } {
 		let options = super.getOptions();
 		options = Object.assign(options, {
-			c1: {
-				name: "C1",
-				type: Number,
-				default: 2
-			},
-			c2: {
-				name: "C2",
-				type: Number,
-				default: 1
-			},
-			c3: {
-				name: "C3",
-				type: Number,
-				default: 1
-			},
-			c4: {
-				name: "C4",
-				type: Number,
-				default: 0.1
-			},
-			iterNum: {
-				name: "Iteration Number",
-				type: Number,
-				default: 100
-			},
-			drawUndefinedNodes: {
-				name: "Draw undefined nodes",
-				type: Boolean,
-				default: false
-			}
+			c1: new Option("C1", Number, 2),
+			c2: new Option("C2", Number, 1),
+			c3: new Option("C3", Number, 1),
+			c4: new Option("C4", Number, 0.1),
+			iterNum: new Option("Iteration Number", Number, 100),
+			drawUndefinedNodes: new Option("Draw undefined nodes", Boolean, false)
 		});
 		return options;
 	}

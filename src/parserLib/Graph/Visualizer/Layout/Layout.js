@@ -7,6 +7,7 @@ import Filter from "../../Filter/Filter";
 import FilterResult from "../../Filter/Results/FilterResult";
 import GraphHolder from "../../GraphHolder";
 import Machine from "../../../Machine";
+import Option from "../../../Option";
 
 class Layout {
 	filterResult: FilterResult;
@@ -74,12 +75,9 @@ class Layout {
 
 	updatePositions(): void {}
 
-	static getOptions(): {} {
+	static getOptions(): { [string]: Option } {
 		return {
-			filter: {
-				name: "Filter",
-				type: Filter
-			}
+			filter: new Option("Filter", Filter)
 		};
 	}
 

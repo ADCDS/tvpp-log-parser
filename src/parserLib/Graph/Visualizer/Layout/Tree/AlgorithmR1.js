@@ -4,6 +4,7 @@ import TreeFilter from "../../../Filter/Tree/TreeFilter";
 import TreeFilterResult from "../../../Filter/Results/TreeFilterResult";
 import Machine from "../../../../Machine";
 import TreeLayout from "./TreeLayout";
+import Option from "../../../../Option";
 
 class AlgorithmR1 extends TreeLayout {
 	constructor(filterResult: TreeFilterResult<TreeFilter>, machines: Map<string, Machine>, options: { [string]: any }) {
@@ -115,25 +116,9 @@ class AlgorithmR1 extends TreeLayout {
 	static getOptions(): {} {
 		let options = super.getOptions();
 		options = Object.assign(options, {
-			gamma: {
-				name: "Gamma",
-				type: Number,
-				default: 200
-			},
-			source: {
-				name: "Source",
-				type: String,
-				default: "::src"
-			},
-			drawUndefinedNodes: {
-				name: "Draw undefined nodes",
-				type: Boolean,
-				default: false
-			},
-			filter: {
-				name: "Filter",
-				type: TreeFilter
-			}
+			gamma: new Option("Gamma", Number, 200),
+			source: new Option("Source", String, "::src"),
+			drawUndefinedNodes: new Option("Draw undefined nodes", Boolean, false)
 		});
 		return options;
 	}

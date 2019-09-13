@@ -1,6 +1,7 @@
 // @flow
 import GraphHolder from "../GraphHolder";
 import FilterResult from "./Results/FilterResult";
+import Option from "../../Option";
 
 class Filter {
 	options: { [string]: any };
@@ -13,7 +14,7 @@ class Filter {
 		return new FilterResult<Filter>(graphHolder);
 	}
 
-	static getOptions(): { [string]: any } {
+	static getOptions(): { [string]: Option } {
 		return {};
 	}
 }

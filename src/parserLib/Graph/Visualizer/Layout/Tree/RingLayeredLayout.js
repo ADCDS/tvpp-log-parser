@@ -4,6 +4,7 @@ import TreeFilterResult from "../../../Filter/Results/TreeFilterResult";
 import TreeFilter from "../../../Filter/Tree/TreeFilter";
 import TreeLayout from "./TreeLayout";
 import Machine from "../../../../Machine";
+import Option from "../../../../Option";
 
 class RingLayeredLayout extends TreeLayout {
 	constructor(filterResult: TreeFilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
@@ -43,8 +44,10 @@ class RingLayeredLayout extends TreeLayout {
 
 		nodes.forEach(el => {
 			// Treat vertices that are not connected to the source node
-			const distanceFromSourceEl = this.filterResult.distancesFromSource[el];
-			if (distanceFromSourceEl === -Infinity) this.filterResult.distancesFromSource[el] = highestSourceDistance + 1;
+			let distanceFromSourceEl = this.filterResult.distancesFromSource[el];
+			if (distanceFromSourceEl === -Infinity){
+				this.filterResult.distancesFromSource[el] = distanceFromSourceEl = highestSourceDistance + 1;
+			}
 			if (Object.prototype.hasOwnProperty.call(numberOfNodesAtRing, distanceFromSourceEl)) {
 				numberOfNodesAtRing[distanceFromSourceEl]++;
 			} else {
@@ -69,28 +72,12 @@ class RingLayeredLayout extends TreeLayout {
 		});
 	}
 
-	static getOptions(): {} {
+	static getOptions(): {[string]: Option} {
 		let options = super.getOptions();
 		options = Object.assign(options, {
-			radius: {
-				name: "Radius",
-				type: Number,
-				default: 100
-			},
-			source: {
-				name: "Source",
-				type: String,
-				default: "::src"
-			},
-			drawUndefinedNodes: {
-				name: "Draw undefined nodes",
-				type: Boolean,
-				default: false
-			},
-			filter: {
-				name: "Filter",
-				type: TreeFilter
-			}
+			radius: new Option("Radius", Number, 100),
+			drawUndefinedNodes: new Option("Draw undefined nodes", Boolean, false),
+			filter: new Option("Filter", TreeFilter)
 		});
 		return options;
 	}

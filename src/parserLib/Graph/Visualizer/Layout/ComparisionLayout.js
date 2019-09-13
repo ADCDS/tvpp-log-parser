@@ -5,6 +5,7 @@ import GraphHolder from "../../GraphHolder";
 import Machine from "../../../Machine";
 import Filter from "../../Filter/Filter";
 import Edge from "../Edge";
+import Option from "../../../Option";
 
 class ComparisionLayout extends Layout {
 	mainGraphHolder: GraphHolder;
@@ -56,7 +57,7 @@ class ComparisionLayout extends Layout {
 		}
 	}
 
-	static getOptions(): { [string]: any } {
+	static getOptions(): { [string]: Option } {
 		return {};
 	}
 }

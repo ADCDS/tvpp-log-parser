@@ -64,16 +64,6 @@ class DijkstraFilter extends TreeFilter {
 
 		return new TreeFilterResult<DijkstraFilter>(newGraphHolder, distancesFromSource, fathers);
 	}
-
-	static getOptions(): {} {
-		return {
-			source: {
-				name: "Source",
-				type: String,
-				default: "::src"
-			}
-		};
-	}
 }
 
 export default DijkstraFilter;
