@@ -9,7 +9,6 @@ import Node from "../../../parserLib/Graph/Visualizer/Node";
 import DOMUtils from "./Utils.js";
 import Variables from "./Variables";
 class Manager {
-
 	static init(): void {
 		// Show starting options
 
@@ -139,10 +138,10 @@ class Manager {
 
 	static updateClassifications(): void {
 		for (const value of window.logEntity.machines.values()) {
-			try{
+			try {
 				const element = DOMUtils.getElementById(`machClassification_${value.address}`);
 				element.innerHTML = value.bandwidthClassification;
-			}catch (e) {
+			} catch (e) {
 				console.log(`Machine ${value.address} appears on Perfomance Log but doesn't appear mainly at Overlay Log`);
 			}
 		}
@@ -212,29 +211,31 @@ class Manager {
 		}
 
 		// Add edges
-		for (const machineKey of nodeHolder.keys()) {
-			const edgesTo = graphHolder.getOutgoingEdges(machineKey);
-			edgesTo.forEach(machineDest => {
-				const edge = {
-					id: `${machineKey}_>_${machineDest}`,
-					source: machineKey,
-					target: machineDest,
-					size: 2,
-					type: "arrow"
-				};
-				const edgesFrom = edgesHolder.get(machineKey);
-				if (edgesFrom) {
-					const edgeObj = edgesFrom.get(machineDest);
-					if (edgeObj) {
-						Object.assign(edge, edgeObj);
+		if (!Variables.disableEdges) {
+			for (const machineKey of nodeHolder.keys()) {
+				const edgesTo = graphHolder.getOutgoingEdges(machineKey);
+				edgesTo.forEach(machineDest => {
+					const edge = {
+						id: `${machineKey}_>_${machineDest}`,
+						source: machineKey,
+						target: machineDest,
+						size: 2,
+						type: "arrow"
+					};
+					const edgesFrom = edgesHolder.get(machineKey);
+					if (edgesFrom) {
+						const edgeObj = edgesFrom.get(machineDest);
+						if (edgeObj) {
+							Object.assign(edge, edgeObj);
+						}
 					}
-				}
-				try {
-					sigma.graph.addEdge(edge);
-				} catch (e) {
-					console.log(`Sigma exception: ${e}`);
-				}
-			});
+					try {
+						sigma.graph.addEdge(edge);
+					} catch (e) {
+						console.log(`Sigma exception: ${e}`);
+					}
+				});
+			}
 		}
 
 		// Update bypasses
@@ -298,8 +299,6 @@ class Manager {
 		};
 	}
 
-
-
 	static synchronizeMachineListButtons(oldSigma: {}, newSigma: {}): void {
 		const oldButtons = oldSigma.helperHolder.managedButtons;
 		oldButtons.forEach(button => {
@@ -317,7 +316,9 @@ class Manager {
 			DOMUtils.getElementById(`machRow_${Variables.selectedNode.id}`).classList.remove("active");
 		}
 		Variables.selectedNode = node;
-		DOMUtils.getElementById(`machRow_${node.id}`).classList.add("active");
+		const elementById = DOMUtils.getElementById(`machRow_${node.id}`);
+		elementById.scrollIntoView({ block: "nearest", inline: "start" });
+		elementById.classList.add("active");
 	}
 
 	static drawGraph(goToState: Number, filterOptions: { [string]: plOption }, layoutOptions: { [string]: plOption }): void {

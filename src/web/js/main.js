@@ -81,6 +81,7 @@ document.getElementById("prevEvent").addEventListener("click", e => {
 document.getElementById("draw").addEventListener("click", draw);
 
 document.getElementById("preserveCurrentLayout").addEventListener("change", HandleHolder.handleLayoutPreservationChange);
+document.getElementById("disableEdges").addEventListener("change", HandleHolder.handleDisableEdgesChange);
 
 (() => {
 	window.sigmaPrevious = new Sigma({

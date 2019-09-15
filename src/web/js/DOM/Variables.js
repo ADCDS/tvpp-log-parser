@@ -17,6 +17,8 @@ class Variables{
 
 	static layoutPreservation = false;
 
+	static disableEdges = true;
+
 	static isFirstIteration = true;
 }
 

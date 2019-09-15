@@ -15,6 +15,10 @@ class HandleHolder{
 		Variables.layoutPreservation = e.target.checked;
 	}
 
+	static handleDisableEdgesChange(e: {}): void {
+		Variables.disableEdges = e.target.checked;
+	}
+
 	static handleSubFilterChange(e: {}): void {
 		const filter = Utils.getFilter(e.target.value);
 		Variables.selectedLayoutFilter = filter;

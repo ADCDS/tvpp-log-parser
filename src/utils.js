@@ -11,31 +11,31 @@ const fs = require("fs");
 
 class Utils {
 	static filters = {
-		dijkstra: {
-			id: "dijkstra",
-			name: "Dijkstra Filter",
-			class: DijkstraFilter,
-			type: TreeFilter
-		},
 		empty: {
 			id: "empty",
 			name: "Empty Filter",
 			class: EmptyFilter,
 			type: Filter
+		},
+		dijkstra: {
+			id: "dijkstra",
+			name: "Dijkstra Filter",
+			class: DijkstraFilter,
+			type: TreeFilter
 		}
 	};
 
 	static layouts = {
-		algorithmR1: {
-			id: "algorithmR1",
-			name: "Algorithm R1",
-			class: AlgorithmR1,
-			graphConstraint: TreeFilter
-		},
 		ringLayeredLayout: {
 			id: "ringLayeredLayout",
 			name: "Ring Layered Layout",
 			class: RingLayeredLayout,
+			graphConstraint: TreeFilter
+		},
+		algorithmR1: {
+			id: "algorithmR1",
+			name: "Algorithm R1",
+			class: AlgorithmR1,
 			graphConstraint: TreeFilter
 		},
 		ringLayout: {
