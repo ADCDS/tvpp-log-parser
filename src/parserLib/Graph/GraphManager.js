@@ -7,6 +7,7 @@ class GraphManager {
 	logEntity: TVPPLog;
 	currentEventIndex: number;
 	currentSourceIndex: number;
+
 	graphHolder: GraphHolder;
 
 	constructor(logEntity: TVPPLog) {
@@ -14,6 +15,15 @@ class GraphManager {
 		this.currentEventIndex = 0;
 		this.currentSourceIndex = 0;
 		this.graphHolder = new GraphHolder(Array.from(this.logEntity.machines.keys()));
+	}
+
+	getCurrentTimestamp(): number {
+		const overlayEntry = this.logEntity.overlayEntryList[this.currentEventIndex];
+		return overlayEntry.timestamp;
+	}
+
+	getCurrentElapsedTime(): number {
+		return this.getCurrentTimestamp() - this.logEntity.overlayEntryList[0].timestamp;
 	}
 
 	syncMachines(): void {

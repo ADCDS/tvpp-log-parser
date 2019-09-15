@@ -328,8 +328,10 @@ class Manager {
 
 		const lastEventIndex = graphManager.currentEventIndex;
 		// We should store the last state on 'Previous Graph'
+
 		DOMUtils.getElementById("previousEvent").value = lastEventIndex;
 		DOMUtils.getElementById("previousStateEventId").innerHTML = `(${lastEventIndex})`;
+
 
 		if (!Variables.isFirstIteration) {
 			window.sigmaPrevious.helperHolder.nodeHolder = window.sigmaCurrent.helperHolder.nodeHolder;
@@ -340,6 +342,8 @@ class Manager {
 			if (!Variables.layoutPreservation) {
 				Manager.synchronizeSigma(window.sigmaPrevious);
 			}
+			DOMUtils.getElementById('previousEventTime').value = new Date(graphManager.getCurrentTimestamp() * 1000).toString();
+			DOMUtils.getElementById('previousEventElapsedTime').value = graphManager.getCurrentElapsedTime();
 		}
 
 		const FilterClass = Variables.selectedFilter.class;
@@ -407,13 +411,11 @@ class Manager {
 		window.sigmaCurrent.helperHolder.nodeHolder = layoutObj.nodeHolder;
 		Manager.synchronizeSigma(window.sigmaCurrent);
 
-		/**
-		 * Update DOM
-		 * Maybe this should be in DOMManager
-		 */
 		DOMUtils.getElementById("currentEvent").value = graphManager.currentEventIndex;
 		DOMUtils.getElementById("currentStateEventId").innerHTML = `(${graphManager.currentEventIndex})`;
 		DOMUtils.getElementById("comparisionStateEventId").innerHTML = `(${lastEventIndex}/${graphManager.currentEventIndex})`;
+		DOMUtils.getElementById('currentEventTime').value = new Date(graphManager.getCurrentTimestamp() * 1000).toString();
+		DOMUtils.getElementById('currentEventElapsedTime').value = graphManager.getCurrentElapsedTime();
 
 		Variables.isFirstIteration = false;
 	}
