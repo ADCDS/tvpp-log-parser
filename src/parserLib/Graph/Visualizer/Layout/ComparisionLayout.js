@@ -27,8 +27,13 @@ class ComparisionLayout extends Layout {
 		}
 		for (const machineKey of this.nodeHolder.keys()) {
 			const adjacentEdges = comparisionGraph.getEdges(machineKey);
-			Object.keys(adjacentEdges).forEach(to => {
-				const value = adjacentEdges[to];
+			const machineFrom = this.machines.get(machineKey);
+			if (!machineFrom) {
+				throw new Error(`Machine ${machineKey} not found `);
+			}
+
+			Object.keys(adjacentEdges).forEach(machineKeyTo => {
+				const value = adjacentEdges[machineKeyTo];
 				if (value) {
 					// We have a graph modification here, lets paint destination node and the edgeMap itself
 					// this.nodeHolder[machineKey].color = this.options.colorMap[this.machines[machineKey].bandwidthClassification];
@@ -40,17 +45,17 @@ class ComparisionLayout extends Layout {
 						edgeMap = map;
 					}
 
-					const machine = this.machines.get(machineKey);
-					if (!machine) {
+					const machineTo = this.machines.get(machineKeyTo);
+					if (!machineTo) {
 						throw new Error(`Machine ${machineKey} not found `);
 					}
 
-					const edgeObj = new Edge(this.options.colorMap[machine.bandwidthClassification]);
-					edgeMap.set(to, edgeObj);
+					const edgeObj = new Edge(this.options.colorMap[machineFrom.bandwidthClassification]);
+					edgeMap.set(machineKeyTo, edgeObj);
 
-					const nodeHolderElement = this.nodeHolder.get(to);
+					const nodeHolderElement = this.nodeHolder.get(machineKeyTo);
 					if (nodeHolderElement) {
-						nodeHolderElement.color = this.options.colorMap[machine.bandwidthClassification];
+						nodeHolderElement.color = this.options.colorMap[machineTo.bandwidthClassification];
 					}
 				}
 			});
