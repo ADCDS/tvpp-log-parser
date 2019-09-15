@@ -7,7 +7,7 @@ import Machine from "../../../../Machine";
 import Option from "../../../../Option";
 
 class RingLayeredLayout extends TreeLayout {
-	constructor(filterResult: TreeFilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
+	constructor(filterResult: TreeFilterResult<TreeFilter>, machines: Map<string, Machine>, options: { [string]: any }) {
 		const defaultOptions = {
 			radius: 100,
 			drawUndefinedNodes: false
@@ -21,32 +21,36 @@ class RingLayeredLayout extends TreeLayout {
 		super.updatePositions();
 
 		// Distances preprocessor
-		const numberOfNodesAtRing = { 0: 1 };
-		const iterNumRing = { 0: 0 };
+		const numberOfNodesAtRing = { "0": 1 };
+		const iterNumRing = { "0": 0 };
 
-		/**
-		 * Lets pull all infinity nodes to the beginning of the list
-		 * In order to be able to get the highest distance from the 'source' node,
-		 * and draw the nodes that are not connected to the 'source' node at the outer ring
-		 *
-		 * I believe that this can be optimized
-		 */
-		Object.keys(this.filterResult.distancesFromSource).forEach(index => {
-			if (this.filterResult.distancesFromSource[index] === Infinity)
-				this.filterResult.distancesFromSource[index] = -Infinity;
-		});
+		let nodes = Object.keys(this.filterResult.distancesFromSource);
+		const highestSourceDistance = nodes
+			.map<number>(value => this.filterResult.distancesFromSource[value])
+			.filter(value => value !== Infinity)
+			.reduce((previousValue, currentValue) => {
+				if (currentValue >= previousValue) {
+					return currentValue;
+				}
+				return previousValue;
+			});
 
-		const nodes = Object.keys(this.filterResult.distancesFromSource).sort((e1, e2) => {
-			return this.filterResult.distancesFromSource[e1] - this.filterResult.distancesFromSource[e2];
-		});
-
-		const highestSourceDistance = this.filterResult.distancesFromSource[nodes[nodes.length - 1]];
+		if(!this.options.drawUndefinedNodes){
+			nodes = nodes.filter(value => {
+				if(this.filterResult.distancesFromSource[value] === Infinity){
+					this.nodeHolder.delete(value);
+					return false;
+				}
+				return true;
+			});
+		}
 
 		nodes.forEach(el => {
 			// Treat vertices that are not connected to the source node
 			let distanceFromSourceEl = this.filterResult.distancesFromSource[el];
-			if (distanceFromSourceEl === -Infinity){
-				this.filterResult.distancesFromSource[el] = distanceFromSourceEl = highestSourceDistance + 1;
+			if (distanceFromSourceEl === Infinity) {
+				this.filterResult.distancesFromSource[el] = highestSourceDistance + 1;
+				distanceFromSourceEl = this.filterResult.distancesFromSource[el];
 			}
 			if (Object.prototype.hasOwnProperty.call(numberOfNodesAtRing, distanceFromSourceEl)) {
 				numberOfNodesAtRing[distanceFromSourceEl]++;
@@ -72,7 +76,7 @@ class RingLayeredLayout extends TreeLayout {
 		});
 	}
 
-	static getOptions(): {[string]: Option} {
+	static getOptions(): { [string]: Option } {
 		let options = super.getOptions();
 		options = Object.assign(options, {
 			radius: new Option("Radius", Number, 100),

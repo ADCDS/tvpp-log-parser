@@ -5,7 +5,8 @@ import TVPPLog from "../../parserLib/TVPPLog";
 import GraphManager from "../../parserLib/Graph/GraphManager";
 import DijkstraFilter from "../../parserLib/Graph/Filter/Tree/DijkstraFilter";
 import AlgorithmR1 from "../../parserLib/Graph/Visualizer/Layout/Tree/AlgorithmR1";
-import DOMManager from "./DOMManager";
+import HandleHolder from "./DOM/HandleHolder";
+import Manager from "./DOM/Manager";
 
 const Sigma = require("sigma");
 
@@ -23,8 +24,8 @@ window.LayoutTypeOptions = {};
 window.selectedEvent = 0;
 
 function draw() {
-	const options = DOMManager.extractOptions();
-	DOMManager.drawGraph(window.selectedEvent, options.filter, options.layout);
+	const options = Manager.extractOptions();
+	Manager.drawGraph(window.selectedEvent, options.filter, options.layout);
 }
 
 function createHandler(onLoadCb) {
@@ -39,27 +40,27 @@ function createHandler(onLoadCb) {
 	};
 }
 
-document.getElementById("logOverlayFile").addEventListener("change", createHandler(DOMManager.parseOverlayLog), false);
+document.getElementById("logOverlayFile").addEventListener("change", createHandler(Manager.parseOverlayLog), false);
 
-document.getElementById("logPerformanceFile").addEventListener("change", createHandler(DOMManager.parsePerformanceLog), false);
+document.getElementById("logPerformanceFile").addEventListener("change", createHandler(Manager.parsePerformanceLog), false);
 
-document.getElementById("filterType").addEventListener("change", DOMManager.handleMainFilterChange);
+document.getElementById("filterType").addEventListener("change", HandleHolder.handleMainFilterChange);
 
-document.getElementById("layoutType").addEventListener("change", DOMManager.handleLayoutChange);
+document.getElementById("layoutType").addEventListener("change", HandleHolder.handleLayoutChange);
 
-document.getElementById("selectedEventNumber").addEventListener("change", DOMManager.handleSelectedEventChange);
+document.getElementById("selectedEventNumber").addEventListener("change", HandleHolder.handleSelectedEventChange);
 
 Array.from(document.getElementsByClassName("tablinks")).forEach(el => {
-	el.addEventListener("click", DOMManager.handleStateGraphChange);
+	el.addEventListener("click", HandleHolder.handleStateGraphChange);
 });
 
 document.addEventListener("click", e => {
 	if (e.target && e.target.id === "_mainlayoutOptions_filter") {
-		DOMManager.handleSubFilterChange(e);
+		HandleHolder.handleSubFilterChange(e);
 	}
 });
 
-document.getElementById("machineListTable").addEventListener("click", DOMManager.handleMachineListButtonClick);
+document.getElementById("machineListTable").addEventListener("click", HandleHolder.handleMachineListButtonClick);
 
 document.getElementById("nextEvent").addEventListener("click", e => {
 	const drawButtonDOM = document.getElementById("draw");
@@ -79,7 +80,7 @@ document.getElementById("prevEvent").addEventListener("click", e => {
 
 document.getElementById("draw").addEventListener("click", draw);
 
-document.getElementById("preserveCurrentLayout").addEventListener("change", DOMManager.handleLayoutPreservationChange);
+document.getElementById("preserveCurrentLayout").addEventListener("change", HandleHolder.handleLayoutPreservationChange);
 
 (() => {
 	window.sigmaPrevious = new Sigma({
@@ -92,7 +93,7 @@ document.getElementById("preserveCurrentLayout").addEventListener("change", DOMM
 			autoResize: false
 		}
 	});
-	window.sigmaPrevious.bind("clickNode", DOMManager.handleSigmaClick);
+	window.sigmaPrevious.bind("clickNode", HandleHolder.handleSigmaClick);
 	window.sigmaPrevious.helperHolder = {
 		edgesHolder: {},
 		managedButtons: [],
@@ -110,7 +111,7 @@ document.getElementById("preserveCurrentLayout").addEventListener("change", DOMM
 			autoResize: false
 		}
 	});
-	window.sigmaComparision.bind("clickNode", DOMManager.handleSigmaClick);
+	window.sigmaComparision.bind("clickNode", HandleHolder.handleSigmaClick);
 	window.sigmaComparision.helperHolder = {
 		edgesHolder: {},
 		managedButtons: [],
@@ -134,9 +135,9 @@ document.getElementById("preserveCurrentLayout").addEventListener("change", DOMM
 		byPassInNodes: [],
 		byPassOutNodes: []
 	};
-	window.sigmaCurrent.bind("clickNode", DOMManager.handleSigmaClick);
+	window.sigmaCurrent.bind("clickNode", HandleHolder.handleSigmaClick);
 
-	DOMManager.init();
+	Manager.init();
 	console.log("App started");
 
 	const overlayFileEl = document.getElementById("logOverlayFile");

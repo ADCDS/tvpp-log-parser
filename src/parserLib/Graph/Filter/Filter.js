@@ -1,7 +1,9 @@
 // @flow
 import GraphHolder from "../GraphHolder";
 import FilterResult from "./Results/FilterResult";
-import Option from "../../Option";
+
+// Avoid dependency cycle
+class Option {}
 
 class Filter {
 	options: { [string]: any };

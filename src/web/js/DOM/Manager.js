@@ -1,32 +1,14 @@
 // @flow
-import Utils from "../../utils";
-import Filter from "../../parserLib/Graph/Filter/Filter";
-import LogParserOverlay from "../../parserLib/Log/Overlay/LogParserOverlay";
-import LogParserPerformance from "../../parserLib/Log/Performance/LogParserPerformance";
-import ComparisionLayout from "../../parserLib/Graph/Visualizer/Layout/ComparisionLayout";
-import Option from "../../parserLib/Option";
-import Node from "../../parserLib/Graph/Visualizer/Node";
-
-class DOMManager {
-	static sourceOptions = {
-		filterOptions: [],
-		layoutOptions: [],
-		subFilterOptions: []
-	};
-
-	static selectedFilter = null;
-
-	static selectedLayout = null;
-
-	static selectedLayoutFilter = null;
-
-	static selectedNode = null;
-
-	static selectedSigma = null;
-
-	static layoutPreservation = false;
-
-	static isFirstIteration = true;
+import Utils from "../../../utils";
+import Filter from "../../../parserLib/Graph/Filter/Filter";
+import LogParserOverlay from "../../../parserLib/Log/Overlay/LogParserOverlay";
+import LogParserPerformance from "../../../parserLib/Log/Performance/LogParserPerformance";
+import ComparisionLayout from "../../../parserLib/Graph/Visualizer/Layout/ComparisionLayout";
+import plOption from "../../../parserLib/Option";
+import Node from "../../../parserLib/Graph/Visualizer/Node";
+import DOMUtils from "./Utils.js";
+import Variables from "./Variables";
+class Manager {
 
 	static init(): void {
 		// Show starting options
@@ -35,19 +17,19 @@ class DOMManager {
 		const availableFilters = Utils.filters;
 		const availableLayouts = Utils.layouts;
 
-		const filterTypeDOM = document.getElementById("filterType");
-		const layoutTypeDOM = document.getElementById("layoutType");
+		const filterTypeDOM = DOMUtils.getGenericElementById<HTMLSelectElement>("filterType");
+		const layoutTypeDOM = DOMUtils.getGenericElementById<HTMLSelectElement>("layoutType");
 
 		const availableFiltersKeys = Object.keys(availableFilters);
 		availableFiltersKeys.forEach(el => {
 			const value = availableFilters[el];
-			filterTypeDOM.innerHTML += `<option value='${value.id}'>${value.name}</option>`;
+			filterTypeDOM.add(new Option(value.name, value.id));
 		});
 
 		const availableLayoutsKeys = Object.keys(availableLayouts);
 		availableLayoutsKeys.forEach(index => {
 			const value = availableLayouts[index];
-			layoutTypeDOM.innerHTML += `<option value='${value.id}'>${value.name}</option>`;
+			layoutTypeDOM.add(new Option(value.name, value.id));
 		});
 
 		// Select default elements
@@ -57,15 +39,15 @@ class DOMManager {
 		layoutTypeDOM.value = availableLayouts[availableLayoutsKeys[0]].id;
 		layoutTypeDOM.dispatchEvent(new Event("change"));
 
-		document.getElementById("btnCurrentState").dispatchEvent(new Event("click"));
+		DOMUtils.getElementById("btnCurrentState").dispatchEvent(new Event("click"));
 	}
 
-	static getInputFromOption(inputId: string, option: Option): string {
-		if (!(option.type.prototype instanceof Filter || option.type === Filter)) {
+	static getInputFromOption(inputId: string, option: plOption): string {
+		if (!option.isFilter()) {
 			// If we are not dealing with a filter
-			const inputType = DOMManager.getInputType(option.type);
+			const inputType = Manager.getInputType(option.type);
 
-			return `<label for='${inputId}'>${option.name}</label><input id ='${inputId}' type='${inputType}' ${DOMManager.getDefaultAttr(option.type, option.default)}>`;
+			return `<label for='${inputId}'>${option.name}</label><input id ='${inputId}' type='${inputType}' ${Manager.getDefaultAttr(option.type, option.default)}>`;
 		}
 		// If we area dealing with a filter option
 
@@ -80,23 +62,25 @@ class DOMManager {
 
 		// Generate sub filter config option
 		// Default filter
-		[DOMManager.selectedLayoutFilter] = availableFilters;
-		const filter = DOMManager.selectedLayoutFilter;
+		[Variables.selectedLayoutFilter] = availableFilters;
+		const filter = Variables.selectedLayoutFilter;
 		res += "<div id='subFilterOptionsHolder'>";
-		res += DOMManager.generateOptionsForm("subFilterOptions", filter.class.getOptions());
+		res += Manager.generateOptionsForm("subFilterOptions", filter.class.getOptions());
 		res += "</div></div>";
 		return res;
 	}
 
-	static parseInputValue(configType, element): string | number | boolean {
+	static parseInputValue(configType: string, element: HTMLInputElement): string | number | boolean {
 		const { value } = element;
 		if (configType === String) return String(value);
 		if (configType === Number) return Number(value);
 		if (configType === Boolean) return element.checked;
 
+		// eslint-disable-next-line flowtype-errors/show-errors
 		if (configType.prototype instanceof Filter || configType === Filter) {
 			const layoutFilterFormHolderId = "subFilterOptions";
-			return DOMManager.getOptions(layoutFilterFormHolderId, DOMManager.selectedLayoutFilter.class.getOptions());
+			// eslint-disable-next-line flowtype-errors/show-errors
+			return Manager.getOptions(layoutFilterFormHolderId, Variables.selectedLayoutFilter.class.getOptions());
 		}
 		throw new Error(`Invalid configType: ${configType}`);
 	}
@@ -122,8 +106,8 @@ class DOMManager {
 		throw new Error(`Invalid configType: ${configType}`);
 	}
 
-	static generateOptionsForm(formHolderId: string, options: { [string]: Option }): string {
-		DOMManager.sourceOptions[formHolderId] = [];
+	static generateOptionsForm(formHolderId: string, options: { [string]: plOption }): string {
+		Variables.sourceOptions[formHolderId] = [];
 
 		let resHTML = "";
 		Object.keys(options).forEach(el => {
@@ -131,49 +115,18 @@ class DOMManager {
 
 			const inputId = `_main${formHolderId}_${el}`;
 			if (option.default === "::src") {
-				DOMManager.sourceOptions[formHolderId].push(inputId);
+				Variables.sourceOptions[formHolderId].push(inputId);
 			}
-			resHTML += DOMManager.getInputFromOption(inputId, option);
+			resHTML += Manager.getInputFromOption(inputId, option);
 		});
 		return resHTML;
 	}
 
-	static handleSubFilterChange(e: {}): void {
-		const filter = Utils.getFilter(e.target.value);
-		DOMManager.selectedLayoutFilter = filter;
-		document.getElementById("subFilterOptionsHolder").innerHTML = DOMManager.generateOptionsForm("subFilterOptions", filter.class.getOptions());
-		DOMManager.updateDefaultsOptionValues();
-	}
-
-	static handleMainFilterChange(e: {}): void {
-		const filter = Utils.getFilter(e.target.value);
-		const formHolderId = "filterOptions";
-		const filterOptions = document.getElementById(formHolderId);
-		DOMManager.selectedFilter = filter;
-		filterOptions.innerHTML = DOMManager.generateOptionsForm(formHolderId, filter.class.getOptions());
-		DOMManager.updateDefaultsOptionValues();
-	}
-
-	static handleLayoutChange(e: {}): void {
-		const layout = Utils.getLayout(e.target.value);
-		const formHolderId = "layoutOptions";
-		const filterOptions = document.getElementById(formHolderId);
-		DOMManager.selectedLayout = layout;
-		filterOptions.innerHTML = DOMManager.generateOptionsForm(formHolderId, layout.class.getOptions());
-		DOMManager.updateDefaultsOptionValues();
-	}
-
-	static handleSelectedEventChange(e: {}): void {
-		if (e.target.value < window.logEntity.sourceApparitionLocations.length) window.selectedEvent = Number(e.target.value);
-		else window.selectedEvent = Number(window.logEntity.sourceApparitionLocations.length);
-		e.target.value = window.selectedEvent;
-	}
-
 	static syncMachinesList(): void {
 		let resHTML = "";
-		document.getElementById("machineListTable").innerHTML = "";
+		DOMUtils.getElementById("machineListTable").innerHTML = "";
 		let i = 1;
-		for (const [index, value] of window.logEntity.machines.entries()) {
+		for (const value of window.logEntity.machines.values()) {
 			resHTML += `<tr id="machRow_${value.address}" data-addr="${value.address}"><td>${i++}</td><td>${value.address}</td><td id="machClassification_${
 				value.address
 			}">${value.bandwidthClassification}</td><td>
@@ -181,12 +134,12 @@ class DOMManager {
 <button data-type="out">Out</button>
 </td></tr>`;
 		}
-		document.getElementById("machineListTable").innerHTML = resHTML;
+		DOMUtils.getElementById("machineListTable").innerHTML = resHTML;
 	}
 
 	static updateClassifications(): void {
 		for (const value of window.logEntity.machines.values()) {
-			const element = document.getElementById(`machClassification_${value.address}`);
+			const element = DOMUtils.getElementById(`machClassification_${value.address}`);
 			if (!element) {
 				console.log(`Machine ${value.address} appears on Perfomance Log but doesn't appear mainly at Overlay Log`);
 			} else {
@@ -197,10 +150,10 @@ class DOMManager {
 
 	static updateDefaultsOptionValues(): void {
 		["filterOptions", "layoutOptions", "subFilterOptions"].forEach(optionType => {
-			DOMManager.sourceOptions[optionType].forEach((value, index) => {
-				const el = document.getElementById(value);
+			Variables.sourceOptions[optionType].forEach((value, index) => {
+				const el = DOMUtils.getElementById(value);
 				if (!el) {
-					DOMManager.sourceOptions[optionType].splice(index, 1);
+					Variables.sourceOptions[optionType].splice(index, 1);
 					return;
 				}
 				if (window.logEntity.sourceMachineKey !== "" && el.value === "::src") {
@@ -216,12 +169,12 @@ class DOMManager {
 		console.log(`Parsed ${entryArray.length} lines from overlay log`);
 		window.logEntity.addOverlayEntries(entryArray);
 		window.graphManager.syncMachines();
-		document.getElementById("numberOfEvents").value = window.logEntity.sourceApparitionLocations.length;
-		document.getElementById("numberOfNodes").value = Object.keys(window.logEntity.machines).length;
-		DOMManager.syncMachinesList();
+		DOMUtils.getElementById("numberOfEvents").value = window.logEntity.sourceApparitionLocations.length;
+		DOMUtils.getElementById("numberOfNodes").value = Object.keys(window.logEntity.machines).length;
+		Manager.syncMachinesList();
 
 		// Update defaults ::src
-		DOMManager.updateDefaultsOptionValues();
+		Manager.updateDefaultsOptionValues();
 	}
 
 	static async parsePerformanceLog(e: {}): void {
@@ -229,16 +182,16 @@ class DOMManager {
 		const entryArray = await LogParserPerformance.parse(e.currentTarget.result.split("\n"));
 		console.log(`Parsed ${entryArray.length} lines from performance log`);
 		window.logEntity.addPerformanceEntries(entryArray);
-		DOMManager.updateClassifications();
+		Manager.updateClassifications();
 	}
 
-	static getOptions(formHolderId: string, options: { [string]: Option }): { [string]: string | number | boolean } {
+	static getOptions(formHolderId: string, options: { [string]: plOption }): { [string]: string | number | boolean } {
 		const resObj = {};
 		Object.keys(options).forEach(el => {
 			const option = options[el];
 			const inputId = `_main${formHolderId}_${el}`;
-			const element = document.getElementById(inputId);
-			resObj[el] = DOMManager.parseInputValue(option.type, element);
+			const element = DOMUtils.getElementById(inputId);
+			resObj[el] = Manager.parseInputValue(option.type, element);
 		});
 		return resObj;
 	}
@@ -334,10 +287,10 @@ class DOMManager {
 
 	static extractOptions(): { filter: { [string]: string | number | boolean }, layout: { [string]: string | number | boolean } } {
 		const filterFormHolderId = "filterOptions";
-		const filterOptions = DOMManager.getOptions(filterFormHolderId, DOMManager.selectedFilter.class.getOptions());
+		const filterOptions = Manager.getOptions(filterFormHolderId, Variables.selectedFilter.class.getOptions());
 
 		const layoutFormHolderId = "layoutOptions";
-		const layoutOptions = DOMManager.getOptions(layoutFormHolderId, DOMManager.selectedLayout.class.getOptions());
+		const layoutOptions = Manager.getOptions(layoutFormHolderId, Variables.selectedLayout.class.getOptions());
 
 		return {
 			filter: filterOptions,
@@ -345,30 +298,7 @@ class DOMManager {
 		};
 	}
 
-	static handleStateGraphChange(e: {}): void {
-		const graphs = ["containerPrevious", "containerComparision", "containerCurrent"];
 
-		graphs.forEach(el => {
-			document.getElementById(el).style.display = "none";
-		});
-
-		const tablinks = document.getElementsByClassName("tablinks");
-		for (let i = 0; i < tablinks.length; i++) {
-			tablinks[i].className = tablinks[i].className.replace(" active", "");
-		}
-		document.getElementById(e.currentTarget.dataset.graph).style.display = "block";
-
-		const sigmaObj = window[e.currentTarget.dataset.sigma];
-
-		if (DOMManager.selectedSigma) {
-			DOMManager.synchronizeMachineListButtons(DOMManager.selectedSigma, sigmaObj);
-		}
-
-		DOMManager.selectedSigma = sigmaObj;
-		sigmaObj.refresh();
-
-		e.currentTarget.className += " active";
-	}
 
 	static synchronizeMachineListButtons(oldSigma: {}, newSigma: {}): void {
 		const oldButtons = oldSigma.helperHolder.managedButtons;
@@ -382,79 +312,38 @@ class DOMManager {
 		});
 	}
 
-	static handleMachineListButtonClick(e: {}): void {
-		const button = e.target;
-		const { type } = button.dataset;
-		if (!type) {
-			const node = DOMManager.selectedSigma.helperHolder.nodeHolder[button.parentElement.dataset.addr];
-			if (node) DOMManager.changeSelectedNode(node);
-			return;
-		}
-		const machineId = button.parentElement.parentElement.dataset.addr;
-
-		const isPressed = button.style["border-style"] === "inset";
-		const { helperHolder } = DOMManager.selectedSigma;
-		if (!isPressed) {
-			if (type === "out") {
-				DOMManager.displayAllToRelations(machineId, DOMManager.selectedSigma);
-			} else {
-				DOMManager.displayAllFromRelations(machineId, DOMManager.selectedSigma);
-			}
-			helperHolder.managedButtons.push(button);
-
-			button.style["border-style"] = "inset";
-		} else {
-			if (type === "out") {
-				DOMManager.hideAllToRelations(machineId, DOMManager.selectedSigma);
-			} else {
-				DOMManager.hideAllFromRelations(machineId, DOMManager.selectedSigma);
-			}
-			helperHolder.managedButtons.splice(helperHolder.managedButtons.indexOf(button), 1);
-			button.style["border-style"] = "";
-		}
-	}
-
 	static changeSelectedNode(node: Node): void {
-		if (DOMManager.selectedNode) {
-			document.getElementById(`machRow_${DOMManager.selectedNode.id}`).classList.remove("active");
+		if (Variables.selectedNode) {
+			DOMUtils.getElementById(`machRow_${Variables.selectedNode.id}`).classList.remove("active");
 		}
-		DOMManager.selectedNode = node;
-		document.getElementById(`machRow_${node.id}`).classList.add("active");
+		Variables.selectedNode = node;
+		DOMUtils.getElementById(`machRow_${node.id}`).classList.add("active");
 	}
 
-	static handleSigmaClick(e: {}): void {
-		DOMManager.changeSelectedNode(e.data.node);
-		// DOMManager.displayAllToRelations(e.data.node, e.target);
-	}
-
-	static handleLayoutPreservationChange(e: {}): void {
-		DOMManager.layoutPreservation = e.target.checked;
-	}
-
-	static drawGraph(goToState: Number, filterOptions: { [string]: Option }, layoutOptions: { [string]: Option }): void {
-		if (!DOMManager.selectedLayoutFilter) throw new Error("Layout Options missing subfilter");
+	static drawGraph(goToState: Number, filterOptions: { [string]: plOption }, layoutOptions: { [string]: plOption }): void {
+		if (!Variables.selectedLayoutFilter) throw new Error("Layout Options missing subfilter");
 
 		const { graphManager } = window;
 
 		const lastEventIndex = graphManager.currentEventIndex;
 		// We should store the last state on 'Previous Graph'
-		document.getElementById("previousEvent").value = lastEventIndex;
-		document.getElementById("previousStateEventId").innerHTML = `(${lastEventIndex})`;
+		DOMUtils.getElementById("previousEvent").value = lastEventIndex;
+		DOMUtils.getElementById("previousStateEventId").innerHTML = `(${lastEventIndex})`;
 
-		if (!DOMManager.isFirstIteration) {
+		if (!Variables.isFirstIteration) {
 			window.sigmaPrevious.helperHolder.nodeHolder = window.sigmaCurrent.helperHolder.nodeHolder;
 			window.sigmaPrevious.helperHolder.edgesHolder = window.sigmaCurrent.helperHolder.edgesHolder;
 			window.sigmaPrevious.helperHolder.graphHolder = {
 				...window.sigmaCurrent.helperHolder.graphHolder
 			};
-			if (!DOMManager.layoutPreservation) {
-				DOMManager.synchronizeSigma(window.sigmaPrevious);
+			if (!Variables.layoutPreservation) {
+				Manager.synchronizeSigma(window.sigmaPrevious);
 			}
 		}
 
-		const FilterClass = DOMManager.selectedFilter.class;
-		const LayoutClass = DOMManager.selectedLayout.class;
-		const LayoutFilterClass = DOMManager.selectedLayoutFilter.class;
+		const FilterClass = Variables.selectedFilter.class;
+		const LayoutClass = Variables.selectedLayout.class;
+		const LayoutFilterClass = Variables.selectedLayoutFilter.class;
 
 		graphManager.goToAbsoluteServerApparition(goToState);
 		const graphHolder = graphManager.getGraphHolder();
@@ -475,7 +364,7 @@ class DOMManager {
 		layoutObj.updatePositions();
 		window.sigmaCurrent.helperHolder.edgesHolder = layoutObj.edgesOverride;
 
-		if (!DOMManager.isFirstIteration && DOMManager.layoutPreservation) {
+		if (!Variables.isFirstIteration && Variables.layoutPreservation) {
 			// Previous Sigma's nodes should have the same position as the Current Sigma
 			Object.keys(window.sigmaPrevious.helperHolder.nodeHolder).forEach(index => {
 				const node = window.sigmaPrevious.helperHolder.nodeHolder[index];
@@ -485,7 +374,7 @@ class DOMManager {
 					node.y = currentNode.y;
 				}
 			});
-			DOMManager.synchronizeSigma(window.sigmaPrevious);
+			Manager.synchronizeSigma(window.sigmaPrevious);
 		}
 
 		// Apply filter
@@ -503,50 +392,50 @@ class DOMManager {
 
 		// Apply comparision layout
 		if (window.oldSubFilterResult) {
-			const comparisionLayout = new ComparisionLayout(subFilterResult, window.oldSubFilterResult, graphManager.getMachines());
+			const comparisionLayout = new ComparisionLayout(subFilterResult, window.oldSubFilterResult, graphManager.getMachines(), {});
 			comparisionLayout.nodeHolder = layoutObj.cloneNodeHolder();
 			comparisionLayout.updatePositions();
 			window.sigmaComparision.helperHolder.nodeHolder = comparisionLayout.nodeHolder;
 			window.sigmaComparision.helperHolder.edgesHolder = comparisionLayout.edgesOverride;
 			window.sigmaComparision.helperHolder.graphHolder = window.sigmaCurrent.helperHolder.graphHolder;
 
-			DOMManager.synchronizeSigma(window.sigmaComparision);
+			Manager.synchronizeSigma(window.sigmaComparision);
 		}
 		window.oldSubFilterResult = subFilterResult;
 
 		window.sigmaCurrent.helperHolder.nodeHolder = layoutObj.nodeHolder;
-		DOMManager.synchronizeSigma(window.sigmaCurrent);
+		Manager.synchronizeSigma(window.sigmaCurrent);
 
 		/**
 		 * Update DOM
 		 * Maybe this should be in DOMManager
 		 */
-		document.getElementById("currentEvent").value = graphManager.currentEventIndex;
-		document.getElementById("currentStateEventId").innerHTML = `(${graphManager.currentEventIndex})`;
-		document.getElementById("comparisionStateEventId").innerHTML = `(${lastEventIndex}/${graphManager.currentEventIndex})`;
+		DOMUtils.getElementById("currentEvent").value = graphManager.currentEventIndex;
+		DOMUtils.getElementById("currentStateEventId").innerHTML = `(${graphManager.currentEventIndex})`;
+		DOMUtils.getElementById("comparisionStateEventId").innerHTML = `(${lastEventIndex}/${graphManager.currentEventIndex})`;
 
-		DOMManager.isFirstIteration = false;
+		Variables.isFirstIteration = false;
 	}
 
 	static displayAllToRelations(node: Node, sigma: {}): void {
 		sigma.helperHolder.byPassOutNodes.push(node);
-		DOMManager.synchronizeSigma(sigma);
+		Manager.synchronizeSigma(sigma);
 	}
 
 	static displayAllFromRelations(node: Node, sigma: {}): void {
 		sigma.helperHolder.byPassInNodes.push(node);
-		DOMManager.synchronizeSigma(sigma);
+		Manager.synchronizeSigma(sigma);
 	}
 
-	static hideAllToRelations(node: Node, sigma:{}): void {
+	static hideAllToRelations(node: Node, sigma: {}): void {
 		sigma.helperHolder.byPassOutNodes.splice(sigma.helperHolder.byPassOutNodes.indexOf(node), 1);
-		DOMManager.synchronizeSigma(sigma);
+		Manager.synchronizeSigma(sigma);
 	}
 
 	static hideAllFromRelations(node: Node, sigma: {}): void {
 		sigma.helperHolder.byPassInNodes.splice(sigma.helperHolder.byPassInNodes.indexOf(node), 1);
-		DOMManager.synchronizeSigma(sigma);
+		Manager.synchronizeSigma(sigma);
 	}
 }
 
-export default DOMManager;
+export default Manager;
