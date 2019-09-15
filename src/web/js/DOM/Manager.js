@@ -139,11 +139,11 @@ class Manager {
 
 	static updateClassifications(): void {
 		for (const value of window.logEntity.machines.values()) {
-			const element = DOMUtils.getElementById(`machClassification_${value.address}`);
-			if (!element) {
-				console.log(`Machine ${value.address} appears on Perfomance Log but doesn't appear mainly at Overlay Log`);
-			} else {
+			try{
+				const element = DOMUtils.getElementById(`machClassification_${value.address}`);
 				element.innerHTML = value.bandwidthClassification;
+			}catch (e) {
+				console.log(`Machine ${value.address} appears on Perfomance Log but doesn't appear mainly at Overlay Log`);
 			}
 		}
 	}
