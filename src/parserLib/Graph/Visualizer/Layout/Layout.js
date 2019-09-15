@@ -41,7 +41,7 @@ class Layout {
 		for (const machineKey of machines.keys()) {
 			const machine = this.machines.get(machineKey);
 			if (machine && Object.prototype.hasOwnProperty.call(machine, "bandwidthClassification")) {
-				const node = new Node(machineKey, machineKey, 0, 0, "#000", 1);
+				const node = new Node(machineKey, machineKey, undefined, undefined, "#000", 1);
 				node.color = this.options.colorMap[machine.bandwidthClassification];
 				node.size = 5;
 
