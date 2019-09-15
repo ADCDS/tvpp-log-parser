@@ -74,6 +74,22 @@ class GraphHolder {
 		return this.graph[node];
 	}
 
+	isConnected(node: string): boolean {
+		const edgesTo = this.getEdges(node);
+		for(const index of Object.keys(edgesTo)){
+			if (edgesTo[index]) {
+				return true;
+			}
+		}
+		for (const index of Object.keys(this.graph)){
+			const value = this.graph[index];
+			if (Object.prototype.hasOwnProperty.call(value, node) && value[node]) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	clone(): GraphHolder {
 		const newObj = Object.assign((Object.create(this): any), this);
 		newObj.graph = JSON.parse(JSON.stringify(this.graph));

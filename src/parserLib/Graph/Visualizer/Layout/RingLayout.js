@@ -18,12 +18,22 @@ class RingLayout extends Layout {
 
 	updatePositions(): void {
 		super.updatePositions();
-		const machineLength = this.nodeHolder.size;
-		let iterNum = 0;
+		let nodeKeys = Array.from(this.nodeHolder.keys());
 
+		if (!this.options.drawUndefinedNodes){
+			nodeKeys = nodeKeys.filter(node => {
+				if(!this.filterResult.graphHolder.isConnected(node)){
+					this.nodeHolder.delete(node);
+					return false;
+				}
+				return true;
+			});
+		}
+
+		let iterNum = 0;
 		for (let node of this.nodeHolder.values()) {
-			node.x = this.options.radius * Math.cos((2 * iterNum * Math.PI) / machineLength);
-			node.y = this.options.radius * Math.sin((2 * iterNum * Math.PI) / machineLength);
+			node.x = this.options.radius * Math.cos((2 * iterNum * Math.PI) / nodeKeys.length);
+			node.y = this.options.radius * Math.sin((2 * iterNum * Math.PI) / nodeKeys.length);
 			iterNum++;
 		}
 	}
