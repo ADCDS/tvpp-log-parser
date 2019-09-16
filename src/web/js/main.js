@@ -3,7 +3,7 @@
 import "babel-polyfill";
 import TVPPLog from "../../parserLib/TVPPLog";
 import GraphManager from "../../parserLib/Graph/GraphManager";
-import DijkstraFilter from "../../parserLib/Graph/Filter/Tree/DijkstraFilter";
+import DijkstraFilter from "../../parserLib/Graph/Filter/Tree/Dijkstra/DijkstraFilter";
 import AlgorithmR1 from "../../parserLib/Graph/Visualizer/Layout/Tree/AlgorithmR1";
 import HandleHolder from "./DOM/HandleHolder";
 import Manager from "./DOM/Manager";

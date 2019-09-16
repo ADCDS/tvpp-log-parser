@@ -1,5 +1,5 @@
 // @flow
-import DijkstraFilter from "./parserLib/Graph/Filter/Tree/DijkstraFilter";
+import DijkstraFilter from "./parserLib/Graph/Filter/Tree/Dijkstra/DijkstraFilter";
 import TreeFilter from "./parserLib/Graph/Filter/Tree/TreeFilter";
 import AlgorithmR1 from "./parserLib/Graph/Visualizer/Layout/Tree/AlgorithmR1";
 import EmptyFilter from "./parserLib/Graph/Filter/EmptyFilter";
