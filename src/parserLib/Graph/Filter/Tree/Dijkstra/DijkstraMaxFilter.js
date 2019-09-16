@@ -26,9 +26,10 @@ class DijkstraMaxFilter extends DijkstraFilter {
 				if(filterRes.distancesFromSource[adjacentNode] > max)
 					max = filterRes.distancesFromSource[adjacentNode];
 			}
-			maxes[node] = max;
+			maxes[node] = max + 1;
 		}
 
+		maxes[this.options.source] = 0;
 		filterRes.distancesFromSource = maxes;
 
 		return filterRes;

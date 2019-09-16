@@ -7,6 +7,9 @@ import Filter from "./parserLib/Graph/Filter/Filter";
 import RingLayeredLayout from "./parserLib/Graph/Visualizer/Layout/Tree/RingLayeredLayout";
 import SpringLayout from "./parserLib/Graph/Visualizer/Layout/SpringLayout";
 import RingLayout from "./parserLib/Graph/Visualizer/Layout/RingLayout";
+import DijkstraMeanFilter from "./parserLib/Graph/Filter/Tree/Dijkstra/DijkstraMeanFilter";
+import DijkstraMedianFilter from "./parserLib/Graph/Filter/Tree/Dijkstra/DijkstraMedianFilter";
+import DijkstraMaxFilter from "./parserLib/Graph/Filter/Tree/Dijkstra/DijkstraMaxFilter";
 const fs = require("fs");
 
 class Utils {
@@ -21,6 +24,24 @@ class Utils {
 			id: "dijkstra",
 			name: "Dijkstra Filter",
 			class: DijkstraFilter,
+			type: TreeFilter
+		},
+		dijkstra_mean: {
+			id: "dijkstra_mean",
+			name: "Dijkstra Filter (Mean)",
+			class: DijkstraMeanFilter,
+			type: TreeFilter
+		},
+		dijkstra_median: {
+			id: "dijkstra_median",
+			name: "Dijkstra Filter (Median)",
+			class: DijkstraMedianFilter,
+			type: TreeFilter
+		},
+		dijkstra_max: {
+			id: "dijkstra_max",
+			name: "Dijkstra Filter (Max)",
+			class: DijkstraMaxFilter,
 			type: TreeFilter
 		}
 	};

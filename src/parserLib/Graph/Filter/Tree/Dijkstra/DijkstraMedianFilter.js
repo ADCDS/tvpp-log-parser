@@ -35,17 +35,18 @@ class DijkstraMedianFilter extends DijkstraFilter {
 				const n = (edgesValues.length + 1) / 2;
 				const pos1 = Math.floor(n) - 1;
 				const pos2 = pos1 + 1;
-				medians[node] = (edgesValues[pos1] + edgesValues[pos2]) / 2;
+				medians[node] = ((edgesValues[pos1] + edgesValues[pos2]) / 2) + 1;
 				if(this.options.discretize){
 					medians[node] = Math.round(medians[node]);
 				}
 			} else {
 				//Odd
 				const pos = (edgesValues.length + 1) / 2;
-				medians[node] = edgesValues[pos - 1];
+				medians[node] = edgesValues[pos - 1] + 1;
 			}
 		}
 
+		medians[this.options.source] = 0;
 		filterRes.distancesFromSource = medians;
 
 		return filterRes;

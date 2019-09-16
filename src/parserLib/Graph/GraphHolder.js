@@ -62,7 +62,7 @@ class GraphHolder {
 		return ret;
 	}
 
-	getNodesThatPointTo(node: string) {
+	getNodesThatPointTo(node: string): Array<string> {
 		const ret = [];
 		Object.keys(this.graph).forEach(index => {
 			if (this.graph[index][node]) ret.push(index);

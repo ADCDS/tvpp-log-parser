@@ -33,7 +33,7 @@ class DijkstraMeanFilter extends DijkstraFilter {
 			for (const adjacentNode of edgesToNode) {
 				sum += filterRes.distancesFromSource[adjacentNode];
 			}
-			means[node] = sum / edgesToNode.length;
+			means[node] = (sum / edgesToNode.length) + 1;
 		}
 
 		if(this.options.discretize){
@@ -43,6 +43,7 @@ class DijkstraMeanFilter extends DijkstraFilter {
 
 		}
 
+		means[this.options.source] = 0;
 		filterRes.distancesFromSource = means;
 
 		return filterRes;
