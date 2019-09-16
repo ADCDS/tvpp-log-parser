@@ -22,11 +22,7 @@ window.LayoutType = AlgorithmR1;
 window.LayoutTypeOptions = {};
 
 window.selectedEvent = 0;
-
-function draw() {
-	const options = Manager.extractOptions();
-	Manager.drawGraph(window.selectedEvent, options.filter, options.layout);
-}
+window.selectedTimestamp = 0;
 
 function createHandler(onLoadCb) {
 	return evt => {
@@ -49,6 +45,7 @@ document.getElementById("filterType").addEventListener("change", HandleHolder.ha
 document.getElementById("layoutType").addEventListener("change", HandleHolder.handleLayoutChange);
 
 document.getElementById("selectedEventNumber").addEventListener("change", HandleHolder.handleSelectedEventChange);
+document.getElementById("selectedTimestamp").addEventListener("change", HandleHolder.handleTimestampChange);
 
 Array.from(document.getElementsByClassName("tablinks")).forEach(el => {
 	el.addEventListener("click", HandleHolder.handleStateGraphChange);
@@ -63,7 +60,7 @@ document.addEventListener("click", e => {
 document.getElementById("machineListTable").addEventListener("click", HandleHolder.handleMachineListButtonClick);
 
 document.getElementById("nextEvent").addEventListener("click", e => {
-	const drawButtonDOM = document.getElementById("draw");
+	const drawButtonDOM = document.getElementById("drawEventNumber");
 	const eventNumberDOM = document.getElementById("selectedEventNumber");
 	eventNumberDOM.value = window.selectedEvent + 1;
 	eventNumberDOM.dispatchEvent(new Event("change"));
@@ -71,14 +68,15 @@ document.getElementById("nextEvent").addEventListener("click", e => {
 });
 
 document.getElementById("prevEvent").addEventListener("click", e => {
-	const drawButtonDOM = document.getElementById("draw");
+	const drawButtonDOM = document.getElementById("drawEventNumber");
 	const eventNumberDOM = document.getElementById("selectedEventNumber");
 	eventNumberDOM.value = window.selectedEvent - 1;
 	eventNumberDOM.dispatchEvent(new Event("change"));
 	drawButtonDOM.dispatchEvent(new Event("click"));
 });
 
-document.getElementById("draw").addEventListener("click", draw);
+document.getElementById("drawEventNumber").addEventListener("click", HandleHolder.handleDrawByEvent);
+document.getElementById("drawTimestamp").addEventListener("click", HandleHolder.handleDrawByTimestamp);
 
 document.getElementById("preserveCurrentLayout").addEventListener("change", HandleHolder.handleLayoutPreservationChange);
 document.getElementById("disableEdges").addEventListener("change", HandleHolder.handleDisableEdgesChange);

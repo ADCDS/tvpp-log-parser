@@ -11,6 +11,8 @@ class TVPPLog {
 	overlayEntryList: Array<LogEntryOverlay>;
 	performanceEntryList: Array<LogEntryPerformance>;
 
+	eventTimestampMap: Map<number, number>;
+
 	sourceMachineKey: string;
 	sourceApparitionLocations: Array<number>;
 
@@ -26,14 +28,18 @@ class TVPPLog {
 		this.performanceEntryList = [];
 		this.sourceMachineKey = "";
 		this.sourceApparitionLocations = [];
+		this.eventTimestampMap = new Map<number, number>();
 	}
 
 	addOverlayEntries(entries: Array<LogEntryOverlay>) {
 		this.sourceMachineKey = entries[0].machineId;
+		const initialTimestamp = entries[0].timestamp;
 
 		let iterNum = 0;
 		entries.forEach(logEntry => {
 			this.overlayEntryList.push(logEntry);
+			this.eventTimestampMap.set(logEntry.timestamp - initialTimestamp, iterNum);
+
 			const currMachineName = logEntry.machineId;
 
 			if (currMachineName === this.sourceMachineKey) {

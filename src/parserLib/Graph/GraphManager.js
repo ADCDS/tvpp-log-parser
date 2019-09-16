@@ -83,6 +83,20 @@ class GraphManager {
 		this.goToAbsoluteEventState(nextEventIndex);
 	}
 
+	goToClosestTimeElapsedServerApparition(timestamp: number): void {
+		const logPosition = this.logEntity.eventTimestampMap.get(
+			Array.from(this.logEntity.eventTimestampMap.keys()).reduce((prev, curr) => (Math.abs(curr - timestamp) < Math.abs(prev - timestamp) ? curr : prev))
+		);
+
+		// Find the closest source apparition from this position
+		const logSourcePosition = this.logEntity.sourceApparitionLocations
+			.map((val, index) => {
+				return { idx: index, value: val };
+			})
+			.reduce((prev, curr) => (Math.abs(curr.value - logPosition) < Math.abs(prev.value - logPosition) ? curr : prev));
+		this.goToAbsoluteServerApparition(logSourcePosition.idx);
+	}
+
 	goToNextEvent(): void {
 		const overlayEntry = this.logEntity.overlayEntryList[this.currentEventIndex];
 		if (this.currentEventIndex >= this.logEntity.overlayEntryList.length) return;

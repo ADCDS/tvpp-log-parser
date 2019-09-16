@@ -321,7 +321,7 @@ class Manager {
 		elementById.classList.add("active");
 	}
 
-	static drawGraph(goToState: Number, filterOptions: { [string]: plOption }, layoutOptions: { [string]: plOption }): void {
+	static drawGraph(filterOptions: { [string]: plOption }, layoutOptions: { [string]: plOption }, goToState: Number, byTimestamp: boolean = false): void {
 		if (!Variables.selectedLayoutFilter) throw new Error("Layout Options missing subfilter");
 
 		const { graphManager } = window;
@@ -350,7 +350,11 @@ class Manager {
 		const LayoutClass = Variables.selectedLayout.class;
 		const LayoutFilterClass = Variables.selectedLayoutFilter.class;
 
-		graphManager.goToAbsoluteServerApparition(goToState);
+		if(!byTimestamp) {
+			graphManager.goToAbsoluteServerApparition(goToState);
+		}else{
+			graphManager.goToClosestTimeElapsedServerApparition(goToState);
+		}
 		const graphHolder = graphManager.getGraphHolder();
 		if (!window.sigmaCurrent.helperHolder.graphHolder) {
 			window.sigmaCurrent.helperHolder.graphHolder = {
@@ -416,6 +420,7 @@ class Manager {
 		DOMUtils.getElementById("comparisionStateEventId").innerHTML = `(${lastEventIndex}/${graphManager.currentEventIndex})`;
 		DOMUtils.getElementById('currentEventTime').value = new Date(graphManager.getCurrentTimestamp() * 1000).toString();
 		DOMUtils.getElementById('currentEventElapsedTime').value = graphManager.getCurrentElapsedTime();
+		DOMUtils.getElementById("selectedEventNumber").value = window.selectedEvent = graphManager.currentSourceIndex;
 
 		Variables.isFirstIteration = false;
 	}

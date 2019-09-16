@@ -1,12 +1,12 @@
 // @flow
 import Layout from "./Layout";
-import TreeFilter from "../../Filter/Tree/TreeFilter";
 import FilterResult from "../../Filter/Results/FilterResult";
 import Machine from "../../../Machine";
 import Option from "../../../Option";
+import Filter from "../../Filter/Filter";
 
 class RingLayout extends Layout {
-	constructor(filterResult: FilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
+	constructor(filterResult: FilterResult<Filter>, machines: Map<string, Machine>, options: { [string]: any }) {
 		const defaultOptions = {
 			radius: 100,
 			drawUndefinedNodes: false
@@ -31,7 +31,7 @@ class RingLayout extends Layout {
 		}
 
 		let iterNum = 0;
-		for (let node of this.nodeHolder.values()) {
+		for (const node of this.nodeHolder.values()) {
 			node.x = this.options.radius * Math.cos((2 * iterNum * Math.PI) / nodeKeys.length);
 			node.y = this.options.radius * Math.sin((2 * iterNum * Math.PI) / nodeKeys.length);
 			iterNum++;

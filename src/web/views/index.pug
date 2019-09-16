@@ -39,7 +39,7 @@ html(lang='pt')
 
             #controller {
                 margin: 5px;
-                height: 200px;
+                height: 400px;
                 overflow: auto;
                 text-align: right;
             }
@@ -159,9 +159,16 @@ body
 
         div#controller
             div
-                label(for='selectedEventNumber') Ir para evento:
-                    input#selectedEventNumber(type='number')
-                input#draw(type='button', value='Go!')
+                div
+                    label(for='selectedEventNumber') Go to event:
+                        input#selectedEventNumber(type='number')
+                    input#drawEventNumber(type='button', value='Go!')
+
+                div
+                    label(for='selectedTimestamp') Go to timestamp:
+                        input#selectedTimestamp(type='number')
+                    input#drawTimestamp(type='button', value='Go!')
+
                 input#prevEvent(type='button', value='< Prev')
                 input#nextEvent(type='button', value='Next >')
             div

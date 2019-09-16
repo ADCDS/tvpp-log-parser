@@ -5,7 +5,7 @@ import DOMUtils from "./Utils";
 import Manager from "./Manager";
 import Variables from "./Variables";
 
-class HandleHolder{
+class HandleHolder {
 	static handleSigmaClick(e: {}): void {
 		Manager.changeSelectedNode(e.data.node);
 		// DOMManager.displayAllToRelations(e.data.node, e.target);
@@ -49,6 +49,11 @@ class HandleHolder{
 		else window.selectedEvent = Number(window.logEntity.sourceApparitionLocations.length);
 		e.target.value = window.selectedEvent;
 	}
+	static handleTimestampChange(e: {}): void {
+		window.selectedTimestamp = Number(e.target.value);
+		e.target.value = window.selectedTimestamp;
+	}
+
 	static handleStateGraphChange(e: {}): void {
 		const graphs = ["containerPrevious", "containerComparision", "containerCurrent"];
 
@@ -104,6 +109,16 @@ class HandleHolder{
 			helperHolder.managedButtons.splice(helperHolder.managedButtons.indexOf(button), 1);
 			button.style["border-style"] = "";
 		}
+	}
+
+	static handleDrawByEvent(e: {}): void{
+		const options = Manager.extractOptions();
+		Manager.drawGraph(options.filter, options.layout, window.selectedEvent, false);
+	}
+
+	static handleDrawByTimestamp(e: {}): void{
+		const options = Manager.extractOptions();
+		Manager.drawGraph(options.filter, options.layout, window.selectedTimestamp, true);
 	}
 }
 
