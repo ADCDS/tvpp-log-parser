@@ -21,17 +21,24 @@ class SpringLayout extends Layout {
 
 	calculateForcesOnNode(machineKey: string): void {
 		const nodeHolderElement = this.nodeHolder.get(machineKey);
+
 		const resultantForce = { x: 0, y: 0 };
 		const edges = this.graphHolder.getEdges(machineKey);
 
-		const adjacentVertices = Object.keys(edges).filter(el => {
-			return edges[el];
-		});
+		const adjacentVertices = new Set(
+			Object.keys(edges)
+				.filter(el => {
+					return edges[el];
+				})
+				.concat(this.graphHolder.getNodesThatPointTo(machineKey))
+		);
 
-		adjacentVertices.forEach(adjacentMachine => {
+		for (const adjacentMachine of adjacentVertices) {
 			const adjacentNodeHolderElement = this.nodeHolder.get(adjacentMachine);
+			if (!adjacentNodeHolderElement) continue;
+
 			const d = Math.sqrt(Math.pow(nodeHolderElement.x - adjacentNodeHolderElement.x, 2) + Math.pow(nodeHolderElement.y - adjacentNodeHolderElement.y, 2));
-			if (d === 0) return;
+			if (d === 0) continue;
 
 			const force = this.options.c1 * Math.log(d / this.options.c2);
 
@@ -47,17 +54,17 @@ class SpringLayout extends Layout {
 
 			resultantForce.x += dir.x;
 			resultantForce.y += dir.y;
-		});
+		}
 
 		// Forces that repel
-		const nonAdjacentVertices = Object.keys(edges).filter(el => {
-			return !edges[el];
-		});
+		const nonAdjacentVertices = Object.keys(this.filterResult.graphHolder.graph).filter(value => !adjacentVertices.has(value));
 
-		nonAdjacentVertices.forEach(nonAdjacentMachine => {
+		for (const nonAdjacentMachine of nonAdjacentVertices) {
 			const nonAdjacentNodeHolderElement = this.nodeHolder.get(nonAdjacentMachine);
+			if (!nonAdjacentNodeHolderElement) continue;
+
 			const d = Math.sqrt(Math.pow(nodeHolderElement.x - nonAdjacentNodeHolderElement.x, 2) + Math.pow(nodeHolderElement.y - nonAdjacentNodeHolderElement.y, 2));
-			if (d === 0) return;
+			if (d === 0) continue;
 
 			const force = this.options.c3 / Math.pow(d, 2);
 
@@ -73,13 +80,15 @@ class SpringLayout extends Layout {
 
 			resultantForce.x += dir.x;
 			resultantForce.y += dir.y;
-		});
+		}
 
 		resultantForce.x *= this.options.c4;
 		resultantForce.y *= this.options.c4;
 
 		nodeHolderElement.ResX = nodeHolderElement.x + resultantForce.x;
 		nodeHolderElement.ResY = nodeHolderElement.y + resultantForce.y;
+
+		console.log(`SpringLayout: ${machineKey}: OLD {x: ${nodeHolderElement.x}, y: ${nodeHolderElement.y}}, NEW {x: ${resultantForce.x}, y: ${resultantForce.y}}`);
 	}
 
 	updatePositions(): void {
@@ -87,9 +96,22 @@ class SpringLayout extends Layout {
 		let i = 0;
 
 		// Put nodes at random positions, initially
-		for (const node of this.nodeHolder.values()) {
-			node.x = Math.floor(Math.random() * 1000);
-			node.y = Math.floor(Math.random() * 1000);
+		if (this.options.drawUndefinedNodes) {
+			for (const node of this.nodeHolder.values()) {
+				node.x = Math.floor(Math.random() * 2000);
+				node.y = Math.floor(Math.random() * 2000);
+			}
+		} else {
+			for (const node of this.nodeHolder.values()) {
+				if (this.filterResult.graphHolder.isConnected(node.id)) {
+					node.x = Math.floor(Math.random() * 2000);
+					node.y = Math.floor(Math.random() * 2000);
+				} else {
+					if (this.filterResult.graphHolder.isConnected(node.id)) {
+						this.nodeHolder.delete(node.id);
+					}
+				}
+			}
 		}
 
 		while (i++ < this.options.iterNum) {
@@ -104,7 +126,9 @@ class SpringLayout extends Layout {
 		}
 	}
 
-	static getOptions(): { [string]: any } {
+	static getOptions(): {
+		[string]: any
+	} {
 		let options = super.getOptions();
 		options = Object.assign(options, {
 			c1: new Option("C1", Number, 2),
