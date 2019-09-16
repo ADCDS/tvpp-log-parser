@@ -1,12 +1,13 @@
-import LogParserOverlay from "../src/parserLib/Log/Overlay/LogParserOverlay";
-import TVPPLog from "../src/parserLib/TVPPLog";
-import GraphManager from "../src/parserLib/Graph/GraphManager";
-import LogParserPerformance from "../src/parserLib/Log/Performance/LogParserPerformance";
-import RingLayout from "../src/parserLib/Graph/Visualizer/Layout/RingLayout";
-import DijkstraFilter from "../src/parserLib/Graph/Filter/Tree/DijkstraFilter";
-import Utils from "../src/utils";
+import LogParserOverlay from "../../src/parserLib/Log/Overlay/LogParserOverlay";
+import TVPPLog from "../../src/parserLib/TVPPLog";
+import GraphManager from "../../src/parserLib/Graph/GraphManager";
+import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserPerformance";
+import RingLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayout";
+import DijkstraFilter from "../../src/parserLib/Graph/Filter/Tree/Dijkstra/DijkstraFilter";
+import Utils from "../../src/utils";
+import DijkstraMeanFilter from "../../src/parserLib/Graph/Filter/Tree/Dijkstra/DijkstraMeanFilter";
 
-test("dijkstraFilterTest", async () => {
+test("dijkstraMeanFilterTest", async () => {
 	const dataOverlay = await Utils.readLog("./logs/test1_overlay.txt");
 	const dataPerformance = await Utils.readLog("./logs/test1_perf.txt");
 	const overlayEntryArray = await LogParserOverlay.parse(dataOverlay);
@@ -18,7 +19,7 @@ test("dijkstraFilterTest", async () => {
 	const graphManager = new GraphManager(logEntity);
 	// graphManager.goToLastEventState();
 	graphManager.goToAbsoluteEventState(100);
-	const dijkstraFilter = new DijkstraFilter({
+	const dijkstraFilter = new DijkstraMeanFilter({
 		source: "150.164.3.36:4951"
 	});
 	const filterResult = dijkstraFilter.applyFilter(graphManager.getGraphHolder());

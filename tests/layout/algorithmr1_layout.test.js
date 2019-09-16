@@ -4,7 +4,7 @@ import TVPPLog from "../../src/parserLib/TVPPLog";
 import GraphManager from "../../src/parserLib/Graph/GraphManager";
 import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserPerformance";
 import AlgorithmR1 from "../../src/parserLib/Graph/Visualizer/Layout/Tree/AlgorithmR1";
-import DijkstraFilter from "../../src/parserLib/Graph/Filter/Tree/DijkstraFilter";
+import DijkstraFilter from "../../src/parserLib/Graph/Filter/Tree/Dijkstra/DijkstraFilter";
 import Utils from "../../src/utils";
 
 test("algorithmR1LayoutTest", async () => {
