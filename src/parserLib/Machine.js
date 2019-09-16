@@ -14,8 +14,8 @@ class Machine {
 		this.overlayStatus = overlayStatus || [];
 		this.performanceStatus = performanceStatus || [];
 
-		this.bandwidth = -1;
-		this.bandwidthClassification = -1;
+		this.bandwidth = undefined;
+		this.bandwidthClassification = undefined;
 	}
 
 	addOverlayStatus(event: OverlayState): void {

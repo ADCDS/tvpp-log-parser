@@ -103,7 +103,7 @@ class TVPPLog {
 				foundBandwidths[logEntry.bandwidth] = true;
 				if (
 					Object.prototype.hasOwnProperty.call(machineObj, "bandwidth") &&
-					machineObj.bandwidth !== -1 &&
+					machineObj.bandwidth !== undefined &&
 					machineObj.bandwidth !== logEntry.bandwidth
 				) {
 					throw new Error(
@@ -118,7 +118,8 @@ class TVPPLog {
 			.map(Number);
 
 		for (const machine of this.machines.values()) {
-			machine.bandwidthClassification = bandwidths.indexOf(machine.bandwidth);
+			if(machine.bandwidth !== undefined)
+				machine.bandwidthClassification = bandwidths.indexOf(machine.bandwidth);
 		}
 	}
 }
