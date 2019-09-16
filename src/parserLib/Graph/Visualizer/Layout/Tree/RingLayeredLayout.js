@@ -35,9 +35,9 @@ class RingLayeredLayout extends TreeLayout {
 				return previousValue;
 			});
 
-		if(!this.options.drawUndefinedNodes){
+		if (!this.options.drawUndefinedNodes) {
 			nodes = nodes.filter(value => {
-				if(this.filterResult.distancesFromSource[value] === Infinity){
+				if (this.filterResult.distancesFromSource[value] === Infinity) {
 					this.nodeHolder.delete(value);
 					return false;
 				}
@@ -47,7 +47,7 @@ class RingLayeredLayout extends TreeLayout {
 
 		nodes.forEach(el => {
 			// Treat vertices that are not connected to the source node
-			let distanceFromSourceEl = this.filterResult.distancesFromSource[el];
+			let distanceFromSourceEl = Math.round(this.filterResult.distancesFromSource[el]);
 			if (distanceFromSourceEl === Infinity) {
 				this.filterResult.distancesFromSource[el] = highestSourceDistance + 1;
 				distanceFromSourceEl = this.filterResult.distancesFromSource[el];
@@ -67,12 +67,12 @@ class RingLayeredLayout extends TreeLayout {
 			node.x =
 				this.options.radius *
 				distancesFromSourceElement *
-				Math.cos((2 * iterNumRing[distancesFromSourceElement] * Math.PI) / numberOfNodesAtRing[distancesFromSourceElement]);
+				Math.cos((2 * iterNumRing[Math.round(distancesFromSourceElement)] * Math.PI) / numberOfNodesAtRing[Math.round(distancesFromSourceElement)]);
 			node.y =
 				this.options.radius *
 				distancesFromSourceElement *
-				Math.sin((2 * iterNumRing[distancesFromSourceElement] * Math.PI) / numberOfNodesAtRing[distancesFromSourceElement]);
-			iterNumRing[distancesFromSourceElement]++;
+				Math.sin((2 * iterNumRing[Math.round(distancesFromSourceElement)] * Math.PI) / numberOfNodesAtRing[Math.round(distancesFromSourceElement)]);
+			iterNumRing[Math.round(distancesFromSourceElement)]++;
 		});
 	}
 
