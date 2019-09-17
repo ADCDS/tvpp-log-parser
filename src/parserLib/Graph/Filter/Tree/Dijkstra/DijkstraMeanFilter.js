@@ -22,7 +22,8 @@ class DijkstraMeanFilter extends DijkstraFilter {
 		const nodes = Object.keys(graphHolder.graph);
 		const means = {};
 		for (const node of nodes) {
-			const edgesToNode = graphHolder.getNodesThatPointTo(node);
+			const edgesToNode = graphHolder.getNodesThatPointTo(node).map(value => filterRes.distancesFromSource[value]).filter(value => value !== Infinity);
+
 			if (edgesToNode.length === 0){
 				means[node] = Infinity;
 				continue;
@@ -30,10 +31,11 @@ class DijkstraMeanFilter extends DijkstraFilter {
 
 			// Calculate the mean of the minimum distance to source of these adjacent nodes
 			let sum = 0;
-			for (const adjacentNode of edgesToNode) {
-				sum += filterRes.distancesFromSource[adjacentNode];
+			for (const adjacentNodeDistance of edgesToNode) {
+				sum += adjacentNodeDistance;
 			}
 			means[node] = (sum / edgesToNode.length) + 1;
+			console.log("Node: " + node + ", adjacent values " + edgesToNode + ", mean " + ((sum / edgesToNode.length) + 1));
 		}
 
 		if(this.options.discretize){

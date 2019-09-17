@@ -78,7 +78,7 @@ document.getElementById("prevEvent").addEventListener("click", e => {
 document.getElementById("drawEventNumber").addEventListener("click", HandleHolder.handleDrawByEvent);
 document.getElementById("drawTimestamp").addEventListener("click", HandleHolder.handleDrawByTimestamp);
 
-document.getElementById("preserveCurrentLayout").addEventListener("change", HandleHolder.handleLayoutPreservationChange);
+//document.getElementById("preserveCurrentLayout").addEventListener("change", HandleHolder.handleLayoutPreservationChange);
 document.getElementById("disableEdges").addEventListener("change", HandleHolder.handleDisableEdgesChange);
 
 (() => {
