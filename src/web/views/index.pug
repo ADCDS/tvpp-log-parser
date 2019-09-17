@@ -110,7 +110,7 @@ body
             input#logOverlayFile(type='file')
             label(for='logPerformanceFile') Performance Log File
             input#logPerformanceFile(type='file')
-            label(for='FilterType') Filter Type
+            label(for='FilterType') Edge Filter Type
                 br
                 select#filterType(name='FilterType' size='3' required)
             label(for='layoutType') Layout Type
@@ -119,7 +119,7 @@ body
 
         div#options
             div#filterHolder
-                b Filter Options
+                b Edge Filter Options
                 div#filterOptions
             br
             div#layoutHolder
@@ -172,10 +172,10 @@ body
                 input#prevEvent(type='button', value='< Prev')
                 input#nextEvent(type='button', value='Next >')
             div
-                label(for='preserveCurrentLayout') Preservar Layout:
-                input#preserveCurrentLayout(type='Checkbox', checked=false)
+                //label(for='preserveCurrentLayout') Preservar Layout:
+                //input#preserveCurrentLayout(type='Checkbox', checked=false)
                 label(for='disableEdges') Disable Edges:
-                input#disableEdges(type='Checkbox', checked=true)
+                input#disableEdges(type='Checkbox')
 
 
 div#graphContainer

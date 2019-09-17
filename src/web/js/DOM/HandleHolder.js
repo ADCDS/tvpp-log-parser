@@ -17,6 +17,14 @@ class HandleHolder {
 
 	static handleDisableEdgesChange(e: {}): void {
 		Variables.disableEdges = e.target.checked;
+		if(Variables.disableEdges){
+			DOMUtils.getElementById('filterType').disabled = true;
+			const filterTypeDOM = DOMUtils.getGenericElementById<HTMLSelectElement>("filterType");
+			filterTypeDOM.selectedIndex = 0;
+			filterTypeDOM.dispatchEvent(new Event("change"));
+		}else{
+			DOMUtils.getElementById('filterType').disabled = false;
+		}
 	}
 
 	static handleSubFilterChange(e: {}): void {

@@ -39,6 +39,7 @@ class Manager {
 		layoutTypeDOM.dispatchEvent(new Event("change"));
 
 		DOMUtils.getElementById("btnCurrentState").dispatchEvent(new Event("click"));
+		DOMUtils.getElementById('disableEdges').click();
 	}
 
 	static getInputFromOption(inputId: string, option: plOption): string {
@@ -53,7 +54,7 @@ class Manager {
 		// Get all filters that we can use
 		const availableFilters = Utils.getFiltersByType(option.type);
 		let res = "<div class='layoutSubFilter'>";
-		res += `<label for='${inputId}'>Filter</label><select id='${inputId}'>`;
+		res += `<label for='${inputId}'>Edge Sub Filter</label><select id='${inputId}'>`;
 		availableFilters.forEach(value => {
 			res += `<option value='${value.id}'>${value.name}</option>`;
 		});
