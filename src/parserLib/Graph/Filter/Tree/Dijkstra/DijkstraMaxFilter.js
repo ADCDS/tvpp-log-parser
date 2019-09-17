@@ -14,7 +14,7 @@ class DijkstraMaxFilter extends DijkstraFilter {
 		const nodes = Object.keys(graphHolder.graph);
 		const maxes = {};
 		for (const node of nodes) {
-			const edgesToNode = graphHolder.getNodesThatPointTo(node);
+			const edgesToNode = graphHolder.getNodesThatPointTo(node).map(value => filterRes.distancesFromSource[value]).filter(value => value !== Infinity);
 			if (edgesToNode.length === 0){
 				maxes[node] = Infinity;
 				continue;
@@ -22,11 +22,12 @@ class DijkstraMaxFilter extends DijkstraFilter {
 
 			// Get the max of the minimum distance to source of these adjacent nodes
 			let max = 0;
-			for (const adjacentNode of edgesToNode) {
-				if(filterRes.distancesFromSource[adjacentNode] > max)
-					max = filterRes.distancesFromSource[adjacentNode];
+			for (const adjacentDistance of edgesToNode) {
+				if(adjacentDistance > max)
+					max = adjacentDistance;
 			}
 			maxes[node] = max + 1;
+			console.log("Node: " + node + ", adjacent values " + edgesToNode + ", max " + (max + 1));
 		}
 
 		maxes[this.options.source] = 0;

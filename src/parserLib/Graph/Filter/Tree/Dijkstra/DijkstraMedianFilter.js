@@ -22,28 +22,29 @@ class DijkstraMedianFilter extends DijkstraFilter {
 		const nodes = Object.keys(graphHolder.graph);
 		const medians = {};
 		for (const node of nodes) {
-			const edgesToNode = graphHolder.getNodesThatPointTo(node);
+			const edgesToNode = graphHolder.getNodesThatPointTo(node).map(value => filterRes.distancesFromSource[value]).filter(value => value !== Infinity).sort();
 			if (edgesToNode.length === 0) {
 				medians[node] = Infinity;
 				continue;
 			}
 
 			// Get the median of the minimum distance to source of these adjacent nodes
-			let edgesValues = edgesToNode.map(value => filterRes.distancesFromSource[value]).sort();
-			if (edgesValues.length % 2 === 0) {
+			if (edgesToNode.length % 2 === 0) {
 				// Even
-				const n = (edgesValues.length + 1) / 2;
+				const n = (edgesToNode.length + 1) / 2;
 				const pos1 = Math.floor(n) - 1;
 				const pos2 = pos1 + 1;
-				medians[node] = ((edgesValues[pos1] + edgesValues[pos2]) / 2) + 1;
+				medians[node] = ((edgesToNode[pos1] + edgesToNode[pos2]) / 2) + 1;
 				if(this.options.discretize){
 					medians[node] = Math.round(medians[node]);
 				}
 			} else {
 				//Odd
-				const pos = (edgesValues.length + 1) / 2;
-				medians[node] = edgesValues[pos - 1] + 1;
+				const pos = (edgesToNode.length + 1) / 2;
+				medians[node] = edgesToNode[pos - 1] + 1;
 			}
+
+			console.log("Node: " + node + ", adjacent values " + edgesToNode + ", median " + medians[node]);
 		}
 
 		medians[this.options.source] = 0;

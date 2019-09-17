@@ -11,7 +11,8 @@ class SpringLayout extends Layout {
 			c2: 1,
 			c3: 1,
 			c4: 0.1,
-			drawUndefinedNodes: false
+			drawUndefinedNodes: false,
+			fixAt00: ""
 		};
 
 		options = Object.assign(defaultOptions, options);
@@ -70,8 +71,8 @@ class SpringLayout extends Layout {
 
 			// get the direction where the force is applied
 			const dir = {
-				x: (nodeHolderElement.x - nonAdjacentNodeHolderElement.x) / d,
-				y: (nodeHolderElement.y - nonAdjacentNodeHolderElement.y) / d
+				x: -(nonAdjacentNodeHolderElement.x - nodeHolderElement.x) / d,
+				y: -(nonAdjacentNodeHolderElement.y - nodeHolderElement.y) / d
 			};
 
 			// apply the force in the normalized vector
@@ -88,7 +89,7 @@ class SpringLayout extends Layout {
 		nodeHolderElement.ResX = nodeHolderElement.x + resultantForce.x;
 		nodeHolderElement.ResY = nodeHolderElement.y + resultantForce.y;
 
-		console.log(`SpringLayout: ${machineKey}: OLD {x: ${nodeHolderElement.x}, y: ${nodeHolderElement.y}}, NEW {x: ${resultantForce.x}, y: ${resultantForce.y}}`);
+		console.log(`SpringLayout: ${machineKey}: OLD {x: ${nodeHolderElement.x}, y: ${nodeHolderElement.y}}, FORCE {x: ${resultantForce.x}, y: ${resultantForce.y}}`);
 	}
 
 	updatePositions(): void {
@@ -98,8 +99,8 @@ class SpringLayout extends Layout {
 		// Put nodes at random positions, initially
 		if (this.options.drawUndefinedNodes) {
 			for (const node of this.nodeHolder.values()) {
-				node.x = Math.floor(Math.random() * 2000);
-				node.y = Math.floor(Math.random() * 2000);
+				node.x = Math.floor(Math.random() * 1000);
+				node.y = Math.floor(Math.random() * 1000);
 			}
 		} else {
 			for (const node of this.nodeHolder.values()) {
@@ -107,21 +108,31 @@ class SpringLayout extends Layout {
 					node.x = Math.floor(Math.random() * 2000);
 					node.y = Math.floor(Math.random() * 2000);
 				} else {
-					if (this.filterResult.graphHolder.isConnected(node.id)) {
-						this.nodeHolder.delete(node.id);
-					}
+					this.nodeHolder.delete(node.id);
 				}
+			}
+		}
+
+		if (this.options.fixAt00 !== "") {
+			const fixedNode = this.nodeHolder.get(this.options.fixAt00);
+			if (fixedNode) {
+				fixedNode.x = 0;
+				fixedNode.y = 0;
 			}
 		}
 
 		while (i++ < this.options.iterNum) {
 			for (const machineKey of this.nodeHolder.keys()) {
-				this.calculateForcesOnNode(machineKey);
+				if (this.options.fixAt00 !== machineKey) {
+					this.calculateForcesOnNode(machineKey);
+				}
 			}
 
 			for (const node of this.nodeHolder.values()) {
-				node.x = node.ResX;
-				node.y = node.ResY;
+				if (this.options.fixAt00 !== node.id) {
+					node.x = node.ResX;
+					node.y = node.ResY;
+				}
 			}
 		}
 	}
@@ -136,7 +147,8 @@ class SpringLayout extends Layout {
 			c3: new Option("C3", Number, 1),
 			c4: new Option("C4", Number, 0.1),
 			iterNum: new Option("Iteration Number", Number, 100),
-			drawUndefinedNodes: new Option("Draw undefined nodes", Boolean, false)
+			drawUndefinedNodes: new Option("Draw undefined nodes", Boolean, false),
+			fixAt00: new Option("Fix node at (0,0)", String, "::src")
 		});
 		return options;
 	}
