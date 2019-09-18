@@ -30,53 +30,13 @@ myModule();
 
 #### Table of Contents
 
--   [compareWithOldEvent](#comparewitholdevent)
-    -   [Parameters](#parameters)
--   [push](#push)
--   [push](#push-1)
--   [forEach](#foreach)
 -   [pieces](#pieces)
--   [addOverlayEntries](#addoverlayentries)
-    -   [Parameters](#parameters-1)
-
-### compareWithOldEvent
-
-Takes an predecessor event and calculates the difference
-It generates the added and removed fields
-
-#### Parameters
-
--   `event`  Event
-
-### push
-
-If the new states doesn't have an node that was present on the last event,
-we should add it to the removed array
-
-### push
-
-If the new states have an node that wasn't present on the last event,
-we should add it to the added array
-
-### forEach
-
-Lets pull all infinity nodes to the beginning of the list
-In order to be able to get the highest distance from the 'source' node,
-and draw the nodes that are not connected to the 'source' node at the outer ring
-
-I believe that this can be optimized
 
 ### pieces
 
 0.0.0.0:0 works as an separator,
  to the right are the servers which our 'hostAddress' sends chunks to,
  to the left are the servers which 'hostAddress' receives packets from.
-
-### addOverlayEntries
-
-#### Parameters
-
--   `entries`  
 
 ## License
 

@@ -25,24 +25,6 @@ class Utils {
 			name: "Dijkstra Filter",
 			class: DijkstraFilter,
 			type: TreeFilter
-		},
-		dijkstra_mean: {
-			id: "dijkstra_mean",
-			name: "Dijkstra Filter (Mean)",
-			class: DijkstraMeanFilter,
-			type: TreeFilter
-		},
-		dijkstra_median: {
-			id: "dijkstra_median",
-			name: "Dijkstra Filter (Median)",
-			class: DijkstraMedianFilter,
-			type: TreeFilter
-		},
-		dijkstra_max: {
-			id: "dijkstra_max",
-			name: "Dijkstra Filter (Max)",
-			class: DijkstraMaxFilter,
-			type: TreeFilter
 		}
 	};
 
