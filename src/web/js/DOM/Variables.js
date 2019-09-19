@@ -1,4 +1,7 @@
 // @flow
+import type {FilterDefType, LayoutDefType} from "../../../types";
+import SigmaInjection from "../SigmaInjection";
+
 class Variables {
 	static sourceOptions = {
 		filterOptions: [],
@@ -6,15 +9,15 @@ class Variables {
 		subFilterOptions: []
 	};
 
-	static selectedFilter = null;
+	static selectedFilter: ?FilterDefType;
 
-	static selectedLayout = null;
+	static selectedLayout: ?LayoutDefType;
 
-	static selectedLayoutFilter = null;
+	static selectedLayoutFilter: ?FilterDefType;
 
 	static selectedNode = null;
 
-	static selectedSigma = null;
+	static selectedSigma: { helperHolder: SigmaInjection, [string]: any };
 
 	static layoutPreservation = false;
 

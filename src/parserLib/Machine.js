@@ -6,8 +6,8 @@ class Machine {
 	address: string;
 	overlayStatus: Array<OverlayState>;
 	performanceStatus: Array<PerformanceState>;
-	bandwidth: number;
-	bandwidthClassification: number;
+	bandwidth: ?number;
+	bandwidthClassification: ?number;
 
 	constructor(address: string, overlayStatus: Array<OverlayState>, performanceStatus: Array<PerformanceState>) {
 		this.address = address;

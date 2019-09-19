@@ -61,7 +61,7 @@ class RingLayeredLayout extends TreeLayout {
 
 		nodes.forEach(machineKey => {
 			const node = this.nodeHolder.get(machineKey);
-
+			if (!node) throw new Error(`${machineKey} not found`);
 			const distancesFromSourceElement = this.filterResult.distancesFromSource[machineKey];
 			node.x =
 				this.options.radius *

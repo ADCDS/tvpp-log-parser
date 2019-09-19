@@ -10,7 +10,7 @@ import Machine from "../../../Machine";
 import UserOption from "../../../UserOption";
 
 class Layout {
-	filterResult: FilterResult;
+	+filterResult: FilterResult;
 	graphHolder: GraphHolder;
 	machines: Map<string, Machine>;
 	nodeHolder: Map<string, Node>;
@@ -84,7 +84,7 @@ class Layout {
 	cloneNodeHolder(): Map<string, Node> {
 		const resObj = new Map<string, Node>();
 		for (const [index, node] of this.nodeHolder.entries()) {
-			resObj.set(index, { ...node });
+			resObj.set(index, ((Object.assign(Object.create(Node), node): any): Node));
 		}
 		return resObj;
 	}

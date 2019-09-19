@@ -18,8 +18,7 @@ class TVPPLog {
 
 	constructor(options: ?{ [string]: any }) {
 		const defaultOptions = {
-			forceAddGhostNodes: false,
-			iterateTroughServerApparition: true
+			forceAddGhostNodes: false
 		};
 
 		this.options = Object.assign(defaultOptions, options);
@@ -96,8 +95,12 @@ class TVPPLog {
 
 			if (Object.prototype.hasOwnProperty.call(logEntry, "bandwidth")) {
 				foundBandwidths[logEntry.bandwidth] = true;
-				if (Object.prototype.hasOwnProperty.call(machineObj, "bandwidth") && machineObj.bandwidth !== undefined && machineObj.bandwidth !== logEntry.bandwidth) {
-					throw new Error(`Machine ${machineObj.address} bandwidth from ${machineObj.bandwidth} to ${logEntry.bandwidth} changed at line ${logEntry.logId}`);
+				if (machineObj.bandwidth && machineObj.bandwidth !== logEntry.bandwidth) {
+					throw new Error(
+						`Machine ${machineObj.address} bandwidth from ${machineObj.bandwidth.toString()} to ${logEntry.bandwidth.toString()} changed at line ${
+							logEntry.logId
+						}`
+					);
 				}
 				machineObj.bandwidth = logEntry.bandwidth;
 			}

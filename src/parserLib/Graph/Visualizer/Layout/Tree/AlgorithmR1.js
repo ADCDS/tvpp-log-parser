@@ -39,7 +39,7 @@ class AlgorithmR1 extends TreeLayout {
 		return 1 + highestHeight;
 	}
 
-	widthOf(nodeName) {
+	widthOf(nodeName: string): number {
 		// children
 		let res = 0;
 		const edges = this.graphHolder.getEdges(nodeName);
@@ -56,6 +56,9 @@ class AlgorithmR1 extends TreeLayout {
 
 	drawSubTree1(machineName: string, p: number, alpha1: number, alpha2: number): void {
 		const v = this.nodeHolder.get(machineName);
+
+		if (!v) throw new Error(`${machineName} not found`);
+
 		v.setPolarCoordinate(p, (alpha1 + alpha2) / 2);
 		// console.log("Polar: ", p, (alpha1 + alpha2) / 2, "Cartesian: ", v.x, v.y);
 

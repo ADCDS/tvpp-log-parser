@@ -2,8 +2,8 @@
 class Node {
 	id: string;
 	label: string;
-	x: number;
-	y: number;
+	x: ?number;
+	y: ?number;
 	color: string;
 	size: number;
 	polar: {
@@ -11,7 +11,7 @@ class Node {
 		radius: number
 	};
 
-	constructor(id: string, label: string, x: number, y: number, color: string, size: number) {
+	constructor(id: string, label: string, x: ?number, y: ?number, color: string, size: number) {
 		this.id = id;
 		this.label = label;
 		this.x = x;

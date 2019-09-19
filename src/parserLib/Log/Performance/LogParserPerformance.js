@@ -2,48 +2,49 @@
 import LogEntryPerformance from "./LogEntryPerformance";
 
 class LogParserPerformance {
-	static async parse(lineArray, discriminateByPort) {
+	static async parse(lineArray: [string]) {
 		const ret = [];
 		for (let i = 0; i < lineArray.length; i += 1) {
-			if (lineArray[i] !== "") ret.push(this.lineToEntry(i, lineArray[i], discriminateByPort));
+			if (lineArray[i] !== "") ret.push(this.lineToEntry(i, lineArray[i]));
 		}
 		return ret;
 	}
 
-	static lineToEntry(lineId, line) {
+	static lineToEntry(lineId: number, line: string): LogEntryPerformance {
 		const pieces = line.split(" ");
 		const machine = pieces[0];
 		const split = machine.split(":");
 
 		return new LogEntryPerformance(
-			Number(lineId),
+			lineId,
 			split[0],
 			Number(split[1]),
-			pieces[1],
-			pieces[2],
-			pieces[3],
-			pieces[4],
-			pieces[5],
-			pieces[6],
-			pieces[7],
-			pieces[8],
-			pieces[9],
-			pieces[10],
-			pieces[11],
-			pieces[12],
+			Number(pieces[1]),
+			Number(pieces[2]),
+			Number(pieces[3]),
+			Number(pieces[4]),
+			Number(pieces[5]),
+			Number(pieces[6]),
+			Number(pieces[7]),
+			Number(pieces[8]),
+			Number(pieces[9]),
+			Number(pieces[10]),
+			Number(pieces[11]),
+			Number(pieces[12]),
 			pieces[13],
 			pieces[14],
-			pieces[15],
-			pieces[16],
-			pieces[17],
-			pieces[18],
-			pieces[19],
-			pieces[20],
-			pieces[21],
-			pieces[22],
-			pieces[23],
+			Number(pieces[15]),
+			Number(pieces[16]),
+			Number(pieces[17]),
+			Number(pieces[18]),
+			Number(pieces[19]),
+			Number(pieces[20]),
+			Number(pieces[21]),
+			Number(pieces[22]),
+			Number(pieces[23]),
 			Number(pieces[24]),
-			Number(pieces[25])
+			Number(pieces[25]),
+			Number(pieces[26])
 		);
 	}
 }

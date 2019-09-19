@@ -32,7 +32,9 @@
 	"class-methods-use-this": "off",
 	"no-unused-vars": "off",
 	"no-restricted-syntax": "off",
-	"prefer-destructuring": "off"
+	"prefer-destructuring": "off",
 	// https://github.com/facebook/flow/issues/3073
+	"no-continue": "off",
+	"import/no-cycle": "off"
   }
 }

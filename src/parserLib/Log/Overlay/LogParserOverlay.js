@@ -2,7 +2,7 @@
 import LogEntryOverlay from "./LogEntryOverlay";
 
 class LogParserOverlay {
-	static async parse(lineArray) {
+	static async parse(lineArray: [string]) {
 		const ret = [];
 		for (let i = 0; i < lineArray.length; i += 1) {
 			if (lineArray[i] !== "") ret.push(this.lineToEntry(lineArray[i]));
@@ -10,7 +10,7 @@ class LogParserOverlay {
 		return ret;
 	}
 
-	static lineToEntry(line) {
+	static lineToEntry(line: string): LogEntryOverlay {
 		/**
 		 *  0.0.0.0:0 works as an separator,
 		 *  to the right are the servers which our 'hostAddress' sends chunks to,

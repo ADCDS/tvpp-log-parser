@@ -3,7 +3,6 @@ import Layout from "./Layout";
 import FilterResult from "../../Filter/Results/FilterResult";
 import GraphHolder from "../../GraphHolder";
 import Machine from "../../../Machine";
-import Filter from "../../Filter/Filter";
 import Edge from "../Edge";
 import UserOption from "../../../UserOption";
 
@@ -11,7 +10,7 @@ class ComparisionLayout extends Layout {
 	mainGraphHolder: GraphHolder;
 	secondaryGraphHolder: GraphHolder;
 
-	constructor(filterResultMain: FilterResult, filterResultSec: FilterResult<Filter>, machines: Map<string, Machine>, options: { [string]: any }) {
+	constructor(filterResultMain: FilterResult, filterResultSec: FilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
 		super(filterResultMain, machines, options);
 
 		this.mainGraphHolder = filterResultMain.graphHolder;

@@ -6,7 +6,7 @@ import TreeFilter from "../../../Filter/Tree/TreeFilter";
 import UserOption from "../../../../UserOption";
 
 class TreeLayout extends Layout {
-	filterResult: TreeFilterResult; // Field override doesn't work?
+	filterResult: TreeFilterResult;
 
 	constructor(filterResult: TreeFilterResult, machines: Map<string, Machine>, options: { [p: string]: * }) {
 		if (options.source === null) {

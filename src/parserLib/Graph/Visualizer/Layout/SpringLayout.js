@@ -20,9 +20,23 @@ class SpringLayout extends Layout {
 		super(filterResult, machines, options);
 	}
 
-	calculateForcesOnNode(machineKey: string): void {
-		const nodeHolderElement = this.nodeHolder.get(machineKey);
+	static getOptions(): { [string]: UserOption<any> } {
+		let options = super.getOptions();
+		options = Object.assign(options, {
+			c1: new UserOption<Number>("C1", Number, 2),
+			c2: new UserOption<Number>("C2", Number, 1),
+			c3: new UserOption<Number>("C3", Number, 1),
+			c4: new UserOption<Number>("C4", Number, 0.1),
+			iterNum: new UserOption<Number>("Iteration Number", Number, 100),
+			drawUndefinedNodes: new UserOption<Boolean>("Draw undefined nodes", Boolean, false),
+			fixAt00: new UserOption<String>("Fix node at (0,0)", String, "::src")
+		});
+		return options;
+	}
 
+	calculateForcesOnNode(machineKey: string): { x: number, y: number } {
+		const nodeHolderElement = this.nodeHolder.get(machineKey);
+		if (!nodeHolderElement) throw new Error(`${machineKey} wansn't found on nodeHolder`);
 		const resultantForce = { x: 0, y: 0 };
 		const edges = this.graphHolder.getEdges(machineKey);
 
@@ -38,6 +52,7 @@ class SpringLayout extends Layout {
 			const adjacentNodeHolderElement = this.nodeHolder.get(adjacentMachine);
 			if (!adjacentNodeHolderElement) continue;
 
+			// eslint-disable-next-line flowtype-errors/show-errors
 			const d = Math.sqrt(Math.pow(nodeHolderElement.x - adjacentNodeHolderElement.x, 2) + Math.pow(nodeHolderElement.y - adjacentNodeHolderElement.y, 2));
 			if (d === 0) continue;
 
@@ -45,7 +60,9 @@ class SpringLayout extends Layout {
 
 			// get the direction where the force is applied
 			const dir = {
+				// eslint-disable-next-line flowtype-errors/show-errors
 				x: (adjacentNodeHolderElement.x - nodeHolderElement.x) / d,
+				// eslint-disable-next-line flowtype-errors/show-errors
 				y: (adjacentNodeHolderElement.y - nodeHolderElement.y) / d
 			};
 
@@ -64,6 +81,7 @@ class SpringLayout extends Layout {
 			const nonAdjacentNodeHolderElement = this.nodeHolder.get(nonAdjacentMachine);
 			if (!nonAdjacentNodeHolderElement) continue;
 
+			// eslint-disable-next-line flowtype-errors/show-errors
 			const d = Math.sqrt(Math.pow(nodeHolderElement.x - nonAdjacentNodeHolderElement.x, 2) + Math.pow(nodeHolderElement.y - nonAdjacentNodeHolderElement.y, 2));
 			if (d === 0) continue;
 
@@ -71,7 +89,9 @@ class SpringLayout extends Layout {
 
 			// get the direction where the force is applied
 			const dir = {
+				// eslint-disable-next-line flowtype-errors/show-errors
 				x: -(nonAdjacentNodeHolderElement.x - nodeHolderElement.x) / d,
+				// eslint-disable-next-line flowtype-errors/show-errors
 				y: -(nonAdjacentNodeHolderElement.y - nodeHolderElement.y) / d
 			};
 
@@ -86,10 +106,7 @@ class SpringLayout extends Layout {
 		resultantForce.x *= this.options.c4;
 		resultantForce.y *= this.options.c4;
 
-		nodeHolderElement.ResX = nodeHolderElement.x + resultantForce.x;
-		nodeHolderElement.ResY = nodeHolderElement.y + resultantForce.y;
-
-		console.log(`SpringLayout: ${machineKey}: OLD {x: ${nodeHolderElement.x}, y: ${nodeHolderElement.y}}, FORCE {x: ${resultantForce.x}, y: ${resultantForce.y}}`);
+		return {x: resultantForce.x, y: resultantForce.y};
 	}
 
 	updatePositions(): void {
@@ -121,36 +138,21 @@ class SpringLayout extends Layout {
 			}
 		}
 
+		const forces = {};
 		while (i++ < this.options.iterNum) {
 			for (const machineKey of this.nodeHolder.keys()) {
 				if (this.options.fixAt00 !== machineKey) {
-					this.calculateForcesOnNode(machineKey);
+					forces[machineKey] = this.calculateForcesOnNode(machineKey);
 				}
 			}
 
 			for (const node of this.nodeHolder.values()) {
 				if (this.options.fixAt00 !== node.id) {
-					node.x = node.ResX;
-					node.y = node.ResY;
+					node.x += forces[node.id].x;
+					node.y += forces[node.id].y;
 				}
 			}
 		}
-	}
-
-	static getOptions(): {
-		[string]: UserOption<any>
-	} {
-		let options = super.getOptions();
-		options = Object.assign(options, {
-			c1: new UserOption<Number>("C1", Number, 2),
-			c2: new UserOption<Number>("C2", Number, 1),
-			c3: new UserOption<Number>("C3", Number, 1),
-			c4: new UserOption<Number>("C4", Number, 0.1),
-			iterNum: new UserOption<Number>("Iteration Number", Number, 100),
-			drawUndefinedNodes: new UserOption<Boolean>("Draw undefined nodes", Boolean, false),
-			fixAt00: new UserOption<String>("Fix node at (0,0)", String, "::src")
-		});
-		return options;
 	}
 }
 

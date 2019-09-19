@@ -7,6 +7,7 @@ import Filter from "./parserLib/Graph/Filter/Filter";
 import RingLayeredLayout from "./parserLib/Graph/Visualizer/Layout/Tree/RingLayeredLayout";
 import SpringLayout from "./parserLib/Graph/Visualizer/Layout/SpringLayout";
 import RingLayout from "./parserLib/Graph/Visualizer/Layout/RingLayout";
+import type {FilterDefType, LayoutDefType} from "./types";
 
 const fs = require("fs");
 
@@ -67,7 +68,7 @@ class Utils {
 		return retLayout;
 	}
 
-	static getFiltersByType(Type: Class<Filter>): [FilterDefType] {
+	static getFiltersByType(Type: Class<Filter>): Array<FilterDefType> {
 		const retFilters = [];
 		Object.keys(this.filters).forEach(el => {
 			if (this.filters[el].type.prototype instanceof Type || this.filters[el].type === Type) retFilters.push(this.filters[el]);
@@ -75,7 +76,7 @@ class Utils {
 		return retFilters;
 	}
 
-	static async readLog(filePath: string): Promise {
+	static async readLog(filePath: string) {
 		return new Promise((resolve, reject) => {
 			fs.readFile(filePath, (err, fd) => {
 				if (err) {

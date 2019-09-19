@@ -31,19 +31,11 @@ class GraphManager {
 	}
 
 	goToNextState(): void {
-		if (this.logEntity.options.iterateTroughServerApparition) {
-			this.goToNextServerApparition();
-		} else {
-			this.goToNextEvent();
-		}
+		this.goToNextServerApparition();
 	}
 
 	goToPrevState(): void {
-		if (this.logEntity.options.iterateTroughServerApparition) {
-			this.goToPrevServerApparition();
-		} else {
-			this.goToPrevEvent();
-		}
+		this.goToPrevServerApparition();
 	}
 
 	goToAbsoluteServerApparition(index: number): void {
@@ -87,6 +79,10 @@ class GraphManager {
 		const logPosition = this.logEntity.eventTimestampMap.get(
 			Array.from(this.logEntity.eventTimestampMap.keys()).reduce((prev, curr) => (Math.abs(curr - timestamp) < Math.abs(prev - timestamp) ? curr : prev))
 		);
+
+		if (!logPosition) {
+			throw new Error("Log position not defined");
+		}
 
 		// Find the closest source apparition from this position
 		const logSourcePosition = this.logEntity.sourceApparitionLocations
@@ -139,9 +135,7 @@ class GraphManager {
 		if (statePos < 0) statePos = 0;
 
 		if (statePos < this.currentEventIndex) {
-			while (this.currentEventIndex !== statePos) {
-				this.goToPrevEvent();
-			}
+			throw new Error("goToAbsoluteEventState reverse not implemented");
 		} else if (statePos > this.currentEventIndex) {
 			while (this.currentEventIndex !== statePos) {
 				this.goToNextEvent();
