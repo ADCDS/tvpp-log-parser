@@ -27,9 +27,9 @@ window.selectedTimestamp = 0;
 
 function createHandler(onLoadCb: any => any): Event => void {
 	return evt => {
-		const {target} = evt;
+		const { target } = evt;
 		if (target instanceof HTMLInputElement) {
-			const {files} = target; // FileList object
+			const { files } = target; // FileList object
 
 			console.log("Reading file...");
 			const reader = new FileReader();

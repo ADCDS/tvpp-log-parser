@@ -1,8 +1,8 @@
 // @flow
-import {FibonacciHeap} from "@tyriar/fibonacci-heap";
+import { FibonacciHeap } from "@tyriar/fibonacci-heap";
 import TreeFilter from "../TreeFilter";
 import TreeFilterResult from "../../Results/TreeFilterResult";
-import type {Graph} from "../../../../../types";
+import type { Graph } from "../../../../../types";
 import GraphHolder from "../../../GraphHolder";
 
 class DijkstraFilter extends TreeFilter {
