@@ -1,3 +1,4 @@
+// @flow
 import LogParserOverlay from "../src/parserLib/Log/Overlay/LogParserOverlay";
 import TVPPLog from "../src/parserLib/TVPPLog";
 import Utils from "../src/utils";

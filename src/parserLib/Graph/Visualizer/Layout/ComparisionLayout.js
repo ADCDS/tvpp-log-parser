@@ -5,13 +5,13 @@ import GraphHolder from "../../GraphHolder";
 import Machine from "../../../Machine";
 import Filter from "../../Filter/Filter";
 import Edge from "../Edge";
-import Option from "../../../Option";
+import UserOption from "../../../UserOption";
 
 class ComparisionLayout extends Layout {
 	mainGraphHolder: GraphHolder;
 	secondaryGraphHolder: GraphHolder;
 
-	constructor(filterResultMain: FilterResult<Filter>, filterResultSec: FilterResult<Filter>, machines: Map<string, Machine>, options: { [string]: any }) {
+	constructor(filterResultMain: FilterResult, filterResultSec: FilterResult<Filter>, machines: Map<string, Machine>, options: { [string]: any }) {
 		super(filterResultMain, machines, options);
 
 		this.mainGraphHolder = filterResultMain.graphHolder;
@@ -62,7 +62,7 @@ class ComparisionLayout extends Layout {
 		}
 	}
 
-	static getOptions(): { [string]: Option } {
+	static getOptions(): { [string]: UserOption<any> } {
 		return {};
 	}
 }

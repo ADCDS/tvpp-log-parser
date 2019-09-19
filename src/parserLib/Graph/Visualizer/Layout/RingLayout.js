@@ -2,11 +2,10 @@
 import Layout from "./Layout";
 import FilterResult from "../../Filter/Results/FilterResult";
 import Machine from "../../../Machine";
-import Option from "../../../Option";
-import Filter from "../../Filter/Filter";
+import UserOption from "../../../UserOption";
 
 class RingLayout extends Layout {
-	constructor(filterResult: FilterResult<Filter>, machines: Map<string, Machine>, options: { [string]: any }) {
+	constructor(filterResult: FilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
 		const defaultOptions = {
 			radius: 100,
 			drawUndefinedNodes: false
@@ -16,13 +15,23 @@ class RingLayout extends Layout {
 		super(filterResult, machines, options);
 	}
 
+	static getOptions(): { [string]: UserOption<any> } {
+		let options = super.getOptions();
+		options = Object.assign(options, {
+			radius: new UserOption<Number>("Radius", Number, 100),
+			drawUndefinedNodes: new UserOption<Boolean>("Draw undefined nodes", Boolean, false)
+		});
+
+		return options;
+	}
+
 	updatePositions(): void {
 		super.updatePositions();
 		let nodeKeys = Array.from(this.nodeHolder.keys());
 
-		if (!this.options.drawUndefinedNodes){
+		if (!this.options.drawUndefinedNodes) {
 			nodeKeys = nodeKeys.filter(node => {
-				if(!this.filterResult.graphHolder.isConnected(node)){
+				if (!this.filterResult.graphHolder.isConnected(node)) {
 					this.nodeHolder.delete(node);
 					return false;
 				}
@@ -36,16 +45,6 @@ class RingLayout extends Layout {
 			node.y = this.options.radius * Math.sin((2 * iterNum * Math.PI) / nodeKeys.length);
 			iterNum++;
 		}
-	}
-
-	static getOptions(): { [string]: Option } {
-		let options = super.getOptions();
-		options = Object.assign(options, {
-			radius: new Option("Radius", Number, 100),
-			drawUndefinedNodes: new Option("Draw undefined nodes", Boolean, false)
-		});
-
-		return options;
 	}
 }
 

@@ -2,7 +2,7 @@
 import FilterResult from "./FilterResult";
 import GraphHolder from "../../GraphHolder";
 
-class TreeFilterResult<FilterType> extends FilterResult<FilterType> {
+class TreeFilterResult extends FilterResult {
 	distancesFromSource: { [string]: number };
 	fathers: { [string]: string };
 

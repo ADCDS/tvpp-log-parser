@@ -2,7 +2,7 @@
 import Layout from "./Layout";
 import FilterResult from "../../Filter/Results/FilterResult";
 import Machine from "../../../Machine";
-import Option from "../../../Option";
+import UserOption from "../../../UserOption";
 
 class SpringLayout extends Layout {
 	constructor(filterResult: FilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
@@ -138,17 +138,17 @@ class SpringLayout extends Layout {
 	}
 
 	static getOptions(): {
-		[string]: any
+		[string]: UserOption<any>
 	} {
 		let options = super.getOptions();
 		options = Object.assign(options, {
-			c1: new Option("C1", Number, 2),
-			c2: new Option("C2", Number, 1),
-			c3: new Option("C3", Number, 1),
-			c4: new Option("C4", Number, 0.1),
-			iterNum: new Option("Iteration Number", Number, 100),
-			drawUndefinedNodes: new Option("Draw undefined nodes", Boolean, false),
-			fixAt00: new Option("Fix node at (0,0)", String, "::src")
+			c1: new UserOption<Number>("C1", Number, 2),
+			c2: new UserOption<Number>("C2", Number, 1),
+			c3: new UserOption<Number>("C3", Number, 1),
+			c4: new UserOption<Number>("C4", Number, 0.1),
+			iterNum: new UserOption<Number>("Iteration Number", Number, 100),
+			drawUndefinedNodes: new UserOption<Boolean>("Draw undefined nodes", Boolean, false),
+			fixAt00: new UserOption<String>("Fix node at (0,0)", String, "::src")
 		});
 		return options;
 	}

@@ -2,24 +2,24 @@
 import Filter from "../Filter";
 import GraphHolder from "../../GraphHolder";
 import TreeFilterResult from "../Results/TreeFilterResult";
-import Option from "../../../Option";
+import UserOption from "../../../UserOption";
 
 class TreeFilter extends Filter {
-	constructor(options: Map<string, string>) {
+	constructor(options: { [string]: any }) {
 		if (!options.source) {
 			throw new Error("Invoked DijkstraFilter without 'source' option");
 		}
 		super(options);
 	}
 
-	applyFilter(graphHolder: GraphHolder): TreeFilterResult<TreeFilter> {
-		return new TreeFilterResult<TreeFilter>(graphHolder);
+	static getOptions(): { [string]: UserOption<any> } {
+		return {
+			source: new UserOption<String>("Source", String, "::src")
+		};
 	}
 
-	static getOptions(): {[string]: Option} {
-		return {
-			source: new Option("Source", String, "::src")
-		};
+	applyFilter(graphHolder: GraphHolder): TreeFilterResult {
+		return new TreeFilterResult(graphHolder, {}, {});
 	}
 }
 

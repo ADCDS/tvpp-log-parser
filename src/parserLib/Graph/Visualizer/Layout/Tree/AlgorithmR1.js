@@ -1,13 +1,11 @@
 // @flow
-import Layout from "../Layout";
-import TreeFilter from "../../../Filter/Tree/TreeFilter";
 import TreeFilterResult from "../../../Filter/Results/TreeFilterResult";
 import Machine from "../../../../Machine";
 import TreeLayout from "./TreeLayout";
-import Option from "../../../../Option";
+import UserOption from "../../../../UserOption";
 
 class AlgorithmR1 extends TreeLayout {
-	constructor(filterResult: TreeFilterResult<TreeFilter>, machines: Map<string, Machine>, options: { [string]: any }) {
+	constructor(filterResult: TreeFilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
 		const defaultOptions = {
 			gamma: 200,
 			drawUndefinedNodes: false
@@ -113,12 +111,12 @@ class AlgorithmR1 extends TreeLayout {
 		// console.log("Done AlgorithmR1");
 	}
 
-	static getOptions(): {} {
+	static getOptions(): { [string]: UserOption<any> } {
 		let options = super.getOptions();
 		options = Object.assign(options, {
-			gamma: new Option("Gamma", Number, 200),
-			source: new Option("Source", String, "::src"),
-			drawUndefinedNodes: new Option("Draw undefined nodes", Boolean, false)
+			gamma: new UserOption<Number>("Gamma", Number, 200),
+			source: new UserOption<String>("Source", String, "::src"),
+			drawUndefinedNodes: new UserOption<Boolean>("Draw undefined nodes", Boolean, false)
 		});
 		return options;
 	}

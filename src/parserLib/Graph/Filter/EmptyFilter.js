@@ -4,7 +4,7 @@ import FilterResult from "./Results/FilterResult";
 import GraphHolder from "../GraphHolder";
 
 class EmptyFilter extends Filter {
-	applyFilter(graphHolder: GraphHolder): FilterResult<Filter> {
+	applyFilter(graphHolder: GraphHolder): FilterResult {
 		return new FilterResult(graphHolder);
 	}
 }

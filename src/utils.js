@@ -7,9 +7,7 @@ import Filter from "./parserLib/Graph/Filter/Filter";
 import RingLayeredLayout from "./parserLib/Graph/Visualizer/Layout/Tree/RingLayeredLayout";
 import SpringLayout from "./parserLib/Graph/Visualizer/Layout/SpringLayout";
 import RingLayout from "./parserLib/Graph/Visualizer/Layout/RingLayout";
-import DijkstraMeanFilter from "./parserLib/Graph/Filter/Tree/Dijkstra/DijkstraMeanFilter";
-import DijkstraMedianFilter from "./parserLib/Graph/Filter/Tree/Dijkstra/DijkstraMedianFilter";
-import DijkstraMaxFilter from "./parserLib/Graph/Filter/Tree/Dijkstra/DijkstraMaxFilter";
+
 const fs = require("fs");
 
 class Utils {
@@ -55,29 +53,29 @@ class Utils {
 		}
 	};
 
-	static getFilter(filter) {
+	static getFilter(filter: string): FilterDefType {
 		const retFilter = this.filters[filter];
 		if (!retFilter) throw new Error(`Unknown filter name ${filter}`);
 
 		return retFilter;
 	}
 
-	static getLayout(layout) {
+	static getLayout(layout: string): LayoutDefType {
 		const retLayout = this.layouts[layout];
 		if (!retLayout) throw new Error(`Unknown layout name ${layout}`);
 
 		return retLayout;
 	}
 
-	static getFiltersByType(type) {
+	static getFiltersByType(Type: Class<Filter>): [FilterDefType] {
 		const retFilters = [];
 		Object.keys(this.filters).forEach(el => {
-			if (this.filters[el].type.prototype instanceof type || this.filters[el].type === type) retFilters.push(this.filters[el]);
+			if (this.filters[el].type.prototype instanceof Type || this.filters[el].type === Type) retFilters.push(this.filters[el]);
 		});
 		return retFilters;
 	}
 
-	static async readLog(filePath) {
+	static async readLog(filePath: string): Promise {
 		return new Promise((resolve, reject) => {
 			fs.readFile(filePath, (err, fd) => {
 				if (err) {
@@ -94,6 +92,5 @@ class Utils {
 		});
 	}
 }
-
 
 export default Utils;

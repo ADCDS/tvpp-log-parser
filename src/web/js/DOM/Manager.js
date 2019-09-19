@@ -4,10 +4,14 @@ import Filter from "../../../parserLib/Graph/Filter/Filter";
 import LogParserOverlay from "../../../parserLib/Log/Overlay/LogParserOverlay";
 import LogParserPerformance from "../../../parserLib/Log/Performance/LogParserPerformance";
 import ComparisionLayout from "../../../parserLib/Graph/Visualizer/Layout/ComparisionLayout";
-import plOption from "../../../parserLib/Option";
+import UserOption from "../../../parserLib/UserOption";
 import Node from "../../../parserLib/Graph/Visualizer/Node";
-import DOMUtils from "./Utils.js";
+import DOMUtils from "./Utils";
 import Variables from "./Variables";
+import SigmaInjection from "../SigmaInjection";
+
+type OptionValueTypes = Class<String> | Class<Number> | Class<Boolean>;
+
 class Manager {
 	static init(): void {
 		// Show starting options
@@ -22,13 +26,21 @@ class Manager {
 		const availableFiltersKeys = Object.keys(availableFilters);
 		availableFiltersKeys.forEach(el => {
 			const value = availableFilters[el];
-			filterTypeDOM.add(new Option(value.name, value.id));
+			const optionEl = document.createElement("option");
+			optionEl.text = value.name;
+			optionEl.value = value.id;
+
+			filterTypeDOM.add(optionEl);
 		});
 
 		const availableLayoutsKeys = Object.keys(availableLayouts);
 		availableLayoutsKeys.forEach(index => {
 			const value = availableLayouts[index];
-			layoutTypeDOM.add(new Option(value.name, value.id));
+			const optionEl = document.createElement("option");
+			optionEl.text = value.name;
+			optionEl.value = value.id;
+
+			layoutTypeDOM.add(optionEl);
 		});
 
 		// Select default elements
@@ -39,13 +51,13 @@ class Manager {
 		layoutTypeDOM.dispatchEvent(new Event("change"));
 
 		DOMUtils.getElementById("btnCurrentState").dispatchEvent(new Event("click"));
-		DOMUtils.getElementById('disableEdges').click();
+		DOMUtils.getElementById("disableEdges").click();
 	}
 
-	static getInputFromOption(inputId: string, option: plOption): string {
+	static getInputFromOption(inputId: string, option: UserOption<any>): string {
 		if (!option.isFilter()) {
 			// If we are not dealing with a filter
-			const inputType = Manager.getInputType(option.type);
+			const inputType = Manager.getInputType((option.type: OptionValueTypes));
 
 			return `<label for='${inputId}'>${option.name}</label><input id ='${inputId}' type='${inputType}' ${Manager.getDefaultAttr(option.type, option.default)}>`;
 		}
@@ -62,7 +74,7 @@ class Manager {
 
 		// Generate sub filter config option
 		// Default filter
-		[Variables.selectedLayoutFilter] = availableFilters;
+		Variables.selectedLayoutFilter = availableFilters[0];
 		const filter = Variables.selectedLayoutFilter;
 		res += "<div id='subFilterOptionsHolder'>";
 		res += Manager.generateOptionsForm("subFilterOptions", filter.class.getOptions());
@@ -70,7 +82,7 @@ class Manager {
 		return res;
 	}
 
-	static parseInputValue(configType: string, element: HTMLInputElement): string | number | boolean {
+	static parseInputValue(configType: OptionValueTypes, element: HTMLInputElement): string | number | boolean {
 		const { value } = element;
 		if (configType === String) return String(value);
 		if (configType === Number) return Number(value);
@@ -82,18 +94,18 @@ class Manager {
 			// eslint-disable-next-line flowtype-errors/show-errors
 			return Manager.getOptions(layoutFilterFormHolderId, Variables.selectedLayoutFilter.class.getOptions());
 		}
-		throw new Error(`Invalid configType: ${configType}`);
+		throw new Error(`Invalid configType`);
 	}
 
-	static getInputType(configType: Class<String> | Class<Number> | Class<Boolean>): string {
+	static getInputType(configType: OptionValueTypes): string {
 		if (configType === String) return "text";
 		if (configType === Number) return "number";
 		if (configType === Boolean) return "checkbox";
 
-		throw new Error(`Invalid configType: ${configType}`);
+		throw new Error(`Invalid configType`);
 	}
 
-	static getDefaultAttr(configType: Class<String> | Class<Number> | Class<Boolean>, defaultValue: any): string {
+	static getDefaultAttr(configType: OptionValueTypes, defaultValue: any): string {
 		if (configType === Boolean) {
 			if (defaultValue === true) {
 				return "checked = 'checked'";
@@ -103,10 +115,10 @@ class Manager {
 		if (configType === String || configType === Number) {
 			return `value = '${defaultValue}'`;
 		}
-		throw new Error(`Invalid configType: ${configType}`);
+		throw new Error(`Invalid configType`);
 	}
 
-	static generateOptionsForm(formHolderId: string, options: { [string]: plOption }): string {
+	static generateOptionsForm(formHolderId: string, options: { [string]: UserOption<any> }): string {
 		Variables.sourceOptions[formHolderId] = [];
 
 		let resHTML = "";
@@ -151,7 +163,7 @@ class Manager {
 	static updateDefaultsOptionValues(): void {
 		["filterOptions", "layoutOptions", "subFilterOptions"].forEach(optionType => {
 			Variables.sourceOptions[optionType].forEach((value, index) => {
-				const el = DOMUtils.getElementById(value);
+				const el = DOMUtils.getGenericElementById<HTMLInputElement>(value);
 				if (!el) {
 					Variables.sourceOptions[optionType].splice(index, 1);
 					return;
@@ -163,40 +175,44 @@ class Manager {
 		});
 	}
 
-	static async parseOverlayLog(e: {}): void {
+	static async parseOverlayLog(e: Event) {
 		console.log("Overlay log read.");
+		if (!(e.currentTarget instanceof FileReader) || !(typeof e.currentTarget.result === "string")) throw new Error("Invalid type");
+
 		const entryArray = await LogParserOverlay.parse(e.currentTarget.result.split("\n"));
 		console.log(`Parsed ${entryArray.length} lines from overlay log`);
 		window.logEntity.addOverlayEntries(entryArray);
 		window.graphManager.syncMachines();
-		DOMUtils.getElementById("numberOfEvents").value = window.logEntity.sourceApparitionLocations.length;
-		DOMUtils.getElementById("numberOfNodes").value = Object.keys(window.logEntity.machines).length;
+		DOMUtils.getGenericElementById<HTMLInputElement>("numberOfEvents").value = window.logEntity.sourceApparitionLocations.length;
+		DOMUtils.getGenericElementById<HTMLInputElement>("numberOfNodes").value = Object.keys(window.logEntity.machines).length.toString();
 		Manager.syncMachinesList();
 
 		// Update defaults ::src
 		Manager.updateDefaultsOptionValues();
 	}
 
-	static async parsePerformanceLog(e: {}): void {
+	static async parsePerformanceLog(e: Event) {
 		console.log("Performance log read.");
+		if (!(e.currentTarget instanceof FileReader) || !(typeof e.currentTarget.result === "string")) throw new Error("Invalid type");
+
 		const entryArray = await LogParserPerformance.parse(e.currentTarget.result.split("\n"));
 		console.log(`Parsed ${entryArray.length} lines from performance log`);
 		window.logEntity.addPerformanceEntries(entryArray);
 		Manager.updateClassifications();
 	}
 
-	static getOptions(formHolderId: string, options: { [string]: plOption }): { [string]: string | number | boolean } {
+	static getOptions(formHolderId: string, options: { [string]: UserOption<any> }): { [string]: string | number | boolean } {
 		const resObj = {};
 		Object.keys(options).forEach(el => {
 			const option = options[el];
 			const inputId = `_main${formHolderId}_${el}`;
-			const element = DOMUtils.getElementById(inputId);
+			const element = DOMUtils.getGenericElementById<HTMLInputElement>(inputId);
 			resObj[el] = Manager.parseInputValue(option.type, element);
 		});
 		return resObj;
 	}
 
-	static synchronizeSigma(sigma: {}): void {
+	static synchronizeSigma(sigma: { [string]: any, helperHolder: SigmaInjection }): void {
 		const graphHolder = sigma.helperHolder.graphHolder.filtered;
 		const unfilteredGraphHolder = sigma.helperHolder.graphHolder.original;
 		const { nodeHolder } = sigma.helperHolder;
@@ -216,7 +232,7 @@ class Manager {
 			for (const machineKey of nodeHolder.keys()) {
 				const edgesTo = graphHolder.getOutgoingEdges(machineKey);
 				edgesTo.forEach(machineDest => {
-					const edge = {
+					const edge: { color?: ?string } = {
 						id: `${machineKey}_>_${machineDest}`,
 						source: machineKey,
 						target: machineDest,
@@ -227,7 +243,7 @@ class Manager {
 					if (edgesFrom) {
 						const edgeObj = edgesFrom.get(machineDest);
 						if (edgeObj) {
-							Object.assign(edge, edgeObj);
+							Object.assign(edge, edgeObj.toObject());
 						}
 					}
 					try {
@@ -243,15 +259,20 @@ class Manager {
 		byPassOutNodes.forEach(machineKey => {
 			const edgesTo = unfilteredGraphHolder.getOutgoingEdges(machineKey);
 			edgesTo.forEach(machineDest => {
-				const edge = {
+				const edge: { color?: ?string } = {
 					id: `${machineKey}_>_${machineDest}`,
 					source: machineKey,
 					target: machineDest,
 					size: 2,
 					type: "arrow"
 				};
-				if (edgesHolder[machineKey] && edgesHolder[machineKey][machineDest]) {
-					Object.assign(edge, edgesHolder[machineKey][machineDest]);
+				const edgeFrom = edgesHolder.get(machineKey);
+
+				if (edgeFrom) {
+					const edgeFinal = edgeFrom.get(machineDest);
+					if (edgeFinal) {
+						Object.assign(edge, edgeFinal.toObject());
+					}
 				}
 				try {
 					sigma.graph.addEdge(edge);
@@ -266,15 +287,20 @@ class Manager {
 			// Get the edges that point to me
 			const edgesTo = unfilteredGraphHolder.getNodesThatPointTo(machineTo);
 			edgesTo.forEach(machineFrom => {
-				const edge = {
+				const edge: { color?: ?string } = {
 					id: `${machineFrom}_>_${machineTo}`,
 					source: machineFrom,
 					target: machineTo,
 					size: 2,
 					type: "arrow"
 				};
-				if (edgesHolder[machineFrom] && edgesHolder[machineFrom][machineTo]) {
-					Object.assign(edge, edgesHolder[machineFrom][machineTo]);
+
+				const edgeFrom = edgesHolder.get(machineFrom);
+				if (edgeFrom) {
+					const edgeFinal = edgeFrom.get(machineTo);
+					if (edgeFinal) {
+						Object.assign(edge, edgeFinal.toObject());
+					}
 				}
 				try {
 					sigma.graph.addEdge(edge);
@@ -322,7 +348,7 @@ class Manager {
 		elementById.classList.add("active");
 	}
 
-	static drawGraph(filterOptions: { [string]: plOption }, layoutOptions: { [string]: plOption }, goToState: Number, byTimestamp: boolean = false): void {
+	static drawGraph(filterOptions: { [string]: UserOption<any> }, layoutOptions: { [string]: UserOption }, goToState: Number, byTimestamp: boolean = false): void {
 		if (!Variables.selectedLayoutFilter) throw new Error("Layout Options missing subfilter");
 
 		const { graphManager } = window;
@@ -333,7 +359,6 @@ class Manager {
 		DOMUtils.getElementById("previousEvent").value = lastEventIndex;
 		DOMUtils.getElementById("previousStateEventId").innerHTML = `(${lastEventIndex})`;
 
-
 		if (!Variables.isFirstIteration) {
 			window.sigmaPrevious.helperHolder.nodeHolder = window.sigmaCurrent.helperHolder.nodeHolder;
 			window.sigmaPrevious.helperHolder.edgesHolder = window.sigmaCurrent.helperHolder.edgesHolder;
@@ -343,17 +368,17 @@ class Manager {
 			if (!Variables.layoutPreservation) {
 				Manager.synchronizeSigma(window.sigmaPrevious);
 			}
-			DOMUtils.getElementById('previousEventTime').value = new Date(graphManager.getCurrentTimestamp() * 1000).toString();
-			DOMUtils.getElementById('previousEventElapsedTime').value = graphManager.getCurrentElapsedTime();
+			DOMUtils.getElementById("previousEventTime").value = new Date(graphManager.getCurrentTimestamp() * 1000).toString();
+			DOMUtils.getElementById("previousEventElapsedTime").value = graphManager.getCurrentElapsedTime();
 		}
 
 		const FilterClass = Variables.selectedFilter.class;
 		const LayoutClass = Variables.selectedLayout.class;
 		const LayoutFilterClass = Variables.selectedLayoutFilter.class;
 
-		if(!byTimestamp) {
+		if (!byTimestamp) {
 			graphManager.goToAbsoluteServerApparition(goToState);
-		}else{
+		} else {
 			graphManager.goToClosestTimeElapsedServerApparition(goToState);
 		}
 		const graphHolder = graphManager.getGraphHolder();
@@ -419,8 +444,8 @@ class Manager {
 		DOMUtils.getElementById("currentEvent").value = graphManager.currentEventIndex;
 		DOMUtils.getElementById("currentStateEventId").innerHTML = `(${graphManager.currentEventIndex})`;
 		DOMUtils.getElementById("comparisionStateEventId").innerHTML = `(${lastEventIndex}/${graphManager.currentEventIndex})`;
-		DOMUtils.getElementById('currentEventTime').value = new Date(graphManager.getCurrentTimestamp() * 1000).toString();
-		DOMUtils.getElementById('currentEventElapsedTime').value = graphManager.getCurrentElapsedTime();
+		DOMUtils.getElementById("currentEventTime").value = new Date(graphManager.getCurrentTimestamp() * 1000).toString();
+		DOMUtils.getElementById("currentEventElapsedTime").value = graphManager.getCurrentElapsedTime();
 		DOMUtils.getElementById("selectedEventNumber").value = window.selectedEvent = graphManager.currentSourceIndex;
 
 		Variables.isFirstIteration = false;

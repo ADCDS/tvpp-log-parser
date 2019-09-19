@@ -1,3 +1,4 @@
+// @flow
 import GraphHolder from "../../src/parserLib/Graph/GraphHolder";
 
 test("graphHolderTest", async () => {
@@ -6,8 +7,8 @@ test("graphHolderTest", async () => {
 	const graphHolder2 = new GraphHolder(testMachines);
 	graphHolder1.addEdge(testMachines[0], testMachines[2]);
 
-	let graphDifference = graphHolder1.compareWith(graphHolder2);
+	const graphDifference = graphHolder1.compareWith(graphHolder2);
 
-	let edges = graphDifference.getEdges(testMachines[0]);
-	expect(edges.hasOwnProperty(testMachines[2]) && edges[testMachines[2]]).toBe(true);
+	const edges = graphDifference.getEdges(testMachines[0]);
+	expect(Object.prototype.hasOwnProperty.call(edges, testMachines[2]) && edges[testMachines[2]]).toBe(true);
 });

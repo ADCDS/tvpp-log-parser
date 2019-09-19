@@ -2,9 +2,6 @@
 import GraphHolder from "../GraphHolder";
 import FilterResult from "./Results/FilterResult";
 
-// Avoid dependency cycle
-class Option {}
-
 class Filter {
 	options: { [string]: any };
 
@@ -12,12 +9,12 @@ class Filter {
 		this.options = options || {};
 	}
 
-	applyFilter(graphHolder: GraphHolder): FilterResult<Filter> {
-		return new FilterResult<Filter>(graphHolder);
+	static getOptions(): { [string]: any } {
+		return {};
 	}
 
-	static getOptions(): { [string]: Option } {
-		return {};
+	applyFilter(graphHolder: GraphHolder): FilterResult {
+		return new FilterResult(graphHolder);
 	}
 }
 

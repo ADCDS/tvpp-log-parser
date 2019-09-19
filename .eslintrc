@@ -31,6 +31,8 @@
 	"no-param-reassign": "off",
 	"class-methods-use-this": "off",
 	"no-unused-vars": "off",
-	"no-restricted-syntax": "off"
+	"no-restricted-syntax": "off",
+	"prefer-destructuring": "off"
+	// https://github.com/facebook/flow/issues/3073
   }
 }

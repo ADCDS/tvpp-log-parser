@@ -1,3 +1,4 @@
+// @flow
 import LogParserPerformance from "../src/parserLib/Log/Performance/LogParserPerformance";
 import TVPPLog from "../src/parserLib/TVPPLog";
 import Utils from "../src/utils";

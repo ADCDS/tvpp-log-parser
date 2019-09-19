@@ -1,6 +1,6 @@
 // @flow
 
-class Utils{
+class Utils {
 	static getElementById(elementId: string): HTMLElement {
 		const el = document.getElementById(elementId);
 		if (!el) {
@@ -10,13 +10,13 @@ class Utils{
 		return el;
 	}
 
-	static getGenericElementById<T>(elementId: string): T {
+	static getGenericElementById<T: HTMLElement>(elementId: string): T {
 		const el = document.getElementById(elementId);
 		if (!el) {
 			throw new Error(`Element ${elementId} doesn't exists`);
 		}
 
-		return el;
+		return ((el: any): T);
 	}
 }
 

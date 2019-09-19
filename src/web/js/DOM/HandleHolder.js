@@ -17,13 +17,13 @@ class HandleHolder {
 
 	static handleDisableEdgesChange(e: {}): void {
 		Variables.disableEdges = e.target.checked;
-		if(Variables.disableEdges){
-			DOMUtils.getElementById('filterType').disabled = true;
+		if (Variables.disableEdges) {
+			DOMUtils.getElementById("filterType").disabled = true;
 			const filterTypeDOM = DOMUtils.getGenericElementById<HTMLSelectElement>("filterType");
 			filterTypeDOM.selectedIndex = 0;
 			filterTypeDOM.dispatchEvent(new Event("change"));
-		}else{
-			DOMUtils.getElementById('filterType').disabled = false;
+		} else {
+			DOMUtils.getElementById("filterType").disabled = false;
 		}
 	}
 
@@ -119,12 +119,12 @@ class HandleHolder {
 		}
 	}
 
-	static handleDrawByEvent(e: {}): void{
+	static handleDrawByEvent(): void {
 		const options = Manager.extractOptions();
 		Manager.drawGraph(options.filter, options.layout, window.selectedEvent, false);
 	}
 
-	static handleDrawByTimestamp(e: {}): void{
+	static handleDrawByTimestamp(): void {
 		const options = Manager.extractOptions();
 		Manager.drawGraph(options.filter, options.layout, window.selectedTimestamp, true);
 	}

@@ -7,6 +7,7 @@ import DijkstraFilter from "../../parserLib/Graph/Filter/Tree/Dijkstra/DijkstraF
 import AlgorithmR1 from "../../parserLib/Graph/Visualizer/Layout/Tree/AlgorithmR1";
 import HandleHolder from "./DOM/HandleHolder";
 import Manager from "./DOM/Manager";
+import DOMUtils from "./DOM/Utils";
 
 const Sigma = require("sigma");
 
@@ -24,67 +25,75 @@ window.LayoutTypeOptions = {};
 window.selectedEvent = 0;
 window.selectedTimestamp = 0;
 
-function createHandler(onLoadCb) {
+function createHandler(onLoadCb: any => any): Event => void {
 	return evt => {
-		const { files } = evt.target; // FileList object
-		console.log("Reading file...");
-		const reader = new FileReader();
+		const {target} = evt;
+		if (target instanceof HTMLInputElement) {
+			const {files} = target; // FileList object
 
-		reader.onload = onLoadCb;
+			console.log("Reading file...");
+			const reader = new FileReader();
 
-		reader.readAsBinaryString(files[0]);
+			reader.onload = onLoadCb;
+
+			reader.readAsBinaryString(files[0]);
+		}
 	};
 }
 
-document.getElementById("logOverlayFile").addEventListener("change", createHandler(Manager.parseOverlayLog), false);
+DOMUtils.getElementById("logOverlayFile").addEventListener("change", createHandler(Manager.parseOverlayLog), false);
 
-document.getElementById("logPerformanceFile").addEventListener("change", createHandler(Manager.parsePerformanceLog), false);
+DOMUtils.getElementById("logPerformanceFile").addEventListener("change", createHandler(Manager.parsePerformanceLog), false);
 
-document.getElementById("filterType").addEventListener("change", HandleHolder.handleMainFilterChange);
+DOMUtils.getElementById("filterType").addEventListener("change", HandleHolder.handleMainFilterChange);
 
-document.getElementById("layoutType").addEventListener("change", HandleHolder.handleLayoutChange);
+DOMUtils.getElementById("layoutType").addEventListener("change", HandleHolder.handleLayoutChange);
 
-document.getElementById("selectedEventNumber").addEventListener("change", HandleHolder.handleSelectedEventChange);
-document.getElementById("selectedTimestamp").addEventListener("change", HandleHolder.handleTimestampChange);
+DOMUtils.getElementById("selectedEventNumber").addEventListener("change", HandleHolder.handleSelectedEventChange);
+DOMUtils.getElementById("selectedTimestamp").addEventListener("change", HandleHolder.handleTimestampChange);
 
 Array.from(document.getElementsByClassName("tablinks")).forEach(el => {
 	el.addEventListener("click", HandleHolder.handleStateGraphChange);
 });
 
-document.addEventListener("click", e => {
-	if (e.target && e.target.id === "_mainlayoutOptions_filter") {
-		HandleHolder.handleSubFilterChange(e);
+document.addEventListener("click", (e: MouseEvent) => {
+	if (e.target instanceof HTMLInputElement) {
+		if (e.target && e.target.id === "_mainlayoutOptions_filter") {
+			HandleHolder.handleSubFilterChange(e);
+		}
 	}
 });
 
-document.getElementById("machineListTable").addEventListener("click", HandleHolder.handleMachineListButtonClick);
+DOMUtils.getElementById("machineListTable").addEventListener("click", HandleHolder.handleMachineListButtonClick);
 
-document.getElementById("nextEvent").addEventListener("click", e => {
-	const drawButtonDOM = document.getElementById("drawEventNumber");
-	const eventNumberDOM = document.getElementById("selectedEventNumber");
-	eventNumberDOM.value = window.selectedEvent + 1;
+DOMUtils.getElementById("nextEvent").addEventListener("click", () => {
+	const drawButtonDOM = DOMUtils.getElementById("drawEventNumber");
+	const eventNumberDOM = DOMUtils.getGenericElementById<HTMLInputElement>("selectedEventNumber");
+	eventNumberDOM.value = (window.selectedEvent + 1).toString();
+
 	eventNumberDOM.dispatchEvent(new Event("change"));
 	drawButtonDOM.dispatchEvent(new Event("click"));
 });
 
-document.getElementById("prevEvent").addEventListener("click", e => {
-	const drawButtonDOM = document.getElementById("drawEventNumber");
-	const eventNumberDOM = document.getElementById("selectedEventNumber");
-	eventNumberDOM.value = window.selectedEvent - 1;
+DOMUtils.getElementById("prevEvent").addEventListener("click", () => {
+	const drawButtonDOM = DOMUtils.getElementById("drawEventNumber");
+	const eventNumberDOM = DOMUtils.getGenericElementById<HTMLInputElement>("selectedEventNumber");
+	eventNumberDOM.value = (window.selectedEvent - 1).toString();
+
 	eventNumberDOM.dispatchEvent(new Event("change"));
 	drawButtonDOM.dispatchEvent(new Event("click"));
 });
 
-document.getElementById("drawEventNumber").addEventListener("click", HandleHolder.handleDrawByEvent);
-document.getElementById("drawTimestamp").addEventListener("click", HandleHolder.handleDrawByTimestamp);
+DOMUtils.getElementById("drawEventNumber").addEventListener("click", HandleHolder.handleDrawByEvent);
+DOMUtils.getElementById("drawTimestamp").addEventListener("click", HandleHolder.handleDrawByTimestamp);
 
-//document.getElementById("preserveCurrentLayout").addEventListener("change", HandleHolder.handleLayoutPreservationChange);
-document.getElementById("disableEdges").addEventListener("change", HandleHolder.handleDisableEdgesChange);
+// DOMUtils.getElementById("preserveCurrentLayout").addEventListener("change", HandleHolder.handleLayoutPreservationChange);
+DOMUtils.getElementById("disableEdges").addEventListener("change", HandleHolder.handleDisableEdgesChange);
 
 (() => {
 	window.sigmaPrevious = new Sigma({
 		renderer: {
-			container: document.getElementById("containerPrevious"),
+			container: DOMUtils.getElementById("containerPrevious"),
 			type: "canvas"
 		},
 		settings: {
@@ -102,7 +111,7 @@ document.getElementById("disableEdges").addEventListener("change", HandleHolder.
 
 	window.sigmaComparision = new Sigma({
 		renderer: {
-			container: document.getElementById("containerComparision"),
+			container: DOMUtils.getElementById("containerComparision"),
 			type: "canvas"
 		},
 		settings: {
@@ -120,7 +129,7 @@ document.getElementById("disableEdges").addEventListener("change", HandleHolder.
 
 	window.sigmaCurrent = new Sigma({
 		renderer: {
-			container: document.getElementById("containerCurrent"),
+			container: DOMUtils.getElementById("containerCurrent"),
 			type: "canvas"
 		},
 		settings: {
@@ -139,8 +148,8 @@ document.getElementById("disableEdges").addEventListener("change", HandleHolder.
 	Manager.init();
 	console.log("App started");
 
-	const overlayFileEl = document.getElementById("logOverlayFile");
-	const performanceFileEl = document.getElementById("logPerformanceFile");
+	const overlayFileEl = DOMUtils.getGenericElementById<HTMLInputElement>("logOverlayFile");
+	const performanceFileEl = DOMUtils.getGenericElementById<HTMLInputElement>("logPerformanceFile");
 
 	if (overlayFileEl.files.length !== 0) {
 		overlayFileEl.dispatchEvent(new Event("change"));

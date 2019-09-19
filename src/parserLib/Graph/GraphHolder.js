@@ -1,5 +1,5 @@
 // @flow
-import type { Graph } from "../../types";
+import type {Graph} from "../../types";
 
 class GraphHolder {
 	graph: Graph;
@@ -70,18 +70,18 @@ class GraphHolder {
 		return ret;
 	}
 
-	getEdges(node: string): { string: boolean } {
+	getEdges(node: string): { [string]: boolean } {
 		return this.graph[node];
 	}
 
 	isConnected(node: string): boolean {
 		const edgesTo = this.getEdges(node);
-		for(const index of Object.keys(edgesTo)){
+		for (const index of Object.keys(edgesTo)) {
 			if (edgesTo[index]) {
 				return true;
 			}
 		}
-		for (const index of Object.keys(this.graph)){
+		for (const index of Object.keys(this.graph)) {
 			const value = this.graph[index];
 			if (Object.prototype.hasOwnProperty.call(value, node) && value[node]) {
 				return true;
@@ -102,7 +102,7 @@ class GraphHolder {
 			const fromRes = this.graph[from];
 			Object.keys(fromRes).forEach(to => {
 				const value = fromRes[to]; // Boolean
-				newGraph.graph[from][to] = value && (value !== anotherGraph.graph[from][to]);
+				newGraph.graph[from][to] = value && value !== anotherGraph.graph[from][to];
 			});
 		});
 

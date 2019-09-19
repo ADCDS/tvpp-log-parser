@@ -1,8 +1,8 @@
+// @flow
 import LogParserOverlay from "../../src/parserLib/Log/Overlay/LogParserOverlay";
 import TVPPLog from "../../src/parserLib/TVPPLog";
 import GraphManager from "../../src/parserLib/Graph/GraphManager";
 import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserPerformance";
-import RingLayout from "../../src/parserLib/Graph/Visualizer/Layout/RingLayout";
 import DijkstraFilter from "../../src/parserLib/Graph/Filter/Tree/Dijkstra/DijkstraFilter";
 import Utils from "../../src/utils";
 
@@ -21,7 +21,7 @@ test("dijkstraFilterTest", async () => {
 	const dijkstraFilter = new DijkstraFilter({
 		source: "150.164.3.36:4951"
 	});
-	const filterResult = dijkstraFilter.applyFilter(graphManager.getGraphHolder());
+	dijkstraFilter.applyFilter(graphManager.getGraphHolder());
 
 	expect(true).toBe(true);
 });

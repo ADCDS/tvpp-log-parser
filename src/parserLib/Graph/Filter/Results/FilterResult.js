@@ -2,7 +2,7 @@
 
 import GraphHolder from "../../GraphHolder";
 
-class FilterResult<FilterType> {
+class FilterResult {
 	graphHolder: GraphHolder;
 
 	constructor(graphHolder: GraphHolder) {

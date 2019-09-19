@@ -2,12 +2,12 @@
 
 import Filter from "./Graph/Filter/Filter";
 
-class Option {
+class UserOption<T> {
 	name: string;
-	type: Class<String> | Class<Number> | Class<Boolean> | Class<Filter>;
+	type: Class<T>;
 	default: any;
 
-	constructor(name: string, type: Class<String> | Class<Number> | Class<Boolean> | Class<Filter>, defaultValue: any) {
+	constructor(name: string, type: Class<T>, defaultValue: any) {
 		this.name = name;
 		this.type = type;
 		this.default = defaultValue;
@@ -31,4 +31,4 @@ class Option {
 	}
 }
 
-export default Option;
+export default UserOption;

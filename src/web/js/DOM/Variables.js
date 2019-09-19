@@ -1,4 +1,5 @@
-class Variables{
+// @flow
+class Variables {
 	static sourceOptions = {
 		filterOptions: [],
 		layoutOptions: [],

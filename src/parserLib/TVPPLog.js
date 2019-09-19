@@ -16,7 +16,7 @@ class TVPPLog {
 	sourceMachineKey: string;
 	sourceApparitionLocations: Array<number>;
 
-	constructor(options: { [string]: any }) {
+	constructor(options: ?{ [string]: any }) {
 		const defaultOptions = {
 			forceAddGhostNodes: false,
 			iterateTroughServerApparition: true
@@ -48,12 +48,7 @@ class TVPPLog {
 
 			// const currEvent = logEntry.toOverlayState();
 
-			if (this.hasMachine(logEntry.machineId)) {
-				const machineRef = this.getMachine(logEntry.machineId);
-				// if (machineRef) machineRef.addOverlayStatus(currEvent);
-			} else {
-				// Create the address reference with the first overlay status
-				// this.addMachine(logEntry.machineId, [currEvent], []);
+			if (!this.hasMachine(logEntry.machineId)) {
 				this.addMachine(logEntry.machineId, [], []);
 			}
 			iterNum++;
@@ -101,14 +96,8 @@ class TVPPLog {
 
 			if (Object.prototype.hasOwnProperty.call(logEntry, "bandwidth")) {
 				foundBandwidths[logEntry.bandwidth] = true;
-				if (
-					Object.prototype.hasOwnProperty.call(machineObj, "bandwidth") &&
-					machineObj.bandwidth !== undefined &&
-					machineObj.bandwidth !== logEntry.bandwidth
-				) {
-					throw new Error(
-						`Machine ${machineObj.address} bandwidth from ${machineObj.bandwidth} to ${logEntry.bandwidth} changed at line ${logEntry.logId}`
-					);
+				if (Object.prototype.hasOwnProperty.call(machineObj, "bandwidth") && machineObj.bandwidth !== undefined && machineObj.bandwidth !== logEntry.bandwidth) {
+					throw new Error(`Machine ${machineObj.address} bandwidth from ${machineObj.bandwidth} to ${logEntry.bandwidth} changed at line ${logEntry.logId}`);
 				}
 				machineObj.bandwidth = logEntry.bandwidth;
 			}
@@ -118,8 +107,7 @@ class TVPPLog {
 			.map(Number);
 
 		for (const machine of this.machines.values()) {
-			if(machine.bandwidth !== undefined)
-				machine.bandwidthClassification = bandwidths.indexOf(machine.bandwidth);
+			if (machine.bandwidth !== undefined) machine.bandwidthClassification = bandwidths.indexOf(machine.bandwidth);
 		}
 	}
 }

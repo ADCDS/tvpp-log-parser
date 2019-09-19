@@ -1,13 +1,12 @@
 // @flow
-import Layout from "../Layout";
 import TreeFilterResult from "../../../Filter/Results/TreeFilterResult";
 import TreeFilter from "../../../Filter/Tree/TreeFilter";
 import TreeLayout from "./TreeLayout";
 import Machine from "../../../../Machine";
-import Option from "../../../../Option";
+import UserOption from "../../../../UserOption";
 
 class RingLayeredLayout extends TreeLayout {
-	constructor(filterResult: TreeFilterResult<TreeFilter>, machines: Map<string, Machine>, options: { [string]: any }) {
+	constructor(filterResult: TreeFilterResult, machines: Map<string, Machine>, options: { [string]: any }) {
 		const defaultOptions = {
 			radius: 100,
 			drawUndefinedNodes: false
@@ -76,12 +75,12 @@ class RingLayeredLayout extends TreeLayout {
 		});
 	}
 
-	static getOptions(): { [string]: Option } {
+	static getOptions(): { [string]: UserOption<any> } {
 		let options = super.getOptions();
 		options = Object.assign(options, {
-			radius: new Option("Radius", Number, 100),
-			drawUndefinedNodes: new Option("Draw undefined nodes", Boolean, false),
-			filter: new Option("Filter", TreeFilter)
+			radius: new UserOption<Number>("Radius", Number, 100),
+			drawUndefinedNodes: new UserOption<Boolean>("Draw undefined nodes", Boolean, false),
+			filter: new UserOption<TreeFilter>("Filter", TreeFilter)
 		});
 		return options;
 	}
