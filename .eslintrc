@@ -35,6 +35,7 @@
 	"prefer-destructuring": "off",
 	// https://github.com/facebook/flow/issues/3073
 	"no-continue": "off",
-	"import/no-cycle": "off"
+	"import/no-cycle": "off",
+	"no-multi-assign": "off"
   }
 }

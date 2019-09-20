@@ -9,8 +9,9 @@ class SigmaInjection {
 	unfilteredGraphHolder: GraphHolder;
 	nodeHolder: Map<string, Node>;
 	edgesHolder: Map<string, Map<string, Edge>>;
-	byPassInNodes: [string];
-	byPassOutNodes: [string];
+	byPassInNodes: Array<string>;
+	byPassOutNodes: Array<string>;
+	managedButtons: Array<HTMLInputElement>;
 }
 
 export default SigmaInjection;

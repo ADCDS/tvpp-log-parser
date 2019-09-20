@@ -2,7 +2,7 @@
 import LogEntryPerformance from "./LogEntryPerformance";
 
 class LogParserPerformance {
-	static async parse(lineArray: [string]) {
+	static async parse(lineArray: Array<string>) {
 		const ret = [];
 		for (let i = 0; i < lineArray.length; i += 1) {
 			if (lineArray[i] !== "") ret.push(this.lineToEntry(i, lineArray[i]));

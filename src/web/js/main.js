@@ -41,16 +41,12 @@ function createHandler(onLoadCb: any => any): Event => void {
 	};
 }
 
-DOMUtils.getElementById("logOverlayFile").addEventListener("change", createHandler(Manager.parseOverlayLog), false);
-
-DOMUtils.getElementById("logPerformanceFile").addEventListener("change", createHandler(Manager.parsePerformanceLog), false);
-
-DOMUtils.getElementById("filterType").addEventListener("change", HandleHolder.handleMainFilterChange);
-
-DOMUtils.getElementById("layoutType").addEventListener("change", HandleHolder.handleLayoutChange);
-
-DOMUtils.getElementById("selectedEventNumber").addEventListener("change", HandleHolder.handleSelectedEventChange);
-DOMUtils.getElementById("selectedTimestamp").addEventListener("change", HandleHolder.handleTimestampChange);
+DOMUtils.getGenericElementById<HTMLInputElement>("logOverlayFile").addEventListener("change", createHandler(Manager.parseOverlayLog), false);
+DOMUtils.getGenericElementById<HTMLInputElement>("logPerformanceFile").addEventListener("change", createHandler(Manager.parsePerformanceLog), false);
+DOMUtils.getGenericElementById<HTMLInputElement>("filterType").addEventListener("change", HandleHolder.handleMainFilterChange);
+DOMUtils.getGenericElementById<HTMLInputElement>("layoutType").addEventListener("change", HandleHolder.handleLayoutChange);
+DOMUtils.getGenericElementById<HTMLInputElement>("selectedEventNumber").addEventListener("change", HandleHolder.handleSelectedEventChange);
+DOMUtils.getGenericElementById<HTMLInputElement>("selectedTimestamp").addEventListener("change", HandleHolder.handleTimestampChange);
 
 Array.from(document.getElementsByClassName("tablinks")).forEach(el => {
 	el.addEventListener("click", HandleHolder.handleStateGraphChange);

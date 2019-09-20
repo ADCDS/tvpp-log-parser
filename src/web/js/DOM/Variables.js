@@ -1,6 +1,6 @@
 // @flow
-import type {FilterDefType, LayoutDefType} from "../../../types";
-import SigmaInjection from "../SigmaInjection";
+import type { FilterDefType, LayoutDefType, Sigma } from "../../../types";
+import Node from "../../../parserLib/Graph/Visualizer/Node";
 
 class Variables {
 	static sourceOptions = {
@@ -15,9 +15,9 @@ class Variables {
 
 	static selectedLayoutFilter: ?FilterDefType;
 
-	static selectedNode = null;
+	static selectedNode: ?Node;
 
-	static selectedSigma: { helperHolder: SigmaInjection, [string]: any };
+	static selectedSigma: Sigma;
 
 	static layoutPreservation = false;
 

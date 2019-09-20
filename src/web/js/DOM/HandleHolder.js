@@ -17,7 +17,9 @@ class HandleHolder {
 		Variables.layoutPreservation = e.target.checked;
 	}
 
-	static handleDisableEdgesChange(e: SyntheticInputEvent<EventTarget>): void {
+	static handleDisableEdgesChange(e: Event): void {
+		if (!(e.target instanceof HTMLInputElement)) throw new Error("Invalid type");
+
 		Variables.disableEdges = e.target.checked;
 		if (Variables.disableEdges) {
 			DOMUtils.getGenericElementById<HTMLSelectElement>("filterType").disabled = true;
@@ -29,7 +31,9 @@ class HandleHolder {
 		}
 	}
 
-	static handleSubFilterChange(e: SyntheticInputEvent<EventTarget>): void {
+	static handleSubFilterChange(e: Event): void {
+		if (!(e.target instanceof HTMLInputElement)) throw new Error("Invalid type");
+
 		const filter = Utils.getFilter(e.target.value);
 
 		Variables.selectedLayoutFilter = filter;
@@ -37,7 +41,8 @@ class HandleHolder {
 		Manager.updateDefaultsOptionValues();
 	}
 
-	static handleMainFilterChange(e: SyntheticInputEvent<EventTarget>): void {
+	static handleMainFilterChange(e: Event): void {
+		if (!(e.target instanceof HTMLInputElement)) throw new Error("Invalid type");
 		const filter = Utils.getFilter(e.target.value);
 
 		const formHolderId = "filterOptions";
@@ -48,7 +53,8 @@ class HandleHolder {
 		Manager.updateDefaultsOptionValues();
 	}
 
-	static handleLayoutChange(e: SyntheticInputEvent<EventTarget>): void {
+	static handleLayoutChange(e: Event): void {
+		if (!(e.target instanceof HTMLInputElement)) throw new Error("Invalid type");
 		const layout = Utils.getLayout(e.target.value);
 
 		const formHolderId = "layoutOptions";
@@ -58,20 +64,27 @@ class HandleHolder {
 		Manager.updateDefaultsOptionValues();
 	}
 
-	static handleSelectedEventChange(e: SyntheticInputEvent<EventTarget>): void {
-		if (e.target.value < window.logEntity.sourceApparitionLocations.length) window.selectedEvent = Number(e.target.value);
+	static handleSelectedEventChange(e: Event): void {
+		const target = e.target;
+		if (!(target instanceof HTMLInputElement)) throw new Error("Invalid type");
+
+		if (target.value < window.logEntity.sourceApparitionLocations.length) window.selectedEvent = Number(target.value);
 		else window.selectedEvent = Number(window.logEntity.sourceApparitionLocations.length);
-		e.target.value = window.selectedEvent.toString();
+		target.value = window.selectedEvent.toString();
 	}
 
-	static handleTimestampChange(e: SyntheticInputEvent<EventTarget>): void {
-		if (!(e.target instanceof HTMLInputElement)) throw new Error("Invalid type");
+	static handleTimestampChange(e: Event): void {
+		const target = e.target;
+		if (!(target instanceof HTMLInputElement)) throw new Error("Invalid type");
 
-		window.selectedTimestamp = Number(e.target.value);
-		e.target.value = window.selectedTimestamp.toString();
+		window.selectedTimestamp = Number(target.value);
+		target.value = window.selectedTimestamp.toString();
 	}
 
-	static handleStateGraphChange(e: SyntheticInputEvent<HTMLElement>): void {
+	static handleStateGraphChange(e: Event): void {
+		const currentTarget = e.currentTarget;
+		if (!(currentTarget instanceof HTMLInputElement)) throw new Error("Invalid type");
+
 		const graphs = ["containerPrevious", "containerComparision", "containerCurrent"];
 
 		graphs.forEach(el => {
@@ -82,9 +95,9 @@ class HandleHolder {
 		for (let i = 0; i < tabLinks.length; i++) {
 			tabLinks[i].className = tabLinks[i].className.replace(" active", "");
 		}
-		DOMUtils.getElementById(e.currentTarget.dataset.graph).style.display = "block";
+		DOMUtils.getElementById(currentTarget.dataset.graph).style.display = "block";
 
-		const sigmaObj = window[e.currentTarget.dataset.sigma];
+		const sigmaObj = window[currentTarget.dataset.sigma];
 
 		if (Variables.selectedSigma) {
 			Manager.synchronizeMachineListButtons(Variables.selectedSigma, sigmaObj);
@@ -93,25 +106,34 @@ class HandleHolder {
 		Variables.selectedSigma = sigmaObj;
 		sigmaObj.refresh();
 
-		e.currentTarget.className += " active";
+		currentTarget.className += " active";
 	}
 
-	static handleMachineListButtonClick(e: SyntheticInputEvent<HTMLElement>): void {
+	static handleMachineListButtonClick(e: Event): void {
+		if (!(e.target instanceof HTMLInputElement)) throw new Error("Invalid type");
+
 		const button = e.target;
 		const { type } = button.dataset;
-		if (!button.parentElement || !(button.parentElement instanceof HTMLElement)) {
+		if (!button.parentElement) {
 			throw new Error("Invalid event");
 		}
 
+		const tableCell = (button: Node).parentElement;
+		if (!tableCell) throw new Error("Invalid event");
+
+		const parentElement = tableCell.parentElement;
+		if (!parentElement || !(parentElement instanceof HTMLElement)) throw new Error("Invalid type");
+		const addr = (parentElement.dataset.addr: string);
+
 		if (!type) {
-			const node = Variables.selectedSigma.helperHolder.nodeHolder[button.parentElement.dataset.addr];
+			const node = Variables.selectedSigma.helperHolder.nodeHolder.get(addr);
 			if (node) Manager.changeSelectedNode(node);
 			return;
 		}
+		const machineId = addr;
 
-		const machineId = button.parentElement.parentElement.dataset.addr;
+		const isPressed = button.style.borderStyle === "inset";
 
-		const isPressed = button.style["border-style"] === "inset";
 		const { helperHolder } = Variables.selectedSigma;
 		if (!isPressed) {
 			if (type === "out") {
@@ -121,7 +143,7 @@ class HandleHolder {
 			}
 			helperHolder.managedButtons.push(button);
 
-			button.style["border-style"] = "inset";
+			button.style.borderStyle = "inset";
 		} else {
 			if (type === "out") {
 				Manager.hideAllToRelations(machineId, Variables.selectedSigma);
@@ -129,7 +151,7 @@ class HandleHolder {
 				Manager.hideAllFromRelations(machineId, Variables.selectedSigma);
 			}
 			helperHolder.managedButtons.splice(helperHolder.managedButtons.indexOf(button), 1);
-			button.style["border-style"] = "";
+			button.style.borderStyle = "";
 		}
 	}
 

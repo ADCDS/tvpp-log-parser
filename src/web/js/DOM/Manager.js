@@ -9,6 +9,7 @@ import Node from "../../../parserLib/Graph/Visualizer/Node";
 import DOMUtils from "./Utils";
 import Variables from "./Variables";
 import SigmaInjection from "../SigmaInjection";
+import type { FilterLayoutOptions, Sigma } from "../../../types";
 
 type OptionValueTypes = Class<String> | Class<Number> | Class<Boolean>;
 
@@ -201,7 +202,7 @@ class Manager {
 		Manager.updateClassifications();
 	}
 
-	static getOptions(formHolderId: string, options: { [string]: UserOption<any> }): { [string]: string | number | boolean } {
+	static getOptions(formHolderId: string, options: { [string]: UserOption<any> }): FilterLayoutOptions {
 		const resObj = {};
 		Object.keys(options).forEach(el => {
 			const option = options[el];
@@ -313,12 +314,18 @@ class Manager {
 		sigma.refresh();
 	}
 
-	static extractOptions(): { filter: { [string]: string | number | boolean }, layout: { [string]: string | number | boolean } } {
+	static extractOptions(): { filter: FilterLayoutOptions, layout: FilterLayoutOptions } {
 		const filterFormHolderId = "filterOptions";
-		const filterOptions = Manager.getOptions(filterFormHolderId, Variables.selectedFilter.class.getOptions());
+		const selectedFilter = Variables.selectedFilter;
+		const selectedLayout = Variables.selectedLayout;
 
+		if (!selectedFilter) throw new Error("No filter was selected");
+
+		if (!selectedLayout) throw new Error("No layout was selected");
+
+		const filterOptions = Manager.getOptions(filterFormHolderId, selectedFilter.class.getOptions());
 		const layoutFormHolderId = "layoutOptions";
-		const layoutOptions = Manager.getOptions(layoutFormHolderId, Variables.selectedLayout.class.getOptions());
+		const layoutOptions = Manager.getOptions(layoutFormHolderId, selectedLayout.class.getOptions());
 
 		return {
 			filter: filterOptions,
@@ -326,15 +333,15 @@ class Manager {
 		};
 	}
 
-	static synchronizeMachineListButtons(oldSigma: {}, newSigma: {}): void {
+	static synchronizeMachineListButtons(oldSigma: Sigma, newSigma: Sigma): void {
 		const oldButtons = oldSigma.helperHolder.managedButtons;
 		oldButtons.forEach(button => {
-			button.style["border-style"] = "";
+			button.style.borderStyle = "";
 		});
 
 		const newButtons = newSigma.helperHolder.managedButtons;
 		newButtons.forEach(button => {
-			button.style["border-style"] = "inset";
+			button.style.borderStyle = "inset";
 		});
 	}
 
@@ -348,15 +355,22 @@ class Manager {
 		elementById.classList.add("active");
 	}
 
-	static drawGraph(filterOptions: { [string]: UserOption<any> }, layoutOptions: { [string]: UserOption }, goToState: Number, byTimestamp: boolean = false): void {
+	static drawGraph(filterOptions: FilterLayoutOptions, layoutOptions: FilterLayoutOptions, goToState: Number, byTimestamp: boolean = false): void {
+		if (!Variables.selectedFilter) throw new Error("Filter not selected");
+		if (!Variables.selectedLayout) throw new Error("Layout not selected");
+		if (!Variables.selectedLayoutFilter) throw new Error("Layout subfilter not selected not selected");
 		if (!Variables.selectedLayoutFilter) throw new Error("Layout Options missing subfilter");
+
+		const FilterClass = Variables.selectedFilter.class;
+		const LayoutClass = Variables.selectedLayout.class;
+		const LayoutFilterClass = Variables.selectedLayoutFilter.class;
 
 		const { graphManager } = window;
 
 		const lastEventIndex = graphManager.currentEventIndex;
 		// We should store the last state on 'Previous Graph'
 
-		DOMUtils.getElementById("previousEvent").value = lastEventIndex;
+		DOMUtils.getGenericElementById<HTMLInputElement>("previousEvent").value = lastEventIndex;
 		DOMUtils.getElementById("previousStateEventId").innerHTML = `(${lastEventIndex})`;
 
 		if (!Variables.isFirstIteration) {
@@ -368,13 +382,9 @@ class Manager {
 			if (!Variables.layoutPreservation) {
 				Manager.synchronizeSigma(window.sigmaPrevious);
 			}
-			DOMUtils.getElementById("previousEventTime").value = new Date(graphManager.getCurrentTimestamp() * 1000).toString();
-			DOMUtils.getElementById("previousEventElapsedTime").value = graphManager.getCurrentElapsedTime();
+			DOMUtils.getGenericElementById<HTMLInputElement>("previousEventTime").value = new Date(graphManager.getCurrentTimestamp() * 1000).toString();
+			DOMUtils.getGenericElementById<HTMLInputElement>("previousEventElapsedTime").value = graphManager.getCurrentElapsedTime();
 		}
-
-		const FilterClass = Variables.selectedFilter.class;
-		const LayoutClass = Variables.selectedLayout.class;
-		const LayoutFilterClass = Variables.selectedLayoutFilter.class;
 
 		if (!byTimestamp) {
 			graphManager.goToAbsoluteServerApparition(goToState);
@@ -402,8 +412,10 @@ class Manager {
 		if (!Variables.isFirstIteration && Variables.layoutPreservation) {
 			// Previous Sigma's nodes should have the same position as the Current Sigma
 			Object.keys(window.sigmaPrevious.helperHolder.nodeHolder).forEach(index => {
-				const node = window.sigmaPrevious.helperHolder.nodeHolder[index];
-				const currentNode = layoutObj.nodeHolder[index];
+				const node = window.sigmaPrevious.helperHolder.nodeHolder.get(index);
+				if (!node) throw new Error("Node not found");
+
+				const currentNode = layoutObj.nodeHolder.get(index);
 				if (currentNode) {
 					node.x = currentNode.x;
 					node.y = currentNode.y;
@@ -413,7 +425,6 @@ class Manager {
 		}
 
 		// Apply filter
-
 		let filterResult;
 		// We do not need to apply the same filter twice, if they are the same
 		if (LayoutFilterClass === FilterClass && JSON.stringify(layoutOptions.filter) === JSON.stringify(filterOptions)) {
@@ -441,32 +452,32 @@ class Manager {
 		window.sigmaCurrent.helperHolder.nodeHolder = layoutObj.nodeHolder;
 		Manager.synchronizeSigma(window.sigmaCurrent);
 
-		DOMUtils.getElementById("currentEvent").value = graphManager.currentEventIndex;
+		DOMUtils.getGenericElementById<HTMLInputElement>("currentEvent").value = graphManager.currentEventIndex;
 		DOMUtils.getElementById("currentStateEventId").innerHTML = `(${graphManager.currentEventIndex})`;
 		DOMUtils.getElementById("comparisionStateEventId").innerHTML = `(${lastEventIndex}/${graphManager.currentEventIndex})`;
-		DOMUtils.getElementById("currentEventTime").value = new Date(graphManager.getCurrentTimestamp() * 1000).toString();
-		DOMUtils.getElementById("currentEventElapsedTime").value = graphManager.getCurrentElapsedTime();
-		DOMUtils.getElementById("selectedEventNumber").value = window.selectedEvent = graphManager.currentSourceIndex;
+		DOMUtils.getGenericElementById<HTMLInputElement>("currentEventTime").value = new Date(graphManager.getCurrentTimestamp() * 1000).toString();
+		DOMUtils.getGenericElementById<HTMLInputElement>("currentEventElapsedTime").value = graphManager.getCurrentElapsedTime();
+		DOMUtils.getGenericElementById<HTMLInputElement>("selectedEventNumber").value = window.selectedEvent = graphManager.currentSourceIndex;
 
 		Variables.isFirstIteration = false;
 	}
 
-	static displayAllToRelations(node: Node, sigma: {}): void {
+	static displayAllToRelations(node: string, sigma: Sigma): void {
 		sigma.helperHolder.byPassOutNodes.push(node);
 		Manager.synchronizeSigma(sigma);
 	}
 
-	static displayAllFromRelations(node: Node, sigma: {}): void {
+	static displayAllFromRelations(node: string, sigma: Sigma): void {
 		sigma.helperHolder.byPassInNodes.push(node);
 		Manager.synchronizeSigma(sigma);
 	}
 
-	static hideAllToRelations(node: Node, sigma: {}): void {
+	static hideAllToRelations(node: string, sigma: Sigma): void {
 		sigma.helperHolder.byPassOutNodes.splice(sigma.helperHolder.byPassOutNodes.indexOf(node), 1);
 		Manager.synchronizeSigma(sigma);
 	}
 
-	static hideAllFromRelations(node: Node, sigma: {}): void {
+	static hideAllFromRelations(node: string, sigma: Sigma): void {
 		sigma.helperHolder.byPassInNodes.splice(sigma.helperHolder.byPassInNodes.indexOf(node), 1);
 		Manager.synchronizeSigma(sigma);
 	}
