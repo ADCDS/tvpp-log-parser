@@ -6,7 +6,7 @@ import type { Graph } from "../../../../../types";
 import GraphHolder from "../../../GraphHolder";
 
 class DijkstraFilter extends TreeFilter {
-	dijkstraShortestPath(graph: Graph, vertices: Array<string>): { distancesFromSource: { string: number }, fathers: { string: string } } {
+	static dijkstraShortestPath(graph: Graph, source: string, vertices: Array<string>): { distancesFromSource: { string: number }, fathers: { string: string } } {
 		const dist = {};
 		const prev = {};
 		const heap = new FibonacciHeap();
@@ -23,7 +23,7 @@ class DijkstraFilter extends TreeFilter {
 			queue[machine] = heap.insert(Infinity, machine);
 		});
 
-		decreaseDist(this.options.source, 0);
+		decreaseDist(source, 0);
 
 		while (!heap.isEmpty()) {
 			const currNode = heap.extractMinimum();
@@ -52,7 +52,7 @@ class DijkstraFilter extends TreeFilter {
 		const vertices = Object.keys(newGraphHolder.graph);
 
 		const { graph } = newGraphHolder;
-		const dijkstraResults = this.dijkstraShortestPath(graph, vertices);
+		const dijkstraResults = DijkstraFilter.dijkstraShortestPath(graph, this.options.source, vertices);
 		const { fathers, distancesFromSource } = dijkstraResults;
 		vertices.forEach(node => {
 			vertices.forEach(node2 => {

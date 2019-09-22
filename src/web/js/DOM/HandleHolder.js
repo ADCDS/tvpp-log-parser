@@ -42,7 +42,7 @@ class HandleHolder {
 	}
 
 	static handleMainFilterChange(e: Event): void {
-		if (!(e.target instanceof HTMLInputElement)) throw new Error("Invalid type");
+		if (!(e.target instanceof HTMLSelectElement)) throw new Error("Invalid type");
 		const filter = Utils.getFilter(e.target.value);
 
 		const formHolderId = "filterOptions";
@@ -54,7 +54,7 @@ class HandleHolder {
 	}
 
 	static handleLayoutChange(e: Event): void {
-		if (!(e.target instanceof HTMLInputElement)) throw new Error("Invalid type");
+		if (!(e.target instanceof HTMLSelectElement)) throw new Error("Invalid type");
 		const layout = Utils.getLayout(e.target.value);
 
 		const formHolderId = "layoutOptions";
@@ -83,7 +83,7 @@ class HandleHolder {
 
 	static handleStateGraphChange(e: Event): void {
 		const currentTarget = e.currentTarget;
-		if (!(currentTarget instanceof HTMLInputElement)) throw new Error("Invalid type");
+		if (!(currentTarget instanceof HTMLButtonElement)) throw new Error("Invalid type");
 
 		const graphs = ["containerPrevious", "containerComparision", "containerCurrent"];
 
