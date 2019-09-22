@@ -13,8 +13,9 @@ class YenKSP extends TreeFilter {
 
 		for (let k = 1; k < K; k++) {
 			// The spur node ranges from the first node to the next to last node in the previous k-shortest path.
-			for (let i = 0; i < A[k - 1].length; i++) {
-				let recoverStructure: { [string]: { incoming: Array<string>, outgoing: Array<string> } };
+			for (let i = 0; i < A[k - 1].length - 2; i++) {
+				const recoverStructure: { [string]: { incoming: Array<string>, outgoing: Array<string> } } = {};
+				const recoverEdges: Array<[string, string]> = [];
 				// Spur node is retrieved from the previous k-shortest path, k − 1.
 				const spurNode = A[k - 1][i];
 
@@ -22,9 +23,10 @@ class YenKSP extends TreeFilter {
 				const rootPath = A[k - 1].slice(0, i);
 
 				A.forEach(path => {
-					if (rootPath === path.slice(0, i)) {
+					if (rootPath.every(value => path.slice(0, i).includes(value))) {
 						// Remove the links that are part of the previous shortest paths which share the same root path.
 						graph.removeEdge(path[i], path[i + 1]);
+						recoverEdges.push([path[i], path[i + 1]]);
 					}
 				});
 
@@ -34,15 +36,23 @@ class YenKSP extends TreeFilter {
 				});
 
 				// Calculate the spur path from the spur node to the sink.
-				const spurPath = DijkstraFilter.singleDijkstraShortestPath(graph.graph, spurNode, sink, vertices);
+				try {
+					const spurPath = DijkstraFilter.singleDijkstraShortestPath(graph.graph, spurNode, sink, vertices);
 
-				// Entire path is made up of the root path and spur path.
-				const totalPath = rootPath.concat(spurPath);
-				B.push(totalPath);
+					// Entire path is made up of the root path and spur path.
+					const totalPath = rootPath.concat(spurPath);
+					B.push(totalPath);
+					console.log(B);
+				} catch (e) {
+					// Silence is gold
+				}
 
 				// Add back the edges and nodes that were removed from the graph.
 				Object.keys(recoverStructure).forEach(recoverNodeKey => {
 					graph.addNode(recoverNodeKey, recoverStructure[recoverNodeKey].incoming, recoverStructure[recoverNodeKey].outgoing);
+				});
+				recoverEdges.forEach(value => {
+					graph.addEdge(value[0], value[1]);
 				});
 			}
 
@@ -55,9 +65,13 @@ class YenKSP extends TreeFilter {
 			}
 
 			// Sort the potential k-shortest paths by cost.
-			B = B.sort();
+			B = B.sort((a, b) => {
+				return a.length > b.length;
+			});
+
 			A[k] = B[0];
-			B.pop();
+			console.log(A);
+			B.shift();
 		}
 
 		return A;
