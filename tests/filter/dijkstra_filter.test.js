@@ -5,6 +5,7 @@ import GraphManager from "../../src/parserLib/Graph/GraphManager";
 import LogParserPerformance from "../../src/parserLib/Log/Performance/LogParserPerformance";
 import DijkstraFilter from "../../src/parserLib/Graph/Filter/Tree/Dijkstra/DijkstraFilter";
 import Utils from "../../src/utils";
+import GraphHolder from "../../src/parserLib/Graph/GraphHolder";
 
 test("dijkstraFilterTest", async () => {
 	const dataOverlay = await Utils.readLog("./logs/test1_overlay.txt");
@@ -24,4 +25,21 @@ test("dijkstraFilterTest", async () => {
 	dijkstraFilter.applyFilter(graphManager.getGraphHolder());
 
 	expect(true).toBe(true);
+});
+
+test("singleDijkstra", () => {
+	const nodes = ["C", "D", "F", "E", "G", "H"];
+	const graphHolder = new GraphHolder(nodes);
+	graphHolder.addEdge("C", "D");
+	graphHolder.addEdge("C", "E");
+	graphHolder.addEdge("D", "F");
+	graphHolder.addEdge("E", "F");
+	graphHolder.addEdge("E", "G");
+	graphHolder.addEdge("E", "D");
+	graphHolder.addEdge("F", "H");
+	graphHolder.addEdge("F", "G");
+	graphHolder.addEdge("G", "H");
+
+	const singleDijkstra = DijkstraFilter.singleDijkstraShortestPath(graphHolder.graph, "C", "H", nodes);
+	expect(singleDijkstra).toEqual(["C", "D", "F", "H"]);
 });

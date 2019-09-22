@@ -37,6 +37,10 @@ class GraphHolder {
 		this.graph[from][to] = true;
 	}
 
+	getEdge(from: string, to: string): void {
+		return !!this.graph[from][to];
+	}
+
 	forceAddEdge(from: string, to: string): void {
 		this.insertNode(from);
 		this.graph[from][to] = true;
@@ -49,6 +53,36 @@ class GraphHolder {
 
 	removeEdge(from: string, to: string): void {
 		this.graph[from][to] = null;
+	}
+
+	addNode(node: string, incomingEdges: Array<string>, outgoingEdges: Array<string>): void {
+		this.graph[node] = {};
+		Object.keys(this.graph).forEach(value => {
+			this.graph[node][value] = false;
+		});
+		incomingEdges.forEach(value => {
+			this.graph[value][node] = true;
+		});
+		outgoingEdges.forEach(value => {
+			this.graph[node][value] = true;
+		});
+	}
+
+	removeNode(node: string): void {
+		delete this.graph[node];
+		Object.keys(this.graph).forEach(value => {
+			this.graph[value][node] = false;
+		});
+	}
+
+	getIncomingEdgesOn(node: string): Array<string> {
+		const ret = [];
+		Object.keys(this.graph).forEach(neighboor => {
+			if (this.graph[neighboor][node]) {
+				ret.push(neighboor);
+			}
+		});
+		return ret;
 	}
 
 	getOutgoingEdges(node: string): Array<string> {

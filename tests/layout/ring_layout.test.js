@@ -23,7 +23,7 @@ test("ringLayoutTest", async () => {
 	const filter = new EmptyFilter({});
 	const filterResult = filter.applyFilter(graphManager.getGraphHolder());
 
-	const ringLayout = new RingLayout(filterResult, graphManager.getMachines(), 100);
+	const ringLayout = new RingLayout(filterResult, graphManager.getMachines(), {radius: 100});
 
 	ringLayout.updatePositions();
 
