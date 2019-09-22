@@ -13,7 +13,7 @@ class YenKSP extends TreeFilter {
 
 		for (let k = 1; k < K; k++) {
 			// The spur node ranges from the first node to the next to last node in the previous k-shortest path.
-			for (let i = 0; i < A[k - 1].length - 2; i++) {
+			for (let i = 0; i < A[k - 1].length - 1; i++) {
 				const recoverStructure: { [string]: { incoming: Array<string>, outgoing: Array<string> } } = {};
 				const recoverEdges: Array<[string, string]> = [];
 				// Spur node is retrieved from the previous k-shortest path, k − 1.
@@ -22,18 +22,18 @@ class YenKSP extends TreeFilter {
 				// The sequence of nodes from the source to the spur node of the previous k-shortest path.
 				const rootPath = A[k - 1].slice(0, i);
 
-				A.forEach(path => {
+				for (const path of A) {
 					if (rootPath.every(value => path.slice(0, i).includes(value))) {
 						// Remove the links that are part of the previous shortest paths which share the same root path.
 						graph.removeEdge(path[i], path[i + 1]);
 						recoverEdges.push([path[i], path[i + 1]]);
 					}
-				});
+				}
 
-				rootPath.forEach(node => {
+				for (const node of rootPath) {
 					recoverStructure[node] = {incoming: graph.getIncomingEdgesOn(node), outgoing: graph.getOutgoingEdges(node)};
 					graph.removeNode(node);
-				});
+				}
 
 				// Calculate the spur path from the spur node to the sink.
 				try {
@@ -50,9 +50,10 @@ class YenKSP extends TreeFilter {
 				Object.keys(recoverStructure).forEach(recoverNodeKey => {
 					graph.addNode(recoverNodeKey, recoverStructure[recoverNodeKey].incoming, recoverStructure[recoverNodeKey].outgoing);
 				});
-				recoverEdges.forEach(value => {
+
+				for (const value of recoverEdges) {
 					graph.addEdge(value[0], value[1]);
-				});
+				}
 			}
 
 			if (B.length === 0) {
