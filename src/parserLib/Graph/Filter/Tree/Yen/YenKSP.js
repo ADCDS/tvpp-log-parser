@@ -42,7 +42,6 @@ class YenKSP extends TreeFilter {
 					// Entire path is made up of the root path and spur path.
 					const totalPath = rootPath.concat(spurPath);
 					B.push(totalPath);
-					console.log(B);
 				} catch (e) {
 					// Silence is gold
 				}
@@ -70,7 +69,6 @@ class YenKSP extends TreeFilter {
 			});
 
 			A[k] = B[0];
-			console.log(A);
 			B.shift();
 		}
 

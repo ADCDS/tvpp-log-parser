@@ -15,6 +15,6 @@ test("singleKSP", () => {
 	graphHolder.addEdge("F", "G");
 	graphHolder.addEdge("G", "H");
 
-	const singleDijkstra = YenKSP.yenKShortestPath(graphHolder, "C", "H", 3, nodes);
-	expect(singleDijkstra).toEqual(["C", "D", "F", "H"]);
+	const yenKShortestPath = YenKSP.yenKShortestPath(graphHolder, "C", "H", 3, nodes);
+	expect(yenKShortestPath).toEqual(expect.arrayContaining([["C", "D", "F", "H"], ["C", "E", "G", "H"], ["C", "E", "F", "H"]]));
 });
