@@ -10,21 +10,11 @@ import UserOption from "../../../../UserOption";
 function arraysEqual(arr1, arr2) {
 	if (arr1.length !== arr2.length)
 		return false;
-	for (var i = arr1.length; i--;) {
+	for (let i = arr1.length; i--;) {
 		if (arr1[i] !== arr2[i])
 			return false;
 	}
-
 	return true;
-}
-
-function containsPath(A: Array<Array<string>>, arr2: Array<string>) {
-	for (let arr1 of A) {
-		if (arraysEqual(arr1, arr2)) {
-			return true;
-		}
-	}
-	return false;
 }
 
 class YenKSP extends TreeFilter {
@@ -94,10 +84,13 @@ class YenKSP extends TreeFilter {
 				break;
 			}
 
+			// B structure should be a set, duplicated shouldn't be allowed, but i didn't find any heap + set implementation
+			// I allowed duplicate paths on B, but when I extract the minimum length route from B, I take a peek at the top
+			// If the extracted route is the same as the top level route (after the extraction) i keep extracting, thus removing duplicates
 			let poll = B.poll();
-			while (containsPath(A, poll)) {
+			while (!B.isEmpty() && arraysEqual(poll, B.peek()))
 				poll = B.poll();
-			}
+
 			A[k] = poll;
 		}
 
