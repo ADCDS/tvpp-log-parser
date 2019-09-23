@@ -1,17 +1,39 @@
 // @flow
+import FastPriorityQueue from "fastpriorityqueue";
 import TreeFilter from "../TreeFilter";
 import GraphHolder from "../../../GraphHolder";
 import TreeFilterResult from "../../Results/TreeFilterResult";
 import DijkstraFilter from "../Dijkstra/DijkstraFilter";
-import Heap from "collections/heap";
+import UserOption from "../../../../UserOption";
+
+
+function arraysEqual(arr1, arr2) {
+	if (arr1.length !== arr2.length)
+		return false;
+	for (var i = arr1.length; i--;) {
+		if (arr1[i] !== arr2[i])
+			return false;
+	}
+
+	return true;
+}
+
+function containsPath(A: Array<Array<string>>, arr2: Array<string>) {
+	for (let arr1 of A) {
+		if (arraysEqual(arr1, arr2)) {
+			return true;
+		}
+	}
+	return false;
+}
 
 class YenKSP extends TreeFilter {
 	static yenKShortestPath(graph: GraphHolder, source: string, sink: string, K: number, vertices: Array<string>): Array<Array<string>> {
 		// Determine the shortest path from the source to the sink.
 		const A = [DijkstraFilter.singleDijkstraShortestPath(graph.graph, source, sink, vertices)];
 		// Initialize the set to store the potential kth shortest path.
-		let B = new Heap(null, null, function (a, b) {
-			return b.length - a.length;
+		const B = new FastPriorityQueue(function (a, b) {
+			return b.length > a.length;
 		});
 
 		for (let k = 1; k < K; k++) {
@@ -34,7 +56,10 @@ class YenKSP extends TreeFilter {
 				}
 
 				for (const node of rootPath) {
-					recoverStructure[node] = {incoming: graph.getIncomingEdgesOn(node), outgoing: graph.getOutgoingEdges(node)};
+					recoverStructure[node] = {
+						incoming: graph.getIncomingEdgesOn(node),
+						outgoing: graph.getOutgoingEdges(node)
+					};
 					graph.removeNode(node);
 				}
 
@@ -45,8 +70,8 @@ class YenKSP extends TreeFilter {
 					// Entire path is made up of the root path and spur path.
 					const totalPath = rootPath.concat(spurPath);
 
-					if (B.indexOf(totalPath) === -1)
-						B.push(totalPath);
+					B.add(totalPath);
+
 				} catch (e) {
 					// Silence is gold
 				}
@@ -61,7 +86,7 @@ class YenKSP extends TreeFilter {
 				}
 			}
 
-			if (B.length === 0) {
+			if (B.isEmpty()) {
 				// This handles the case of there being no spur paths, or no spur paths left.
 				// This could happen if the spur paths have already been exhausted (added to A),
 				// or there are no spur paths at all - such as when both the source and sink vertices
@@ -69,14 +94,31 @@ class YenKSP extends TreeFilter {
 				break;
 			}
 
-			A[k] = B.pop();
+			let poll = B.poll();
+			while (containsPath(A, poll)) {
+				poll = B.poll();
+			}
+			A[k] = poll;
 		}
 
 		return A;
 	}
 
+	static getOptions(): { [string]: UserOption<any> } {
+		return super.getOptions();
+	}
+
 	applyFilter(graphHolder: GraphHolder): TreeFilterResult {
-		throw new Error("Not implemented yet");
+		const newGraphHolder = graphHolder.clone();
+		const vertices = Object.keys(newGraphHolder.graph);
+		const {graph} = newGraphHolder;
+
+		vertices.forEach(node => {
+			const paths = YenKSP.yenKShortestPath(newGraphHolder, this.options.source, node, 20, vertices).map(value => value.length);
+			console.log(node, paths);
+		});
+
+		return new TreeFilterResult(newGraphHolder, null, null);
 	}
 }
 

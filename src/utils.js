@@ -8,6 +8,7 @@ import RingLayeredLayout from "./parserLib/Graph/Visualizer/Layout/Tree/RingLaye
 import SpringLayout from "./parserLib/Graph/Visualizer/Layout/SpringLayout";
 import RingLayout from "./parserLib/Graph/Visualizer/Layout/RingLayout";
 import type {FilterDefType, LayoutDefType} from "./types";
+import YenKSP from "./parserLib/Graph/Filter/Tree/Yen/YenKSP";
 
 const fs = require("fs");
 
@@ -23,6 +24,12 @@ class Utils {
 			id: "dijkstra",
 			name: "Dijkstra Filter",
 			class: DijkstraFilter,
+			type: TreeFilter
+		},
+		yensKSP: {
+			id: "yensKSP",
+			name: "Yen's KSP Filter",
+			class: YenKSP,
 			type: TreeFilter
 		}
 	};
