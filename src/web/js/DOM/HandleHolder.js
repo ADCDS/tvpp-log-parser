@@ -32,7 +32,7 @@ class HandleHolder {
 	}
 
 	static handleSubFilterChange(e: Event): void {
-		if (!(e.target instanceof HTMLInputElement)) throw new Error("Invalid type");
+		if (!(e.target instanceof HTMLSelectElement)) throw new Error("Invalid type");
 
 		const filter = Utils.getFilter(e.target.value);
 

@@ -53,7 +53,8 @@ Array.from(document.getElementsByClassName("tablinks")).forEach(el => {
 });
 
 document.addEventListener("click", (e: MouseEvent) => {
-	if (e.target instanceof HTMLInputElement) {
+	console.log(e);
+	if (e.target instanceof HTMLSelectElement) {
 		if (e.target && e.target.id === "_mainlayoutOptions_filter") {
 			HandleHolder.handleSubFilterChange(e);
 		}
