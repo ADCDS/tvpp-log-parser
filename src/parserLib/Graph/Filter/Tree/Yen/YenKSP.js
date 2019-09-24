@@ -157,25 +157,27 @@ class YenKSP extends TreeFilter {
 
 	static calculateValue(newGraphHolder: GraphHolder, source: string, node: string, K: number, vertices: Array<string>) {
 		const paths = YenKSP.yenKShortestPath(newGraphHolder, source, node, K, vertices);
-		console.log("Duplicates: ", findDuplicates(paths));
+		// console.log("Duplicates: ", findDuplicates(paths));
 
-		const pathsLengths = paths.map(value => value.length - 1);
 		let medianIndex = -1;
-		if (pathsLengths.length === 0) {
+		if (paths.length === 0) {
 			console.log("No route from ", source, " to ", node);
 			return Infinity;
 		}
 
-		if (pathsLengths.length % 2 === 0) {
+		if (paths.length % 2 === 0) {
 			// Even
-			medianIndex += Math.round(pathsLengths.length / 2);
+			medianIndex += Math.round(paths.length / 2);
 		} else {
-			medianIndex += (pathsLengths.length + 1) / 2;
+			medianIndex += (paths.length + 1) / 2;
 		}
 		// const medianPath = paths[medianIndex];
-		console.log(paths);
+		console.log(`${K} shortests paths, ${source} -> ${node}`);
+		paths.forEach(value => {
+			console.log(value);
+		});
 
-		return pathsLengths[medianIndex];
+		return paths[medianIndex].length;
 	}
 
 	async applyFilter(graphHolder: GraphHolder): Promise<TreeFilterResult> {
