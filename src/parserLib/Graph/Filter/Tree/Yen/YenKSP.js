@@ -5,7 +5,7 @@ import GraphHolder from "../../../GraphHolder";
 import TreeFilterResult from "../../Results/TreeFilterResult";
 import DijkstraFilter from "../Dijkstra/DijkstraFilter";
 import UserOption from "../../../../UserOption";
-import type { YensKSPTask, YensKSPWorkerResult } from "../../../../../types";
+import type {YensKSPTask, YensKSPWorkerResult} from "../../../../../types";
 
 function arraysEqual<T>(arr1: Array<T>, arr2: Array<T>): boolean {
 	if (arr1.length !== arr2.length) return false;
@@ -13,6 +13,21 @@ function arraysEqual<T>(arr1: Array<T>, arr2: Array<T>): boolean {
 		if (arr1[i] !== arr2[i]) return false;
 	}
 	return true;
+}
+
+function findDuplicates(paths: Array<Array<string>>) {
+	let duplicates = [];
+	for (let i = 0; i < paths.length; i++) {
+		for (let j = 0; j < paths.length; j++) {
+			if (i !== j) {
+				if (arraysEqual(paths[i], paths[j])) {
+					duplicates.push(paths[i]);
+				}
+			}
+		}
+	}
+
+	return duplicates;
 }
 
 function chunkify<T>(a: Array<T>, n: number, balanced: boolean): Array<Array<T>> {
@@ -94,7 +109,15 @@ class YenKSP extends TreeFilter {
 					// Entire path is made up of the root path and spur path.
 					const totalPath = rootPath.concat(spurPath);
 
-					B.add(totalPath);
+					let alreadyHas = false;
+					B.array.forEach(value => {
+						if (arraysEqual(value, totalPath)) {
+							alreadyHas = true;
+						}
+					});
+					if (!alreadyHas) {
+						B.add(totalPath);
+					}
 				} catch (e) {
 					// Silence is gold
 				}
@@ -117,13 +140,7 @@ class YenKSP extends TreeFilter {
 				break;
 			}
 
-			// B structure should be a set, duplicated shouldn't be allowed, but i didn't find any heap + set implementation
-			// I allowed duplicate paths on B, but when I extract the minimum length route from B, I take a peek at the top
-			// If the extracted route is the same as the top level route (after the extraction) i keep extracting, thus removing duplicates
-			let poll = B.poll();
-			while (!B.isEmpty() && arraysEqual(poll, B.peek())) poll = B.poll();
-
-			A[k] = poll;
+			A[k] = B.poll();
 		}
 
 		return A;
@@ -132,13 +149,16 @@ class YenKSP extends TreeFilter {
 	static getOptions(): { [string]: UserOption<any> } {
 		let options = super.getOptions();
 		options = Object.assign(options, {
-			threadNum: new UserOption<Number>("Thread Num", Number, 1)
+			threadNum: new UserOption<Number>("Thread Num", Number, 1),
+			numberOfPaths: new UserOption<Number>("Number of paths", Number, 20)
 		});
 		return options;
 	}
 
 	static calculateValue(newGraphHolder: GraphHolder, source: string, node: string, K: number, vertices: Array<string>) {
 		const paths = YenKSP.yenKShortestPath(newGraphHolder, source, node, K, vertices);
+		console.log("Duplicates: ", findDuplicates(paths));
+
 		const pathsLengths = paths.map(value => value.length - 1);
 		let medianIndex = -1;
 		if (pathsLengths.length === 0) {
@@ -153,7 +173,8 @@ class YenKSP extends TreeFilter {
 			medianIndex += (pathsLengths.length + 1) / 2;
 		}
 		// const medianPath = paths[medianIndex];
-		console.log(pathsLengths, medianIndex);
+		console.log(paths);
+
 		return pathsLengths[medianIndex];
 	}
 
@@ -167,19 +188,18 @@ class YenKSP extends TreeFilter {
 		if (this.options.threadNum === 1) {
 			vertices.forEach(node => {
 				console.log(`${i++}/${vertices.length}`);
-				distancesFromSource[node] = YenKSP.calculateValue(newGraphHolder, this.options.source, node, 20, vertices);
+				distancesFromSource[node] = YenKSP.calculateValue(newGraphHolder, this.options.source, node, this.options.numberOfPaths, vertices);
 			});
 		} else {
 			const chunks = chunkify<string>(vertices, this.options.threadNum, true);
 			await Promise.all(
 				chunks.map(chunk => {
 					return new Promise(resolve => {
-						console.log(`${i++}/${vertices.length}`);
 						const ykspTask: YensKSPTask = {
 							newGraphHolder,
 							source: this.options.source,
 							sinks: chunk,
-							k: 20,
+							k: this.options.numberOfPaths,
 							vertices
 						};
 						const myWorker = new Worker("js/yenskst_worker.dist.js");
@@ -187,6 +207,7 @@ class YenKSP extends TreeFilter {
 							const result = ((e.data: any): YensKSPWorkerResult);
 							myWorker.terminate();
 							result.forEach(value => {
+								console.log(`${i++}/${vertices.length}`);
 								distancesFromSource[value[0]] = value[1];
 							});
 							resolve(distancesFromSource);

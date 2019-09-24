@@ -1,3 +1,4 @@
+// @flow
 const gulp = require("gulp");
 const browserSync = require("browser-sync");
 const nodemon = require("gulp-nodemon");
@@ -12,6 +13,19 @@ function compileFrontend() {
 			.bundle()
 			// Pass desired output filename to vinyl-source-stream
 			.pipe(source("bundle.js"))
+			.pipe(buffer())
+			// Start piping stream to tasks!
+			.pipe(gulp.dest("./dist/js"))
+	);
+}
+
+function compileWorkers() {
+	return (
+		browserify({entries: ["./src/web/worker/yenskst_worker.js"], debug: true, global: true})
+			.transform("babelify", {presets: ["@babel/preset-env"], sourceMaps: true})
+			.bundle()
+			// Pass desired output filename to vinyl-source-stream
+			.pipe(source("yenskst_worker.dist.js"))
 			.pipe(buffer())
 			// Start piping stream to tasks!
 			.pipe(gulp.dest("./dist/js"))
@@ -40,4 +54,8 @@ function watch() {
 	gulp.watch(["./src/*.js", "./src/web/js/**/*.js", "./src/web/views/index.pug", "./src/parserLib/**/*.js"], gulp.series(compileFrontend));
 }
 
-exports.default = gulp.series(compileFrontend, gulp.parallel(nodemonStart, watch));
+function watch2() {
+	gulp.watch(["./src/web/worker/*.js"], gulp.series(compileWorkers));
+}
+
+exports.default = gulp.series(compileFrontend, compileWorkers, gulp.parallel(nodemonStart, watch, watch2));
