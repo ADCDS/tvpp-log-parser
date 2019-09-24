@@ -1,5 +1,5 @@
 // @flow
-import type {Graph} from "../../types";
+import type { Graph } from "../../types";
 
 class GraphHolder {
 	graph: Graph;
@@ -29,7 +29,7 @@ class GraphHolder {
 
 		this.graph[node] = {};
 		Object.keys(this.graph).forEach(nodeKey => {
-			this.graph[node][nodeKey] = null;
+			this.graph[node][nodeKey] = false;
 		});
 	}
 
@@ -37,7 +37,7 @@ class GraphHolder {
 		this.graph[from][to] = true;
 	}
 
-	getEdge(from: string, to: string): void {
+	getEdge(from: string, to: string): boolean {
 		return !!this.graph[from][to];
 	}
 
@@ -52,11 +52,19 @@ class GraphHolder {
 	}
 
 	removeEdge(from: string, to: string): void {
-		this.graph[from][to] = null;
+		this.graph[from][to] = false;
 	}
 
-	addNode(node: string, incomingEdges: Array<string>, outgoingEdges: Array<string>): void {
-		this.graph[node] = {};
+	addNode(node: string, incomingEdges: Array<string>, outgoingEdges: Array<string>, removedNodes: Array<string>): void {
+		if (!Object.prototype.hasOwnProperty.call(this.graph, node)) {
+			this.graph[node] = {};
+		}
+		removedNodes.forEach(value => {
+			if (!Object.prototype.hasOwnProperty.call(this.graph, value)) {
+				this.graph[value] = {};
+			}
+		});
+
 		Object.keys(this.graph).forEach(value => {
 			this.graph[node][value] = false;
 		});

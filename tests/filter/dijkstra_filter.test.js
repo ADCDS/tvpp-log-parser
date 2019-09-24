@@ -22,7 +22,7 @@ test("dijkstraFilterTest", async () => {
 	const dijkstraFilter = new DijkstraFilter({
 		source: "150.164.3.36:4951"
 	});
-	dijkstraFilter.applyFilter(graphManager.getGraphHolder());
+	await dijkstraFilter.applyFilter(graphManager.getGraphHolder());
 
 	expect(true).toBe(true);
 });

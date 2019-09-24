@@ -4,7 +4,7 @@ import FilterResult from "./Results/FilterResult";
 import GraphHolder from "../GraphHolder";
 
 class EmptyFilter extends Filter {
-	applyFilter(graphHolder: GraphHolder): FilterResult {
+	async applyFilter(graphHolder: GraphHolder): Promise<FilterResult> {
 		return new FilterResult(graphHolder);
 	}
 }

@@ -18,7 +18,7 @@ class TreeFilter extends Filter {
 		};
 	}
 
-	applyFilter(graphHolder: GraphHolder): TreeFilterResult {
+	async applyFilter(graphHolder: GraphHolder): Promise<TreeFilterResult> {
 		return new TreeFilterResult(graphHolder, {}, {});
 	}
 }

@@ -13,7 +13,7 @@ class Filter {
 		return {};
 	}
 
-	applyFilter(graphHolder: GraphHolder): FilterResult {
+	async applyFilter(graphHolder: GraphHolder): Promise<FilterResult> {
 		return new FilterResult(graphHolder);
 	}
 }

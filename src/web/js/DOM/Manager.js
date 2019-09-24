@@ -355,7 +355,7 @@ class Manager {
 		elementById.classList.add("active");
 	}
 
-	static drawGraph(filterOptions: FilterLayoutOptions, layoutOptions: FilterLayoutOptions, goToState: Number, byTimestamp: boolean = false): void {
+	static async drawGraph(filterOptions: FilterLayoutOptions, layoutOptions: FilterLayoutOptions, goToState: Number, byTimestamp: boolean = false) {
 		if (!Variables.selectedFilter) throw new Error("Filter not selected");
 		if (!Variables.selectedLayout) throw new Error("Layout not selected");
 		if (!Variables.selectedLayoutFilter) throw new Error("Layout subfilter not selected not selected");
@@ -403,7 +403,7 @@ class Manager {
 
 		// Apply layout filter
 		const subFilterObj = new LayoutFilterClass(layoutOptions.filter);
-		const subFilterResult = subFilterObj.applyFilter(graphHolder);
+		const subFilterResult = await subFilterObj.applyFilter(graphHolder);
 
 		const layoutObj = new LayoutClass(subFilterResult, graphManager.getMachines(), layoutOptions);
 		layoutObj.updatePositions();
@@ -432,7 +432,7 @@ class Manager {
 			console.log("Main filter and Layout filter are the same, reusing result...");
 		} else {
 			const filterObj = new FilterClass(filterOptions);
-			filterResult = filterObj.applyFilter(graphHolder);
+			filterResult = await filterObj.applyFilter(graphHolder);
 		}
 		window.sigmaCurrent.helperHolder.graphHolder.filtered = filterResult.graphHolder;
 

@@ -106,7 +106,7 @@ class SpringLayout extends Layout {
 		resultantForce.x *= this.options.c4;
 		resultantForce.y *= this.options.c4;
 
-		return {x: resultantForce.x, y: resultantForce.y};
+		return { x: resultantForce.x, y: resultantForce.y };
 	}
 
 	updatePositions(): void {

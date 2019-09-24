@@ -1,8 +1,8 @@
 // @flow
-import {FibonacciHeap} from "@tyriar/fibonacci-heap";
+import { FibonacciHeap } from "@tyriar/fibonacci-heap";
 import TreeFilter from "../TreeFilter";
 import TreeFilterResult from "../../Results/TreeFilterResult";
-import type {Graph} from "../../../../../types";
+import type { Graph } from "../../../../../types";
 import GraphHolder from "../../../GraphHolder";
 
 class DijkstraFilter extends TreeFilter {
@@ -96,7 +96,7 @@ class DijkstraFilter extends TreeFilter {
 		};
 	}
 
-	applyFilter(graphHolder: GraphHolder): TreeFilterResult {
+	async applyFilter(graphHolder: GraphHolder): Promise<TreeFilterResult> {
 		const newGraphHolder = graphHolder.clone();
 		const vertices = Object.keys(newGraphHolder.graph);
 
