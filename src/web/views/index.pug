@@ -9,9 +9,24 @@ html(lang='pt')
                 margin: 5px;
             }
 
+            #currentGraphic {
+                width: 500px;
+                height: 400px;
+            }
+
+            #graphArea {
+                display: flex;
+            }
+
+            #graphicsHolder {
+                width: 500px;
+                height: 800px;
+                margin: 30px;
+            }
+
             .graph-container {
-                width: 97%;
-                height: 700px;
+                width: 1200px;
+                height: 800px;
                 margin: 30px;
             }
 
@@ -190,8 +205,11 @@ div#graphContainer
             span Current State
             b#currentStateEventId (NaN)
 
-    div#containerPrevious.graph-container
-    div#containerComparision.graph-container
-    div#containerCurrent.graph-container
+    div#graphArea
+        div#containerPrevious.graph-container
+        div#containerComparision.graph-container
+        div#containerCurrent.graph-container
+        div#graphicsHolder
+            div#currentGraphic
 script(src='/js/bundle.js')
 

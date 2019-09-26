@@ -3,6 +3,8 @@
 import GraphHolder from "../../parserLib/Graph/GraphHolder";
 import Node from "../../parserLib/Graph/Visualizer/Node";
 import Edge from "../../parserLib/Graph/Visualizer/Edge";
+import FilterResult from "../../parserLib/Graph/Filter/Results/FilterResult";
+import Layout from "../../parserLib/Graph/Visualizer/Layout/Layout";
 
 class SigmaInjection {
 	graphHolder: { filtered: GraphHolder, original: GraphHolder };
@@ -12,6 +14,8 @@ class SigmaInjection {
 	byPassInNodes: Array<string>;
 	byPassOutNodes: Array<string>;
 	managedButtons: Array<HTMLInputElement>;
+	layoutSubFilter: FilterResult;
+	usedLayout: Layout;
 }
 
 export default SigmaInjection;

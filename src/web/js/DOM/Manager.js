@@ -9,7 +9,8 @@ import Node from "../../../parserLib/Graph/Visualizer/Node";
 import DOMUtils from "./Utils";
 import Variables from "./Variables";
 import SigmaInjection from "../SigmaInjection";
-import type { FilterLayoutOptions, Sigma } from "../../../types";
+import type {FilterLayoutOptions, Sigma} from "../../../types";
+import ChartManager from "./ChartManager";
 
 type OptionValueTypes = Class<String> | Class<Number> | Class<Boolean>;
 
@@ -379,6 +380,8 @@ class Manager {
 			window.sigmaPrevious.helperHolder.graphHolder = {
 				...window.sigmaCurrent.helperHolder.graphHolder
 			};
+			window.sigmaPrevious.helperHolder.layoutSubFilter = window.sigmaCurrent.helperHolder.layoutSubFilter;
+			window.sigmaPrevious.helperHolder.usedLayout = window.sigmaCurrent.helperHolder.usedLayout;
 			if (!Variables.layoutPreservation) {
 				Manager.synchronizeSigma(window.sigmaPrevious);
 			}
@@ -408,6 +411,8 @@ class Manager {
 		const layoutObj = new LayoutClass(subFilterResult, graphManager.getMachines(), layoutOptions);
 		layoutObj.updatePositions();
 		window.sigmaCurrent.helperHolder.edgesHolder = layoutObj.edgesOverride;
+		window.sigmaCurrent.helperHolder.layoutSubFilter = subFilterResult;
+		window.sigmaCurrent.helperHolder.usedLayout = layoutObj;
 
 		if (!Variables.isFirstIteration && Variables.layoutPreservation) {
 			// Previous Sigma's nodes should have the same position as the Current Sigma
@@ -437,17 +442,22 @@ class Manager {
 		window.sigmaCurrent.helperHolder.graphHolder.filtered = filterResult.graphHolder;
 
 		// Apply comparision layout
-		if (window.oldSubFilterResult) {
-			const comparisionLayout = new ComparisionLayout(subFilterResult, window.oldSubFilterResult, graphManager.getMachines(), {});
+		if (!Variables.isFirstIteration) {
+			const comparisionLayout = new ComparisionLayout(
+				window.sigmaCurrent.helperHolder.layoutSubFilter,
+				window.sigmaPrevious.helperHolder.layoutSubFilter,
+				graphManager.getMachines(),
+				{}
+			);
 			comparisionLayout.nodeHolder = layoutObj.cloneNodeHolder();
 			comparisionLayout.updatePositions();
 			window.sigmaComparision.helperHolder.nodeHolder = comparisionLayout.nodeHolder;
 			window.sigmaComparision.helperHolder.edgesHolder = comparisionLayout.edgesOverride;
 			window.sigmaComparision.helperHolder.graphHolder = window.sigmaCurrent.helperHolder.graphHolder;
+			window.sigmaComparision.helperHolder.usedLayout = comparisionLayout;
 
 			Manager.synchronizeSigma(window.sigmaComparision);
 		}
-		window.oldSubFilterResult = subFilterResult;
 
 		window.sigmaCurrent.helperHolder.nodeHolder = layoutObj.nodeHolder;
 		Manager.synchronizeSigma(window.sigmaCurrent);
@@ -459,6 +469,7 @@ class Manager {
 		DOMUtils.getGenericElementById<HTMLInputElement>("currentEventElapsedTime").value = graphManager.getCurrentElapsedTime();
 		DOMUtils.getGenericElementById<HTMLInputElement>("selectedEventNumber").value = window.selectedEvent = graphManager.currentSourceIndex;
 
+		ChartManager.drawCharts();
 		Variables.isFirstIteration = false;
 	}
 

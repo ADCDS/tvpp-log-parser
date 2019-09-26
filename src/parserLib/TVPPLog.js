@@ -15,6 +15,7 @@ class TVPPLog {
 
 	sourceMachineKey: string;
 	sourceApparitionLocations: Array<number>;
+	bandwidths: Array<number>;
 
 	constructor(options: ?{ [string]: any }) {
 		const defaultOptions = {
@@ -112,6 +113,27 @@ class TVPPLog {
 		for (const machine of this.machines.values()) {
 			if (machine.bandwidth !== undefined) machine.bandwidthClassification = bandwidths.indexOf(machine.bandwidth);
 		}
+		this.bandwidths = bandwidths;
+	}
+
+	getMachinesByBandwidthClassification(): Map<number, Array<Machine>> {
+		const returnMap = new Map<number, Array<Machine>>();
+		for (const bandwitdth of this.bandwidths) {
+			returnMap.set(bandwitdth, []);
+		}
+		for (const machine of this.machines.values()) {
+			if (machine.bandwidth !== undefined) {
+				const machineArray = returnMap.get(machine.bandwidth);
+
+				if (!machineArray) {
+					throw new Error("Machine " + machine.address + " with an invalid bandwidth");
+				}
+
+				machineArray.push(machine);
+			}
+		}
+
+		return returnMap;
 	}
 }
 

@@ -16,7 +16,7 @@ function arraysEqual<T>(arr1: Array<T>, arr2: Array<T>): boolean {
 }
 
 function findDuplicates(paths: Array<Array<string>>) {
-	let duplicates = [];
+	const duplicates = [];
 	for (let i = 0; i < paths.length; i++) {
 		for (let j = 0; j < paths.length; j++) {
 			if (i !== j) {
