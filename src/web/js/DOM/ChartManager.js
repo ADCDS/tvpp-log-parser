@@ -59,7 +59,7 @@ class ChartManager {
 
 	static drawGroupedBarChart(DOMLocation: string, samplesNum: number, seriesNum: number, data: Array<{}>, colorMap: { [number]: string }) {
 		const margin = {top: 10, right: 30, bottom: 30, left: 40},
-			width = 500 - margin.left - margin.right,
+			width = 600 - margin.left - margin.right,
 			height = 400 - margin.top - margin.bottom;
 
 		const svg = d3
@@ -74,7 +74,7 @@ class ChartManager {
 		// The scale spacing the groups:
 		const x0 = d3
 			.scaleBand()
-			.rangeRound([0, width])
+			.rangeRound([0, 470])
 			.paddingInner(0.1);
 
 		// The scale for spacing each group's bar:

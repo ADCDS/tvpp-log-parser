@@ -1,5 +1,5 @@
 // @flow
-import type { FilterDefType, LayoutDefType, Sigma } from "../../../types";
+import type {FilterDefType, LayoutDefType, Sigma} from "../../../types";
 import Node from "../../../parserLib/Graph/Visualizer/Node";
 
 class Variables {
@@ -24,6 +24,8 @@ class Variables {
 	static disableEdges = true;
 
 	static isFirstIteration = true;
+
+	static autoNext = false;
 }
 
 export default Variables;

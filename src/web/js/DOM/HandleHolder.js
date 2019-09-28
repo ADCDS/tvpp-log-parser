@@ -4,8 +4,16 @@ import Utils from "../../../utils";
 import DOMUtils from "./Utils";
 import Manager from "./Manager";
 import Variables from "./Variables";
+import html2canvas from "html2canvas";
 
 class HandleHolder {
+	static async handleNextButtonClick(e: Event) {
+		return Manager.goToEventAndDraw(window.selectedEvent + 1);
+	}
+
+	static async handlePrevButtonClick(e: Event) {
+		return Manager.goToEventAndDraw(window.selectedEvent - 1);
+	}
 	static handleSigmaClick(e: any): void {
 		Manager.changeSelectedNode(e.data.node);
 		// DOMManager.displayAllToRelations(e.data.node, e.target);
@@ -95,7 +103,9 @@ class HandleHolder {
 		for (let i = 0; i < tabLinks.length; i++) {
 			tabLinks[i].className = tabLinks[i].className.replace(" active", "");
 		}
-		DOMUtils.getElementById(currentTarget.dataset.graph).style.display = "block";
+		const graphContainer = DOMUtils.getElementById(currentTarget.dataset.graph);
+		graphContainer.style.display = "block";
+		Variables.selectedGraphContainer = graphContainer;
 
 		const sigmaObj = window[currentTarget.dataset.sigma];
 
@@ -155,14 +165,59 @@ class HandleHolder {
 		}
 	}
 
-	static handleDrawByEvent(): void {
+	static async handleDrawByEvent() {
 		const options = Manager.extractOptions();
-		Manager.drawGraph(options.filter, options.layout, window.selectedEvent, false);
+		return Manager.drawGraph(options.filter, options.layout, window.selectedEvent, false);
 	}
 
-	static handleDrawByTimestamp(): void {
+	static async handleDrawByTimestamp() {
 		const options = Manager.extractOptions();
-		Manager.drawGraph(options.filter, options.layout, window.selectedTimestamp, true);
+		return Manager.drawGraph(options.filter, options.layout, window.selectedTimestamp, true);
+	}
+
+	static handleToggleAutoNext(e: Event): void {
+		const button = e.target;
+
+		if (!(button instanceof HTMLInputElement)) throw new Error("Invalid type");
+		if (!Variables.autoNext) {
+			// Activate autoNext
+			Variables.autoNext = true;
+			button.value = "Disable Auto Next X";
+
+			const autoNextFunction = async () => {
+				try {
+					await Manager.goToEventAndDraw(window.selectedEvent + 1);
+				} catch (e) {
+					Variables.autoNext = false;
+					console.log("AutoNext: " + e);
+				}
+
+				if (Variables.autoNext) {
+					setTimeout(autoNextFunction, 1000);
+				}
+			};
+
+			setTimeout(autoNextFunction, 1000);
+		} else {
+			Variables.autoNext = false;
+			button.value = "AutoNext X";
+		}
+	}
+
+	static handleTakeSnapShot() {
+		if (Variables.selectedGraphContainer) {
+			window.scrollTo(0, 0);
+			const element = DOMUtils.getElementById("graphArea");
+			html2canvas(element).then(canvas => {
+				const image = new Image();
+				const dataURL = canvas.toDataURL("image/png");
+				image.src = dataURL;
+
+				console.log(dataURL);
+				const w = window.open("");
+				w.document.write(image.outerHTML);
+			});
+		}
 	}
 }
 

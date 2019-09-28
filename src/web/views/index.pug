@@ -10,24 +10,33 @@ html(lang='pt')
             }
 
             #currentGraphic {
-                width: 500px;
+                width: 600px;
                 height: 400px;
             }
 
             #graphArea {
                 display: flex;
+                padding: 0;
+                margin: 0;
+                display: -webkit-box;
+                display: -moz-box;
+                display: -ms-flexbox;
+                display: -webkit-flex;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             #graphicsHolder {
-                width: 500px;
+                width: 610px;
                 height: 800px;
-                margin: 30px;
+                margin: 30px 0 0 0;
             }
 
             .graph-container {
                 width: 1200px;
                 height: 800px;
-                margin: 30px;
+                margin: 30px 0 0 0;
             }
 
             #panelHolder {
@@ -186,11 +195,19 @@ body
 
                 input#prevEvent(type='button', value='< Prev')
                 input#nextEvent(type='button', value='Next >')
+                div
+                    input#autoNext(type='button', value='AutoNext >')
             div
                 //label(for='preserveCurrentLayout') Preservar Layout:
                 //input#preserveCurrentLayout(type='Checkbox', checked=false)
                 label(for='disableEdges') Disable Edges:
                 input#disableEdges(type='Checkbox')
+
+            div
+                label(for='saveOutput') Save Output:
+                    input#saveOutput(type='Checkbox')
+            div
+                input#takeSnapshot(type='button', value='Take Snapshot')
 
 
 div#graphContainer

@@ -11,6 +11,7 @@ import Variables from "./Variables";
 import SigmaInjection from "../SigmaInjection";
 import type {FilterLayoutOptions, Sigma} from "../../../types";
 import ChartManager from "./ChartManager";
+import HandleHolder from "./HandleHolder";
 
 type OptionValueTypes = Class<String> | Class<Number> | Class<Boolean>;
 
@@ -491,6 +492,17 @@ class Manager {
 	static hideAllFromRelations(node: string, sigma: Sigma): void {
 		sigma.helperHolder.byPassInNodes.splice(sigma.helperHolder.byPassInNodes.indexOf(node), 1);
 		Manager.synchronizeSigma(sigma);
+	}
+
+	static async goToEventAndDraw(eventIndex: number) {
+		if (eventIndex > window.logEntity.sourceApparitionLocations.length || eventIndex < 0)
+			throw new Error("Invalid index");
+
+		const eventNumberDOM = DOMUtils.getGenericElementById<HTMLInputElement>("selectedEventNumber");
+		eventNumberDOM.value = eventIndex.toString();
+
+		eventNumberDOM.dispatchEvent(new Event("change"));
+		return HandleHolder.handleDrawByEvent();
 	}
 }
 

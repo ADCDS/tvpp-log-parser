@@ -62,29 +62,17 @@ document.addEventListener("click", (e: MouseEvent) => {
 
 DOMUtils.getElementById("machineListTable").addEventListener("click", HandleHolder.handleMachineListButtonClick);
 
-DOMUtils.getElementById("nextEvent").addEventListener("click", () => {
-	const drawButtonDOM = DOMUtils.getElementById("drawEventNumber");
-	const eventNumberDOM = DOMUtils.getGenericElementById<HTMLInputElement>("selectedEventNumber");
-	eventNumberDOM.value = (window.selectedEvent + 1).toString();
+DOMUtils.getElementById("nextEvent").addEventListener("click", HandleHolder.handleNextButtonClick);
 
-	eventNumberDOM.dispatchEvent(new Event("change"));
-	drawButtonDOM.dispatchEvent(new Event("click"));
-});
-
-DOMUtils.getElementById("prevEvent").addEventListener("click", () => {
-	const drawButtonDOM = DOMUtils.getElementById("drawEventNumber");
-	const eventNumberDOM = DOMUtils.getGenericElementById<HTMLInputElement>("selectedEventNumber");
-	eventNumberDOM.value = (window.selectedEvent - 1).toString();
-
-	eventNumberDOM.dispatchEvent(new Event("change"));
-	drawButtonDOM.dispatchEvent(new Event("click"));
-});
+DOMUtils.getElementById("prevEvent").addEventListener("click", HandleHolder.handlePrevButtonClick);
 
 DOMUtils.getElementById("drawEventNumber").addEventListener("click", HandleHolder.handleDrawByEvent);
 DOMUtils.getElementById("drawTimestamp").addEventListener("click", HandleHolder.handleDrawByTimestamp);
 
 // DOMUtils.getElementById("preserveCurrentLayout").addEventListener("change", HandleHolder.handleLayoutPreservationChange);
 DOMUtils.getElementById("disableEdges").addEventListener("change", HandleHolder.handleDisableEdgesChange);
+DOMUtils.getElementById("autoNext").addEventListener("click", HandleHolder.handleToggleAutoNext);
+DOMUtils.getElementById("takeSnapshot").addEventListener("click", HandleHolder.handleTakeSnapShot);
 
 (() => {
 	window.sigmaPrevious = new Sigma({
@@ -94,10 +82,12 @@ DOMUtils.getElementById("disableEdges").addEventListener("change", HandleHolder.
 		},
 		settings: {
 			autoRescale: false,
-			autoResize: false
+			autoResize: false,
 		}
 	});
 	window.sigmaPrevious.bind("clickNode", HandleHolder.handleSigmaClick);
+	window.sigmaPrevious.cameras[0].goTo({x: 0, y: 0, angle: 0, ratio: 2});
+
 	window.sigmaPrevious.helperHolder = {
 		edgesHolder: {},
 		managedButtons: [],
@@ -112,10 +102,13 @@ DOMUtils.getElementById("disableEdges").addEventListener("change", HandleHolder.
 		},
 		settings: {
 			autoRescale: false,
-			autoResize: false
+			autoResize: false,
+			ratio: 2
 		}
 	});
 	window.sigmaComparision.bind("clickNode", HandleHolder.handleSigmaClick);
+	window.sigmaComparision.cameras[0].goTo({x: 0, y: 0, angle: 0, ratio: 2});
+
 	window.sigmaComparision.helperHolder = {
 		edgesHolder: {},
 		managedButtons: [],
@@ -130,7 +123,8 @@ DOMUtils.getElementById("disableEdges").addEventListener("change", HandleHolder.
 		},
 		settings: {
 			autoRescale: false,
-			autoResize: false
+			autoResize: false,
+			ratio: 2
 		}
 	});
 	window.sigmaCurrent.helperHolder = {
@@ -140,6 +134,7 @@ DOMUtils.getElementById("disableEdges").addEventListener("change", HandleHolder.
 		byPassOutNodes: []
 	};
 	window.sigmaCurrent.bind("clickNode", HandleHolder.handleSigmaClick);
+	window.sigmaCurrent.cameras[0].goTo({x: 0, y: 0, angle: 0, ratio: 2});
 
 	Manager.init();
 	console.log("App started");
