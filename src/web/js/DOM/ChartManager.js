@@ -1,5 +1,6 @@
 // @flow
 import * as d3 from "d3";
+import DOMUtils from "./Utils";
 
 class ChartManager {
 	static drawCharts() {
@@ -25,13 +26,12 @@ class ChartManager {
 			colorMap[bandwidth] = usedLayout.options.colorMap[i++];
 		}
 
-		const outputArray: Array<{}> = [];
+		const outputArray: Array<{ name: string, [string]: number }> = [];
 
 		// Populate output array
 
-		for (let i = 0; i < layers.length; i++) {
-			const objectToInsert = {...bandwidthsTemplate};
-			objectToInsert["name"] = `Layer ${i}`;
+		for (let j = 0; j < layers.length; j++) {
+			const objectToInsert = { name: `Layer ${j}`, ...bandwidthsTemplate };
 
 			outputArray.push(objectToInsert);
 		}
@@ -53,23 +53,31 @@ class ChartManager {
 		}
 
 		console.log(outputArray);
-		document.getElementById("currentGraphic").innerHTML = "";
+		DOMUtils.getElementById("currentGraphic").innerHTML = "";
 		ChartManager.drawGroupedBarChart("#currentGraphic", samplesNum, seriesNum, outputArray, colorMap);
 	}
 
-	static drawGroupedBarChart(DOMLocation: string, samplesNum: number, seriesNum: number, data: Array<{}>, colorMap: { [number]: string }) {
-		const margin = {top: 10, right: 30, bottom: 30, left: 40},
-			width = 600 - margin.left - margin.right,
-			height = 400 - margin.top - margin.bottom;
+	static drawGroupedBarChart(
+		DOMLocation: string,
+		samplesNum: number,
+		seriesNum: number,
+		data: Array<{ name: string, [string]: number }>,
+		colorMap: { [number]: string }
+	) {
+		const margin = { top: 10, right: 30, bottom: 30, left: 40 };
+		const width = 600 - margin.left - margin.right;
+		const height = 400 - margin.top - margin.bottom;
 
 		const svg = d3
 			.select(DOMLocation)
 			.append("svg")
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom);
-		const g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
-		const keys = Object.keys(data[0]).filter(value => value !== "name").reverse();
+		const keys = Object.keys(data[0])
+			.filter(value => value !== "name")
+			.reverse();
 
 		// The scale spacing the groups:
 		const x0 = d3
@@ -84,14 +92,15 @@ class ChartManager {
 
 		let highestYValue = 0;
 		for (const layer of data) {
-			const max = Math.max(...Object.values(layer).filter(value => !isNaN(value)));
+			// eslint-disable-next-line flowtype-errors/show-errors
+			const max = Math.max(...Object.values(layer).filter(value => !Number.isNaN(Number(value))));
 			if (max > highestYValue) {
 				highestYValue = max;
 			}
 		}
 
 		x0.domain(
-			data.map(function (d) {
+			data.map((d: { name: * }) => {
 				return d.name;
 			})
 		);
@@ -104,34 +113,34 @@ class ChartManager {
 			.enter()
 			.append("g")
 			.attr("class", "bar")
-			.attr("transform", function (d) {
-				return "translate(" + x0(d.name) + ",0)";
+			.attr("transform", (d: { name: * }) => {
+				return `translate(${x0(d.name)},0)`;
 			})
 			.selectAll("rect")
-			.data(function (d) {
-				return keys.map(function (key) {
-					return {key: key, value: d[key]};
+			.data(d => {
+				return keys.map((key: string) => {
+					return { key, value: d[key] };
 				});
 			})
 			.enter()
 			.append("rect")
-			.attr("x", function (d) {
+			.attr("x", (d: { key: * }) => {
 				return x1(d.key);
 			})
-			.attr("y", function (d) {
+			.attr("y", (d: { value: * }) => {
 				return y(d.value);
 			})
 			.attr("width", x1.bandwidth())
-			.attr("height", function (d) {
+			.attr("height", (d: { value: * }) => {
 				return height - y(d.value);
 			})
-			.attr("fill", function (d) {
+			.attr("fill", (d: { key: string }) => {
 				return colorMap[Number(d.key)];
 			});
 
 		g.append("g")
 			.attr("class", "axis")
-			.attr("transform", "translate(0," + height + ")")
+			.attr("transform", `translate(0,${height})`)
 			.call(d3.axisBottom(x0));
 
 		g.append("g")
@@ -155,8 +164,8 @@ class ChartManager {
 			.data(keys)
 			.enter()
 			.append("g")
-			.attr("transform", function (d, i) {
-				return "translate(0," + i * 20 + ")";
+			.attr("transform", (d: {}, i: number) => {
+				return `translate(0,${i * 20})`;
 			});
 
 		legend
@@ -164,10 +173,10 @@ class ChartManager {
 			.attr("x", width - 17)
 			.attr("width", 15)
 			.attr("height", 15)
-			.attr("fill", function (d) {
+			.attr("fill", (d: number) => {
 				return colorMap[Number(d)];
 			})
-			.attr("stroke", function (d) {
+			.attr("stroke", (d: number) => {
 				return colorMap[Number(d)];
 			})
 			.attr("stroke-width", 2);
@@ -177,7 +186,7 @@ class ChartManager {
 			.attr("x", width - 24)
 			.attr("y", 9.5)
 			.attr("dy", "0.32em")
-			.text(function (d) {
+			.text((d: {}) => {
 				return d;
 			});
 	}

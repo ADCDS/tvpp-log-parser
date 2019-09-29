@@ -7,3 +7,4 @@ dist/
 *.lock
 package-lock.json
 .idea/
+flow-typed/

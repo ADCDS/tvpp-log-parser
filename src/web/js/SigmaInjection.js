@@ -13,7 +13,7 @@ class SigmaInjection {
 	edgesHolder: Map<string, Map<string, Edge>>;
 	byPassInNodes: Array<string>;
 	byPassOutNodes: Array<string>;
-	managedButtons: Array<HTMLInputElement>;
+	managedButtons: Array<HTMLButtonElement>;
 	layoutSubFilter: FilterResult;
 	usedLayout: Layout;
 }

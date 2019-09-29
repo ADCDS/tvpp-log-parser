@@ -82,11 +82,11 @@ DOMUtils.getElementById("takeSnapshot").addEventListener("click", HandleHolder.h
 		},
 		settings: {
 			autoRescale: false,
-			autoResize: false,
+			autoResize: false
 		}
 	});
 	window.sigmaPrevious.bind("clickNode", HandleHolder.handleSigmaClick);
-	window.sigmaPrevious.cameras[0].goTo({x: 0, y: 0, angle: 0, ratio: 2});
+	window.sigmaPrevious.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 2 });
 
 	window.sigmaPrevious.helperHolder = {
 		edgesHolder: {},
@@ -107,7 +107,7 @@ DOMUtils.getElementById("takeSnapshot").addEventListener("click", HandleHolder.h
 		}
 	});
 	window.sigmaComparision.bind("clickNode", HandleHolder.handleSigmaClick);
-	window.sigmaComparision.cameras[0].goTo({x: 0, y: 0, angle: 0, ratio: 2});
+	window.sigmaComparision.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 2 });
 
 	window.sigmaComparision.helperHolder = {
 		edgesHolder: {},
@@ -134,7 +134,7 @@ DOMUtils.getElementById("takeSnapshot").addEventListener("click", HandleHolder.h
 		byPassOutNodes: []
 	};
 	window.sigmaCurrent.bind("clickNode", HandleHolder.handleSigmaClick);
-	window.sigmaCurrent.cameras[0].goTo({x: 0, y: 0, angle: 0, ratio: 2});
+	window.sigmaCurrent.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 2 });
 
 	Manager.init();
 	console.log("App started");

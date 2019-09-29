@@ -1,5 +1,5 @@
 // @flow
-import type {FilterDefType, LayoutDefType, Sigma} from "../../../types";
+import type { FilterDefType, LayoutDefType, Sigma } from "../../../types";
 import Node from "../../../parserLib/Graph/Visualizer/Node";
 
 class Variables {

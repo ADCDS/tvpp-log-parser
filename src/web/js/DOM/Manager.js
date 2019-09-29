@@ -9,7 +9,7 @@ import Node from "../../../parserLib/Graph/Visualizer/Node";
 import DOMUtils from "./Utils";
 import Variables from "./Variables";
 import SigmaInjection from "../SigmaInjection";
-import type {FilterLayoutOptions, Sigma} from "../../../types";
+import type { FilterLayoutOptions, Sigma } from "../../../types";
 import ChartManager from "./ChartManager";
 import HandleHolder from "./HandleHolder";
 
@@ -495,8 +495,7 @@ class Manager {
 	}
 
 	static async goToEventAndDraw(eventIndex: number) {
-		if (eventIndex > window.logEntity.sourceApparitionLocations.length || eventIndex < 0)
-			throw new Error("Invalid index");
+		if (eventIndex > window.logEntity.sourceApparitionLocations.length || eventIndex < 0) throw new Error("Invalid index");
 
 		const eventNumberDOM = DOMUtils.getGenericElementById<HTMLInputElement>("selectedEventNumber");
 		eventNumberDOM.value = eventIndex.toString();

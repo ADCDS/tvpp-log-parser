@@ -122,11 +122,11 @@ class TVPPLog {
 			returnMap.set(bandwitdth, []);
 		}
 		for (const machine of this.machines.values()) {
-			if (machine.bandwidth !== undefined) {
+			if (machine && machine.bandwidth !== undefined && machine.bandwidth !== null) {
 				const machineArray = returnMap.get(machine.bandwidth);
 
 				if (!machineArray) {
-					throw new Error("Machine " + machine.address + " with an invalid bandwidth");
+					throw new Error(`Machine ${machine.address} with an invalid bandwidth`);
 				}
 
 				machineArray.push(machine);

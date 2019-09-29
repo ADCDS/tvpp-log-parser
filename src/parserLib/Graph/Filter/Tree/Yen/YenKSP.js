@@ -5,7 +5,7 @@ import GraphHolder from "../../../GraphHolder";
 import TreeFilterResult from "../../Results/TreeFilterResult";
 import DijkstraFilter from "../Dijkstra/DijkstraFilter";
 import UserOption from "../../../../UserOption";
-import type {YensKSPTask, YensKSPWorkerResult} from "../../../../../types";
+import type { YensKSPTask, YensKSPWorkerResult } from "../../../../../types";
 
 function arraysEqual<T>(arr1: Array<T>, arr2: Array<T>): boolean {
 	if (arr1.length !== arr2.length) return false;

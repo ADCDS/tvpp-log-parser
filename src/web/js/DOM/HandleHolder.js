@@ -1,10 +1,12 @@
 // @flow
 
+// eslint-disable-next-line flowtype-errors/show-errors
+import html2canvas from "html2canvas";
+
 import Utils from "../../../utils";
 import DOMUtils from "./Utils";
 import Manager from "./Manager";
 import Variables from "./Variables";
-import html2canvas from "html2canvas";
 
 class HandleHolder {
 	static async handleNextButtonClick(e: Event) {
@@ -105,7 +107,6 @@ class HandleHolder {
 		}
 		const graphContainer = DOMUtils.getElementById(currentTarget.dataset.graph);
 		graphContainer.style.display = "block";
-		Variables.selectedGraphContainer = graphContainer;
 
 		const sigmaObj = window[currentTarget.dataset.sigma];
 
@@ -187,9 +188,9 @@ class HandleHolder {
 			const autoNextFunction = async () => {
 				try {
 					await Manager.goToEventAndDraw(window.selectedEvent + 1);
-				} catch (e) {
+				} catch (e2) {
 					Variables.autoNext = false;
-					console.log("AutoNext: " + e);
+					console.log(`AutoNext: ${e2}`);
 				}
 
 				if (Variables.autoNext) {
@@ -205,19 +206,17 @@ class HandleHolder {
 	}
 
 	static handleTakeSnapShot() {
-		if (Variables.selectedGraphContainer) {
-			window.scrollTo(0, 0);
-			const element = DOMUtils.getElementById("graphArea");
-			html2canvas(element).then(canvas => {
-				const image = new Image();
-				const dataURL = canvas.toDataURL("image/png");
-				image.src = dataURL;
+		window.scrollTo(0, 0);
+		const element = DOMUtils.getElementById("graphArea");
+		html2canvas(element).then(canvas => {
+			const image = new Image();
+			const dataURL = canvas.toDataURL("image/png");
+			image.src = dataURL;
 
-				console.log(dataURL);
-				const w = window.open("");
-				w.document.write(image.outerHTML);
-			});
-		}
+			console.log(dataURL);
+			const w = window.open("");
+			w.document.write(image.outerHTML);
+		});
 	}
 }
 
