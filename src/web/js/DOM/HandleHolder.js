@@ -7,6 +7,7 @@ import Utils from "../../../utils";
 import DOMUtils from "./Utils";
 import Manager from "./Manager";
 import Variables from "./Variables";
+import ChartManager from "./ChartManager";
 
 class HandleHolder {
 	static async handleNextButtonClick(e: Event) {
@@ -49,6 +50,9 @@ class HandleHolder {
 		Variables.selectedLayoutFilter = filter;
 		DOMUtils.getElementById("subFilterOptionsHolder").innerHTML = Manager.generateOptionsForm("subFilterOptions", filter.class.getOptions());
 		Manager.updateDefaultsOptionValues();
+
+		const charts = Utils.getChartsByFilterConstraintType(filter);
+		Manager.generateChartOptions(charts);
 	}
 
 	static handleMainFilterChange(e: Event): void {
@@ -72,6 +76,13 @@ class HandleHolder {
 		Variables.selectedLayout = layout;
 		filterOptions.innerHTML = Manager.generateOptionsForm(formHolderId, layout.class.getOptions());
 		Manager.updateDefaultsOptionValues();
+
+		// Associate a eventListener to a newly created layoutSubFilter HTMLSelectElement
+		const layoutSubFilterSelect = DOMUtils.getGenericElementById<HTMLSelectElement>("_mainlayoutOptions_filter");
+		layoutSubFilterSelect.addEventListener("change", HandleHolder.handleSubFilterChange);
+
+		// And triggers it, to update charts options
+		layoutSubFilterSelect.dispatchEvent(new Event("change"));
 	}
 
 	static handleSelectedEventChange(e: Event): void {
@@ -168,12 +179,14 @@ class HandleHolder {
 
 	static async handleDrawByEvent() {
 		const options = Manager.extractOptions();
-		return Manager.drawGraph(options.filter, options.layout, window.selectedEvent, false);
+		await Manager.drawGraph(options.filter, options.layout, window.selectedEvent, false);
+		return ChartManager.drawCharts(options.charts);
 	}
 
 	static async handleDrawByTimestamp() {
 		const options = Manager.extractOptions();
-		return Manager.drawGraph(options.filter, options.layout, window.selectedTimestamp, true);
+		await Manager.drawGraph(options.filter, options.layout, window.selectedTimestamp, true);
+		return ChartManager.drawCharts(options.charts);
 	}
 
 	static handleToggleAutoNext(e: Event): void {

@@ -52,14 +52,6 @@ Array.from(document.getElementsByClassName("tablinks")).forEach(el => {
 	el.addEventListener("click", HandleHolder.handleStateGraphChange);
 });
 
-document.addEventListener("click", (e: MouseEvent) => {
-	if (e.target instanceof HTMLSelectElement) {
-		if (e.target && e.target.id === "_mainlayoutOptions_filter") {
-			HandleHolder.handleSubFilterChange(e);
-		}
-	}
-});
-
 DOMUtils.getElementById("machineListTable").addEventListener("click", HandleHolder.handleMachineListButtonClick);
 
 DOMUtils.getElementById("nextEvent").addEventListener("click", HandleHolder.handleNextButtonClick);

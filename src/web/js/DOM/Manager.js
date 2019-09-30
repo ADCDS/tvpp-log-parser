@@ -9,9 +9,9 @@ import Node from "../../../parserLib/Graph/Visualizer/Node";
 import DOMUtils from "./Utils";
 import Variables from "./Variables";
 import SigmaInjection from "../SigmaInjection";
-import type { FilterLayoutOptions, Sigma } from "../../../types";
-import ChartManager from "./ChartManager";
+import type {ChartDefType, FilterLayoutOptions, Sigma} from "../../../types";
 import HandleHolder from "./HandleHolder";
+import Chart from "../../../parserLib/Graph/Chart/Chart";
 
 type OptionValueTypes = Class<String> | Class<Number> | Class<Boolean>;
 
@@ -316,7 +316,7 @@ class Manager {
 		sigma.refresh();
 	}
 
-	static extractOptions(): { filter: FilterLayoutOptions, layout: FilterLayoutOptions } {
+	static extractOptions(): { filter: FilterLayoutOptions, layout: FilterLayoutOptions, charts: Array<Class<Chart>> } {
 		const filterFormHolderId = "filterOptions";
 		const selectedFilter = Variables.selectedFilter;
 		const selectedLayout = Variables.selectedLayout;
@@ -329,9 +329,22 @@ class Manager {
 		const layoutFormHolderId = "layoutOptions";
 		const layoutOptions = Manager.getOptions(layoutFormHolderId, selectedLayout.class.getOptions());
 
+		const selectedCharts = [];
+
+		if (!Variables.selectedLayoutFilter) throw new Error("Layout filter not selected");
+		const availableCharts = Utils.getChartsByFilterConstraintType(Variables.selectedLayoutFilter);
+		for (const chartsDef of availableCharts) {
+			const optEl = DOMUtils.getGenericElementById<HTMLInputElement>(chartsDef.id);
+
+			if (optEl.checked) {
+				selectedCharts.push(chartsDef.class);
+			}
+		}
+
 		return {
 			filter: filterOptions,
-			layout: layoutOptions
+			layout: layoutOptions,
+			charts: selectedCharts
 		};
 	}
 
@@ -470,7 +483,6 @@ class Manager {
 		DOMUtils.getGenericElementById<HTMLInputElement>("currentEventElapsedTime").value = graphManager.getCurrentElapsedTime();
 		DOMUtils.getGenericElementById<HTMLInputElement>("selectedEventNumber").value = window.selectedEvent = graphManager.currentSourceIndex;
 
-		ChartManager.drawCharts();
 		Variables.isFirstIteration = false;
 	}
 
@@ -502,6 +514,27 @@ class Manager {
 
 		eventNumberDOM.dispatchEvent(new Event("change"));
 		return HandleHolder.handleDrawByEvent();
+	}
+
+	static generateChartOptions(charts: Array<ChartDefType>): void {
+		const ul = DOMUtils.getElementById("chartList");
+		ul.innerHTML = "";
+		for (const chartDefs of charts) {
+			const chartId = chartDefs.id;
+			const li = document.createElement("li");
+			const label = document.createElement("label");
+			label.innerHTML = chartDefs.name;
+			label.htmlFor = chartId;
+			const input = document.createElement("input");
+			input.id = chartId;
+			input.type = "checkbox";
+			input.checked = "checked";
+
+			label.appendChild(input);
+			li.appendChild(label);
+
+			ul.appendChild(li);
+		}
 	}
 }
 

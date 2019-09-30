@@ -9,7 +9,7 @@ html(lang='pt')
                 margin: 5px;
             }
 
-            #currentGraphic {
+            #chartsHolder > div {
                 width: 600px;
                 height: 400px;
             }
@@ -27,7 +27,7 @@ html(lang='pt')
                 justify-content: center;
             }
 
-            #graphicsHolder {
+            #chartsHolder {
                 width: 610px;
                 height: 800px;
                 margin: 30px 0 0 0;
@@ -45,6 +45,13 @@ html(lang='pt')
 
             #toolbar {
                 margin: 5px;
+            }
+
+            #chartOptions {
+                margin: 5px;
+                height: 430px;
+                width: 300px;
+                overflow: auto;
             }
 
             #options {
@@ -150,6 +157,11 @@ body
                 b Layout Options
                 div#layoutOptions
 
+        div#chartOptions
+            b Available Charts
+            ul#chartList
+
+
         div#infoView
             label(for='numberOfNodes') Total nodes:
                 input(readonly=true)#numberOfNodes
@@ -226,7 +238,6 @@ div#graphContainer
         div#containerPrevious.graph-container
         div#containerComparision.graph-container
         div#containerCurrent.graph-container
-        div#graphicsHolder
-            div#currentGraphic
+        div#chartsHolder
 script(src='/js/bundle.js')
 

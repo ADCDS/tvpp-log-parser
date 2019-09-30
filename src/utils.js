@@ -7,8 +7,9 @@ import Filter from "./parserLib/Graph/Filter/Filter";
 import RingLayeredLayout from "./parserLib/Graph/Visualizer/Layout/Tree/RingLayeredLayout";
 import SpringLayout from "./parserLib/Graph/Visualizer/Layout/SpringLayout";
 import RingLayout from "./parserLib/Graph/Visualizer/Layout/RingLayout";
-import type { FilterDefType, LayoutDefType } from "./types";
+import type {ChartDefType, FilterDefType, LayoutDefType} from "./types";
 import YenKSP from "./parserLib/Graph/Filter/Tree/Yen/YenKSP";
+import GroupLayerChart from "./parserLib/Graph/Chart/GroupLayerChart";
 
 const fs = require("fs");
 
@@ -61,6 +62,15 @@ class Utils {
 		}
 	};
 
+	static charts = {
+		groupLayerChart: {
+			id: "groupLayerChart",
+			name: "Group Layer Chart",
+			class: GroupLayerChart,
+			filterConstraint: TreeFilter
+		}
+	};
+
 	static getFilter(filter: string): FilterDefType {
 		const retFilter = this.filters[filter];
 		if (!retFilter) throw new Error(`Unknown filter name ${filter}`);
@@ -77,10 +87,18 @@ class Utils {
 
 	static getFiltersByType(Type: Class<Filter>): Array<FilterDefType> {
 		const retFilters = [];
-		Object.keys(this.filters).forEach(el => {
-			if (this.filters[el].type.prototype instanceof Type || this.filters[el].type === Type) retFilters.push(this.filters[el]);
+		Object.values(this.filters).forEach(filter => {
+			if (filter.type.prototype instanceof Type || filter.type === Type) retFilters.push(filter);
 		});
 		return retFilters;
+	}
+
+	static getChartsByFilterConstraintType(Type: Class<Filter>): Array<ChartDefType> {
+		const retCharts = [];
+		Object.values(this.charts).forEach(chart => {
+			if (chart.filterConstraint === Type.type) retCharts.push(chart);
+		});
+		return retCharts;
 	}
 
 	static async readLog(filePath: string) {

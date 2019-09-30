@@ -1,81 +1,50 @@
 // @flow
 import * as d3 from "d3";
-import DOMUtils from "./Utils";
+import Chart from "../../../parserLib/Graph/Chart/Chart";
+import Variables from "./Variables";
 
 class ChartManager {
-	static drawCharts() {
-		// Draw graphics for the current graph
-
-		const layoutSubFilter = window.sigmaCurrent.helperHolder.layoutSubFilter;
-		const usedLayout = window.sigmaCurrent.helperHolder.usedLayout;
-		const logEntity = window.logEntity;
-		const layers = Array.from(new Set(Object.values(layoutSubFilter.distancesFromSource))).sort();
-
-		// The number of samples is the number of layers in our network
-		const samplesNum = layers.length; //
-
-		const colorMap = {};
-
-		// The number of series is the number of different bandwidths
-		const seriesNum = logEntity.bandwidths.length;
-
-		const bandwidthsTemplate = {};
-		let i = 0;
-		for (const bandwidth of logEntity.bandwidths) {
-			bandwidthsTemplate[bandwidth] = 0;
-			colorMap[bandwidth] = usedLayout.options.colorMap[i++];
-		}
-
-		const outputArray: Array<{ name: string, [string]: number }> = [];
-
-		// Populate output array
-
-		for (let j = 0; j < layers.length; j++) {
-			const objectToInsert = { name: `Layer ${j}`, ...bandwidthsTemplate };
-
-			outputArray.push(objectToInsert);
-		}
-
-		for (const machine of logEntity.machines.values()) {
-			// In which layer are this machine at?
-			const distance = layoutSubFilter.distancesFromSource[machine.address];
-			const bandwidth = machine.bandwidth;
-			if (bandwidth === undefined) continue;
-
-			let layerIndex;
-			if (distance !== Infinity) {
-				layerIndex = distance;
-			} else {
-				// This is an unconnected node, its layer index is the last one
-				layerIndex = layers.length - 1;
+	static async drawCharts(charts: Array<Class<Chart>>) {
+		return new Promise(resolve => {
+			const chartHolderEl = document.getElementById("chartsHolder");
+			chartHolderEl.innerHTML = "";
+			let i = 0;
+			for (const chart of charts) {
+				const chartHolder = document.createElement("div");
+				chartHolder.id = "chart_" + i++;
+				chartHolderEl.appendChild(chartHolder);
+				const cbFunc = chart.drawFunction;
+				cbFunc(chartHolderEl, chart.generateGraphInput({sigma: Variables.selectedSigma}));
 			}
-			outputArray[layerIndex][bandwidth]++;
-		}
-
-		console.log(outputArray);
-		DOMUtils.getElementById("currentGraphic").innerHTML = "";
-		ChartManager.drawGroupedBarChart("#currentGraphic", samplesNum, seriesNum, outputArray, colorMap);
+			resolve();
+		});
 	}
 
-	static drawGroupedBarChart(
-		DOMLocation: string,
-		samplesNum: number,
-		seriesNum: number,
-		data: Array<{ name: string, [string]: number }>,
-		colorMap: { [number]: string }
+	static async drawGroupedBarChart(
+		element: HTMLElement,
+		input: {
+			data: Array<{
+				name: string,
+				[string]: number
+			}>,
+			colorMap: {
+				[number]: string
+			}
+		}
 	) {
+		element.innerHTML = "";
 		const margin = { top: 10, right: 30, bottom: 30, left: 40 };
 		const width = 600 - margin.left - margin.right;
 		const height = 400 - margin.top - margin.bottom;
 
 		const svg = d3
-			.select(DOMLocation)
+			.select("#" + element.id)
 			.append("svg")
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom);
 		const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
-		const keys = Object.keys(data[0])
+		const keys = Object.keys(input.data[0])
 			.filter(value => value !== "name")
 			.reverse();
 
@@ -91,7 +60,7 @@ class ChartManager {
 		const y = d3.scaleLinear().rangeRound([height, 0]);
 
 		let highestYValue = 0;
-		for (const layer of data) {
+		for (const layer of input.data) {
 			// eslint-disable-next-line flowtype-errors/show-errors
 			const max = Math.max(...Object.values(layer).filter(value => !Number.isNaN(Number(value))));
 			if (max > highestYValue) {
@@ -100,7 +69,7 @@ class ChartManager {
 		}
 
 		x0.domain(
-			data.map((d: { name: * }) => {
+			input.data.map((d: { name: * }) => {
 				return d.name;
 			})
 		);
@@ -109,7 +78,7 @@ class ChartManager {
 
 		g.append("g")
 			.selectAll("g")
-			.data(data)
+			.data(input.data)
 			.enter()
 			.append("g")
 			.attr("class", "bar")
@@ -135,7 +104,7 @@ class ChartManager {
 				return height - y(d.value);
 			})
 			.attr("fill", (d: { key: string }) => {
-				return colorMap[Number(d.key)];
+				return input.colorMap[Number(d.key)];
 			});
 
 		g.append("g")
@@ -174,10 +143,10 @@ class ChartManager {
 			.attr("width", 15)
 			.attr("height", 15)
 			.attr("fill", (d: number) => {
-				return colorMap[Number(d)];
+				return input.colorMap[Number(d)];
 			})
 			.attr("stroke", (d: number) => {
-				return colorMap[Number(d)];
+				return input.colorMap[Number(d)];
 			})
 			.attr("stroke-width", 2);
 
