@@ -11,7 +11,6 @@ import Variables from "./Variables";
 import SigmaInjection from "../SigmaInjection";
 import type {ChartDefType, FilterLayoutOptions, Sigma} from "../../../types";
 import HandleHolder from "./HandleHolder";
-import Chart from "../../../parserLib/Graph/Chart/Chart";
 
 type OptionValueTypes = Class<String> | Class<Number> | Class<Boolean>;
 
@@ -316,7 +315,7 @@ class Manager {
 		sigma.refresh();
 	}
 
-	static extractOptions(): { filter: FilterLayoutOptions, layout: FilterLayoutOptions, charts: Array<Class<Chart>> } {
+	static extractOptions(): { filter: FilterLayoutOptions, layout: FilterLayoutOptions, charts: Array<ChartDefType> } {
 		const filterFormHolderId = "filterOptions";
 		const selectedFilter = Variables.selectedFilter;
 		const selectedLayout = Variables.selectedLayout;
@@ -332,12 +331,12 @@ class Manager {
 		const selectedCharts = [];
 
 		if (!Variables.selectedLayoutFilter) throw new Error("Layout filter not selected");
-		const availableCharts = Utils.getChartsByFilterConstraintType(Variables.selectedLayoutFilter);
+		const availableCharts = Utils.getChartsByFilterConstraintType(Variables.selectedLayoutFilter.type);
 		for (const chartsDef of availableCharts) {
 			const optEl = DOMUtils.getGenericElementById<HTMLInputElement>(chartsDef.id);
 
 			if (optEl.checked) {
-				selectedCharts.push(chartsDef.class);
+				selectedCharts.push(chartsDef);
 			}
 		}
 

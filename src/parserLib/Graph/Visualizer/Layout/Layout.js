@@ -24,15 +24,16 @@ class Layout {
 		this.nodeHolder = new Map<string, Node>();
 		this.edgesOverride = new Map<string, Map<string, Edge>>();
 
+		/**
+		 * colorMap defines a color for each bandwidth category
+		 * colorMap[0] is the color of the server
+		 * colorMap[1] is the color of the freerider
+		 * colorMap[N] is the color of a node that isnt a freerider and isnt a server, sorted by ascending bandwidth
+		 * @type {{filter: null, colorMap: [string, string, string, string, string]}}
+		 */
 		const defaultOptions = {
 			filter: null,
-			colorMap: {
-				"0": "#ff0000",
-				"1": "#0000ff",
-				"2": "#ff7b00",
-				"3": "#fff400",
-				"4": "#64ff00"
-			}
+			colorMap: ["#ff0000", "#0000ff", "#64ff00", "#fff400", "#ff7b00"]
 		};
 
 		this.options = Object.assign(defaultOptions, options);

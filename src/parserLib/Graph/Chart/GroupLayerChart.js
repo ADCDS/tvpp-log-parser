@@ -22,10 +22,10 @@ class GroupLayerChart extends Chart {
 		const colorMap = {};
 		const bandwidthsTemplate = {};
 
-		let i = 0;
-		for (const bandwidth of logEntity.bandwidths) {
+		for (let i = 0; i < logEntity.bandwidths.length; i++) {
+			const bandwidth = logEntity.bandwidths[i];
 			bandwidthsTemplate[bandwidth] = 0;
-			colorMap[bandwidth] = usedLayout.options.colorMap[i++];
+			colorMap[bandwidth] = usedLayout.options.colorMap[i];
 		}
 
 		const outputArray: Array<{ name: string, [string]: number }> = [];

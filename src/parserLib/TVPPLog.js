@@ -107,8 +107,8 @@ class TVPPLog {
 			}
 		});
 		const bandwidths = Object.keys(foundBandwidths)
-			.sort()
-			.map(Number);
+			.map(Number)
+			.sort();
 
 		for (const machine of this.machines.values()) {
 			if (machine.bandwidth !== undefined) machine.bandwidthClassification = bandwidths.indexOf(machine.bandwidth);

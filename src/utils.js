@@ -10,6 +10,7 @@ import RingLayout from "./parserLib/Graph/Visualizer/Layout/RingLayout";
 import type {ChartDefType, FilterDefType, LayoutDefType} from "./types";
 import YenKSP from "./parserLib/Graph/Filter/Tree/Yen/YenKSP";
 import GroupLayerChart from "./parserLib/Graph/Chart/GroupLayerChart";
+import GenericOutputText from "./parserLib/Graph/Chart/GenericOutputText";
 
 const fs = require("fs");
 
@@ -63,6 +64,13 @@ class Utils {
 	};
 
 	static charts = {
+		genericOutputText: {
+			id: "genericOutputText",
+			name: "Text Output",
+			class: GenericOutputText,
+			filterConstraint: Filter
+		},
+
 		groupLayerChart: {
 			id: "groupLayerChart",
 			name: "Group Layer Chart",
@@ -96,7 +104,7 @@ class Utils {
 	static getChartsByFilterConstraintType(Type: Class<Filter>): Array<ChartDefType> {
 		const retCharts = [];
 		Object.values(this.charts).forEach(chart => {
-			if (chart.filterConstraint === Type.type) retCharts.push(chart);
+			if (chart.filterConstraint.isPrototypeOf(Type) || chart.filterConstraint === Type) retCharts.push(chart);
 		});
 		return retCharts;
 	}

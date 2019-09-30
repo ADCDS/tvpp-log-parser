@@ -51,7 +51,7 @@ class HandleHolder {
 		DOMUtils.getElementById("subFilterOptionsHolder").innerHTML = Manager.generateOptionsForm("subFilterOptions", filter.class.getOptions());
 		Manager.updateDefaultsOptionValues();
 
-		const charts = Utils.getChartsByFilterConstraintType(filter);
+		const charts = Utils.getChartsByFilterConstraintType(filter.type);
 		Manager.generateChartOptions(charts);
 	}
 

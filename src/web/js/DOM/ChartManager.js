@@ -1,10 +1,10 @@
 // @flow
 import * as d3 from "d3";
-import Chart from "../../../parserLib/Graph/Chart/Chart";
 import Variables from "./Variables";
+import type {ChartDefType} from "../../../types";
 
 class ChartManager {
-	static async drawCharts(charts: Array<Class<Chart>>) {
+	static async drawCharts(charts: Array<ChartDefType>) {
 		return new Promise(resolve => {
 			const chartHolderEl = document.getElementById("chartsHolder");
 			chartHolderEl.innerHTML = "";
@@ -13,15 +13,20 @@ class ChartManager {
 				const chartHolder = document.createElement("div");
 				chartHolder.id = "chart_" + i++;
 				chartHolderEl.appendChild(chartHolder);
-				const cbFunc = chart.drawFunction;
-				cbFunc(chartHolderEl, chart.generateGraphInput({sigma: Variables.selectedSigma}));
+				const cbFunc = chart.class.drawFunction;
+				cbFunc(chartHolderEl, chart.name, chart.class.generateGraphInput({sigma: Variables.selectedSigma}));
 			}
 			resolve();
 		});
 	}
 
+	static async drawTexts(data: Array<{ name: string, value: string }>) {
+		console.log(data);
+	}
+
 	static async drawGroupedBarChart(
 		element: HTMLElement,
+		chartName: string,
 		input: {
 			data: Array<{
 				name: string,
@@ -33,7 +38,7 @@ class ChartManager {
 		}
 	) {
 		element.innerHTML = "";
-		const margin = { top: 10, right: 30, bottom: 30, left: 40 };
+		const margin = {top: 20, right: 30, bottom: 30, left: 40};
 		const width = 600 - margin.left - margin.right;
 		const height = 400 - margin.top - margin.bottom;
 
@@ -81,7 +86,7 @@ class ChartManager {
 			.data(input.data)
 			.enter()
 			.append("g")
-			.attr("class", "bar")
+			.attr("class", "bar-group")
 			.attr("transform", (d: { name: * }) => {
 				return `translate(${x0(d.name)},0)`;
 			})
@@ -93,6 +98,7 @@ class ChartManager {
 			})
 			.enter()
 			.append("rect")
+			.attr("class", "bar")
 			.attr("x", (d: { key: * }) => {
 				return x1(d.key);
 			})
@@ -122,7 +128,39 @@ class ChartManager {
 			.attr("fill", "#000")
 			.attr("font-weight", "bold")
 			.attr("text-anchor", "start")
-			.text("Population");
+			.text(chartName);
+
+		g.append("g")
+			.selectAll(".bar-group")
+			.data(input.data)
+			.enter()
+			.append("g")
+			.attr("class", "bar-group")
+			.attr("transform", (d: { name: * }) => {
+				return `translate(${x0(d.name)},0)`;
+			})
+			.selectAll("text.bar")
+			.data(d => {
+				return keys.map((key: string) => {
+					return {key, value: d[key]};
+				});
+			})
+			.enter()
+			.append("text")
+			.attr("class", "text-bar")
+			.attr("font-family", "sans-serif")
+			.attr("font-size", 10)
+			.attr("text-anchor", "middle")
+			.attr("dy", "0.1em")
+			.attr("x", (d: { key: * }) => {
+				return x1(d.key) + x1.bandwidth() / 2;
+			})
+			.attr("y", (d: { value: * }) => {
+				return y(d.value) - 5;
+			})
+			.text((d: { value: * }) => {
+				return d.value;
+			});
 
 		const legend = g
 			.append("g")
