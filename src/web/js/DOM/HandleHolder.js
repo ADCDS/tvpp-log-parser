@@ -132,7 +132,7 @@ class HandleHolder {
 	}
 
 	static handleMachineListButtonClick(e: Event): void {
-		if (!(e.target instanceof HTMLButtonElement)) throw new Error("Invalid type");
+		if (!(e.target instanceof HTMLButtonElement)) return;
 
 		const button = e.target;
 		const { type } = button.dataset;

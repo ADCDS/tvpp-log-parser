@@ -70,7 +70,6 @@ class Utils {
 			class: GenericOutputText,
 			filterConstraint: Filter
 		},
-
 		groupLayerChart: {
 			id: "groupLayerChart",
 			name: "Group Layer Chart",

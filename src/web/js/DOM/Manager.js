@@ -177,13 +177,14 @@ class Manager {
 		});
 	}
 
-	static async parseOverlayLog(e: Event) {
-		console.log("Overlay log read.");
+	static async parseOverlayLog(e: Event, filename: string) {
 		if (!(e.currentTarget instanceof FileReader) || !(typeof e.currentTarget.result === "string")) throw new Error("Invalid type");
 
 		const entryArray = await LogParserOverlay.parse(e.currentTarget.result.split("\n"));
 		console.log(`Parsed ${entryArray.length} lines from overlay log`);
 		window.logEntity.addOverlayEntries(entryArray);
+		window.logEntity.overlayFileName = filename;
+
 		window.graphManager.syncMachines();
 		DOMUtils.getGenericElementById<HTMLInputElement>("numberOfEvents").value = window.logEntity.sourceApparitionLocations.length;
 		DOMUtils.getGenericElementById<HTMLInputElement>("numberOfNodes").value = Object.keys(window.logEntity.machines).length.toString();
@@ -193,13 +194,14 @@ class Manager {
 		Manager.updateDefaultsOptionValues();
 	}
 
-	static async parsePerformanceLog(e: Event) {
+	static async parsePerformanceLog(e: Event, filename: string) {
 		console.log("Performance log read.");
 		if (!(e.currentTarget instanceof FileReader) || !(typeof e.currentTarget.result === "string")) throw new Error("Invalid type");
-
 		const entryArray = await LogParserPerformance.parse(e.currentTarget.result.split("\n"));
 		console.log(`Parsed ${entryArray.length} lines from performance log`);
 		window.logEntity.addPerformanceEntries(entryArray);
+		window.logEntity.performanceFileName = filename;
+
 		Manager.updateClassifications();
 	}
 

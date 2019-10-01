@@ -33,8 +33,9 @@ function createHandler(onLoadCb: any => any): Event => void {
 
 			console.log("Reading file...");
 			const reader = new FileReader();
-
-			reader.onload = onLoadCb;
+			reader.onload = evt2 => {
+				onLoadCb(evt2, files[0].name);
+			};
 
 			reader.readAsBinaryString(files[0]);
 		}

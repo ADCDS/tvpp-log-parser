@@ -1,7 +1,7 @@
 // @flow
 import * as d3 from "d3";
 import Variables from "./Variables";
-import type {ChartDefType} from "../../../types";
+import type { ChartDefType } from "../../../types";
 
 class ChartManager {
 	static async drawCharts(charts: Array<ChartDefType>) {
@@ -14,14 +14,28 @@ class ChartManager {
 				chartHolder.id = "chart_" + i++;
 				chartHolderEl.appendChild(chartHolder);
 				const cbFunc = chart.class.drawFunction;
-				cbFunc(chartHolderEl, chart.name, chart.class.generateGraphInput({sigma: Variables.selectedSigma}));
+				cbFunc(chartHolder, chart.name, chart.class.generateGraphInput({ sigma: Variables.selectedSigma }));
 			}
 			resolve();
 		});
 	}
 
-	static async drawTexts(data: Array<{ name: string, value: string }>) {
-		console.log(data);
+	static async drawTexts(element: HTMLElement, chartName: string, data: Array<{ name: string, value: string }>) {
+		element.innerHTML = "";
+		for(const val of data.values()){
+			const p = document.createElement("p");
+			const small = document.createElement("small");
+			const b = document.createElement("b");
+			b.innerHTML = val.name + ": ";
+			const span2 = document.createElement("span");
+			span2.innerHTML = val.value;
+
+			small.appendChild(b);
+			small.appendChild(span2);
+			p.appendChild(small);
+
+			element.appendChild(p);
+		}
 	}
 
 	static async drawGroupedBarChart(
@@ -38,7 +52,7 @@ class ChartManager {
 		}
 	) {
 		element.innerHTML = "";
-		const margin = {top: 20, right: 30, bottom: 30, left: 40};
+		const margin = { top: 20, right: 30, bottom: 30, left: 40 };
 		const width = 600 - margin.left - margin.right;
 		const height = 400 - margin.top - margin.bottom;
 
@@ -142,7 +156,7 @@ class ChartManager {
 			.selectAll("text.bar")
 			.data(d => {
 				return keys.map((key: string) => {
-					return {key, value: d[key]};
+					return { key, value: d[key] };
 				});
 			})
 			.enter()

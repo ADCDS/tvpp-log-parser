@@ -6,6 +6,9 @@ import OverlayState from "./Log/Overlay/OverlayState";
 import PerformanceState from "./Log/Performance/PerformanceState";
 
 class TVPPLog {
+	overlayFileName: string;
+	performanceFileName: string;
+
 	options: { [string]: any };
 	machines: Map<string, Machine>;
 	overlayEntryList: Array<LogEntryOverlay>;
