@@ -48,6 +48,7 @@ DOMUtils.getGenericElementById<HTMLInputElement>("filterType").addEventListener(
 DOMUtils.getGenericElementById<HTMLInputElement>("layoutType").addEventListener("change", HandleHolder.handleLayoutChange);
 DOMUtils.getGenericElementById<HTMLInputElement>("selectedEventNumber").addEventListener("change", HandleHolder.handleSelectedEventChange);
 DOMUtils.getGenericElementById<HTMLInputElement>("selectedTimestamp").addEventListener("change", HandleHolder.handleTimestampChange);
+DOMUtils.getGenericElementById<HTMLInputElement>("saveOutput").addEventListener("change", HandleHolder.handleSaveOutputChange);
 
 Array.from(document.getElementsByClassName("tablinks")).forEach(el => {
 	el.addEventListener("click", HandleHolder.handleStateGraphChange);

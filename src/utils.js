@@ -7,7 +7,7 @@ import Filter from "./parserLib/Graph/Filter/Filter";
 import RingLayeredLayout from "./parserLib/Graph/Visualizer/Layout/Tree/RingLayeredLayout";
 import SpringLayout from "./parserLib/Graph/Visualizer/Layout/SpringLayout";
 import RingLayout from "./parserLib/Graph/Visualizer/Layout/RingLayout";
-import type {ChartDefType, FilterDefType, LayoutDefType} from "./types";
+import type { ChartDefType, FilterDefType, LayoutDefType } from "./types";
 import YenKSP from "./parserLib/Graph/Filter/Tree/Yen/YenKSP";
 import GroupLayerChart from "./parserLib/Graph/Chart/GroupLayerChart";
 import GenericOutputText from "./parserLib/Graph/Chart/GenericOutputText";
@@ -123,6 +123,14 @@ class Utils {
 				resolve(fd.toString("utf8").split("\n"));
 			});
 		});
+	}
+
+	static saveBase64AsFile(base64, fileName): void {
+		const link = document.createElement("a");
+
+		link.setAttribute("href", base64);
+		link.setAttribute("download", fileName);
+		link.click();
 	}
 }
 

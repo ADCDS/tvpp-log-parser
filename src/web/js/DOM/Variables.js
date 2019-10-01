@@ -26,6 +26,8 @@ class Variables {
 	static isFirstIteration = true;
 
 	static autoNext = false;
+
+	static saveOutput = false;
 }
 
 export default Variables;

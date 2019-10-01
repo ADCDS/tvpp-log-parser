@@ -180,13 +180,45 @@ class HandleHolder {
 	static async handleDrawByEvent() {
 		const options = Manager.extractOptions();
 		await Manager.drawGraph(options.filter, options.layout, window.selectedEvent, false);
-		return ChartManager.drawCharts(options.charts);
+		await ChartManager.drawCharts(options.charts);
+		if (Variables.saveOutput) {
+			window.scrollTo(0, 0);
+			const element = DOMUtils.getElementById("graphArea");
+			html2canvas(element).then(canvas => {
+				Utils.saveBase64AsFile(
+					canvas.toDataURL("image/png"),
+					"(" +
+						window.graphManager.currentSourceIndex +
+						"-" +
+						window.logEntity.sourceApparitionLocations.length +
+						") - " +
+						window.graphManager.getCurrentTimestamp() +
+						".png"
+				);
+			});
+		}
 	}
 
 	static async handleDrawByTimestamp() {
 		const options = Manager.extractOptions();
 		await Manager.drawGraph(options.filter, options.layout, window.selectedTimestamp, true);
-		return ChartManager.drawCharts(options.charts);
+		await ChartManager.drawCharts(options.charts);
+		if (Variables.saveOutput) {
+			window.scrollTo(0, 0);
+			const element = DOMUtils.getElementById("graphArea");
+			html2canvas(element).then(canvas => {
+				Utils.saveBase64AsFile(
+					canvas.toDataURL("image/png"),
+					"(" +
+						window.graphManager.currentSourceIndex +
+						"-" +
+						window.logEntity.sourceApparitionLocations.length +
+						") - " +
+						window.graphManager.getCurrentTimestamp() +
+						".png"
+				);
+			});
+		}
 	}
 
 	static handleToggleAutoNext(e: Event): void {
@@ -223,13 +255,17 @@ class HandleHolder {
 		const element = DOMUtils.getElementById("graphArea");
 		html2canvas(element).then(canvas => {
 			const image = new Image();
-			const dataURL = canvas.toDataURL("image/png");
-			image.src = dataURL;
+			image.src = canvas.toDataURL("image/png");
 
-			console.log(dataURL);
 			const w = window.open("");
 			w.document.write(image.outerHTML);
 		});
+	}
+
+	static handleSaveOutputChange(e: Event) {
+		const checkbox = e.target;
+		if (!(checkbox instanceof HTMLInputElement)) throw new Error("Invalid type");
+		Variables.saveOutput = checkbox.checked;
 	}
 }
 

@@ -537,6 +537,13 @@ class Manager {
 			ul.appendChild(li);
 		}
 	}
+
+	static saveBase64AsFile(base64: string, fileName: string): void {
+		const link = document.createElement("a");
+		link.setAttribute("href", base64);
+		link.setAttribute("download", fileName);
+		link.click();
+	}
 }
 
 export default Manager;
