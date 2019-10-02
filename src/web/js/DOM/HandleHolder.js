@@ -267,6 +267,14 @@ class HandleHolder {
 		if (!(checkbox instanceof HTMLInputElement)) throw new Error("Invalid type");
 		Variables.saveOutput = checkbox.checked;
 	}
+
+	static handleExtractOverlay(e: Event) {
+		const currentSourceIndex = window.graphManager.currentSourceIndex;
+		const initialEventId = window.logEntity.sourceApparitionLocations[currentSourceIndex - 1];
+		const lastEventId = window.graphManager.currentEventIndex - 2;
+		// console.log(initialEventId, lastEventId);
+		Manager.extractOverlayLog(initialEventId, lastEventId);
+	}
 }
 
 export default HandleHolder;

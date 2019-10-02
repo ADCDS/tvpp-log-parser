@@ -9,7 +9,7 @@ import Node from "../../../parserLib/Graph/Visualizer/Node";
 import DOMUtils from "./Utils";
 import Variables from "./Variables";
 import SigmaInjection from "../SigmaInjection";
-import type {ChartDefType, FilterLayoutOptions, Sigma} from "../../../types";
+import type { ChartDefType, FilterLayoutOptions, Sigma } from "../../../types";
 import HandleHolder from "./HandleHolder";
 
 type OptionValueTypes = Class<String> | Class<Number> | Class<Boolean>;
@@ -180,7 +180,8 @@ class Manager {
 	static async parseOverlayLog(e: Event, filename: string) {
 		if (!(e.currentTarget instanceof FileReader) || !(typeof e.currentTarget.result === "string")) throw new Error("Invalid type");
 
-		const entryArray = await LogParserOverlay.parse(e.currentTarget.result.split("\n"));
+		Variables.overlayLogLines = e.currentTarget.result.split("\n");
+		const entryArray = await LogParserOverlay.parse(Variables.overlayLogLines);
 		console.log(`Parsed ${entryArray.length} lines from overlay log`);
 		window.logEntity.addOverlayEntries(entryArray);
 		window.logEntity.overlayFileName = filename;
@@ -543,6 +544,15 @@ class Manager {
 		link.setAttribute("href", base64);
 		link.setAttribute("download", fileName);
 		link.click();
+	}
+
+	static extractOverlayLog(startLine: number, lastLine: number): void {
+		const evaluatedLines = Variables.overlayLogLines.splice(startLine, lastLine);
+		const link = document.createElement("a");
+		link.setAttribute("href", `data:application/octet-stream;base64,${btoa(evaluatedLines.join("\n"))}`);
+		link.setAttribute("download", startLine + "-" + lastLine + ".txt");
+		link.click();
+		// console.log(evaluatedLines);
 	}
 }
 

@@ -28,6 +28,8 @@ class Variables {
 	static autoNext = false;
 
 	static saveOutput = false;
+
+	static overlayLogLines: Array<string>;
 }
 
 export default Variables;
