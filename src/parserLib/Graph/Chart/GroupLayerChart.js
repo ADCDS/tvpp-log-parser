@@ -1,7 +1,7 @@
 // @flow
 import Chart from "./Chart";
 import ChartManager from "../../../web/js/DOM/ChartManager";
-import type {Sigma} from "../../../types";
+import type { Sigma } from "../../../types";
 import TreeFilterResult from "../Filter/Results/TreeFilterResult";
 
 type OutputChart = {
@@ -14,7 +14,7 @@ class GroupLayerChart extends Chart {
 
 	static generateGraphInput(input: { sigma: Sigma, [string]: any }): OutputChart {
 		// Draw graphics for the current graph
-		const layoutSubFilter = (input.sigma.helperHolder.layoutSubFilter: TreeFilterResult);
+		const layoutSubFilter = ((input.sigma.helperHolder.layoutSubFilter: any): TreeFilterResult);
 
 		const usedLayout = input.sigma.helperHolder.usedLayout;
 		const logEntity = window.logEntity;
@@ -33,7 +33,7 @@ class GroupLayerChart extends Chart {
 		// Populate output array
 
 		for (let j = 0; j < layers.length; j++) {
-			const objectToInsert = {name: `Layer ${j}`, ...bandwidthsTemplate};
+			const objectToInsert = { name: `Layer ${j}`, ...bandwidthsTemplate };
 
 			outputArray.push(objectToInsert);
 		}
@@ -56,7 +56,7 @@ class GroupLayerChart extends Chart {
 
 		return {
 			data: outputArray,
-			colorMap: colorMap
+			colorMap
 		};
 	}
 }

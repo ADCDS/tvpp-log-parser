@@ -25,7 +25,7 @@ window.LayoutTypeOptions = {};
 window.selectedEvent = 0;
 window.selectedTimestamp = 0;
 
-function createHandler(onLoadCb: any => any): Event => void {
+function createHandler(onLoadCb: (...any) => any): Event => void {
 	return evt => {
 		const { target } = evt;
 		if (target instanceof HTMLInputElement) {

@@ -530,7 +530,7 @@ class Manager {
 			const input = document.createElement("input");
 			input.id = chartId;
 			input.type = "checkbox";
-			input.checked = "checked";
+			input.checked = true;
 
 			label.appendChild(input);
 			li.appendChild(label);
@@ -550,7 +550,7 @@ class Manager {
 		const evaluatedLines = Variables.overlayLogLines.splice(startLine, lastLine);
 		const link = document.createElement("a");
 		link.setAttribute("href", `data:application/octet-stream;base64,${btoa(evaluatedLines.join("\n"))}`);
-		link.setAttribute("download", startLine + "-" + lastLine + ".txt");
+		link.setAttribute("download", `${startLine}-${lastLine}.txt`);
 		link.click();
 		// console.log(evaluatedLines);
 	}

@@ -15,7 +15,7 @@ import GenericOutputText from "./parserLib/Graph/Chart/GenericOutputText";
 const fs = require("fs");
 
 class Utils {
-	static filters = {
+	static filters: { [string]: FilterDefType } = {
 		empty: {
 			id: "empty",
 			name: "Empty Filter",
@@ -36,7 +36,7 @@ class Utils {
 		}
 	};
 
-	static layouts = {
+	static layouts: { [string]: LayoutDefType } = {
 		ringLayeredLayout: {
 			id: "ringLayeredLayout",
 			name: "Ring Layered Layout",
@@ -63,7 +63,7 @@ class Utils {
 		}
 	};
 
-	static charts = {
+	static charts: { [string]: ChartDefType } = {
 		genericOutputText: {
 			id: "genericOutputText",
 			name: "Text Output",
@@ -94,16 +94,18 @@ class Utils {
 
 	static getFiltersByType(Type: Class<Filter>): Array<FilterDefType> {
 		const retFilters = [];
-		Object.values(this.filters).forEach(filter => {
-			if (filter.type.prototype instanceof Type || filter.type === Type) retFilters.push(filter);
+		Object.values(Utils.filters).forEach(filter => {
+			filter = ((filter: any): FilterDefType);
+			if (filter.type instanceof Type || filter.type === Type) retFilters.push(filter);
 		});
 		return retFilters;
 	}
 
 	static getChartsByFilterConstraintType(Type: Class<Filter>): Array<ChartDefType> {
 		const retCharts = [];
-		Object.values(this.charts).forEach(chart => {
-			if (chart.filterConstraint.isPrototypeOf(Type) || chart.filterConstraint === Type) retCharts.push(chart);
+		Object.values(Utils.charts).forEach(chart => {
+			chart = ((chart: any): ChartDefType);
+			if (Object.prototype.isPrototypeOf.call(chart.filterConstraint, Type) || chart.filterConstraint === Type) retCharts.push(chart);
 		});
 		return retCharts;
 	}
@@ -125,7 +127,7 @@ class Utils {
 		});
 	}
 
-	static saveBase64AsFile(base64, fileName): void {
+	static saveBase64AsFile(base64: string, fileName: string): void {
 		const link = document.createElement("a");
 
 		link.setAttribute("href", base64);

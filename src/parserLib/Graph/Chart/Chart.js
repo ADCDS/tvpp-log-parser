@@ -1,11 +1,11 @@
 // @flow
 
-import type {Sigma} from "../../../types";
+import type { Sigma } from "../../../types";
 
 class Chart {
-	static drawFunction: ({}) => void;
+	static drawFunction: (...any) => Promise<any>;
 
-	static generateGraphInput(input: { sigma: Sigma, [string]: any }): {} {
+	static generateGraphInput(input: { [any]: any }): any {
 		return {};
 	}
 }

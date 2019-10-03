@@ -2,16 +2,17 @@
 import * as d3 from "d3";
 import Variables from "./Variables";
 import type { ChartDefType } from "../../../types";
+import DOMUtils from "./Utils";
 
 class ChartManager {
 	static async drawCharts(charts: Array<ChartDefType>) {
 		return new Promise(resolve => {
-			const chartHolderEl = document.getElementById("chartsHolder");
+			const chartHolderEl = DOMUtils.getElementById("chartsHolder");
 			chartHolderEl.innerHTML = "";
 			let i = 0;
 			for (const chart of charts) {
 				const chartHolder = document.createElement("div");
-				chartHolder.id = "chart_" + i++;
+				chartHolder.id = `chart_${i++}`;
 				chartHolderEl.appendChild(chartHolder);
 				const cbFunc = chart.class.drawFunction;
 				cbFunc(chartHolder, chart.name, chart.class.generateGraphInput({ sigma: Variables.selectedSigma }));
@@ -22,11 +23,11 @@ class ChartManager {
 
 	static async drawTexts(element: HTMLElement, chartName: string, data: Array<{ name: string, value: string }>) {
 		element.innerHTML = "";
-		for(const val of data.values()){
+		for (const val of data.values()) {
 			const p = document.createElement("p");
 			const small = document.createElement("small");
 			const b = document.createElement("b");
-			b.innerHTML = val.name + ": ";
+			b.innerHTML = `${val.name}: `;
 			const span2 = document.createElement("span");
 			span2.innerHTML = val.value;
 
@@ -57,7 +58,7 @@ class ChartManager {
 		const height = 400 - margin.top - margin.bottom;
 
 		const svg = d3
-			.select("#" + element.id)
+			.select(`#${element.id}`)
 			.append("svg")
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom);

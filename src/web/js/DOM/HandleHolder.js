@@ -10,11 +10,11 @@ import Variables from "./Variables";
 import ChartManager from "./ChartManager";
 
 class HandleHolder {
-	static async handleNextButtonClick(e: Event) {
+	static async handleNextButtonClick() {
 		return Manager.goToEventAndDraw(window.selectedEvent + 1);
 	}
 
-	static async handlePrevButtonClick(e: Event) {
+	static async handlePrevButtonClick() {
 		return Manager.goToEventAndDraw(window.selectedEvent - 1);
 	}
 	static handleSigmaClick(e: any): void {
@@ -187,13 +187,7 @@ class HandleHolder {
 			html2canvas(element).then(canvas => {
 				Utils.saveBase64AsFile(
 					canvas.toDataURL("image/png"),
-					"(" +
-						window.graphManager.currentSourceIndex +
-						"-" +
-						window.logEntity.sourceApparitionLocations.length +
-						") - " +
-						window.graphManager.getCurrentTimestamp() +
-						".png"
+					`(${window.graphManager.currentSourceIndex}-${window.logEntity.sourceApparitionLocations.length}) - ${window.graphManager.getCurrentTimestamp()}.png`
 				);
 			});
 		}
@@ -209,13 +203,7 @@ class HandleHolder {
 			html2canvas(element).then(canvas => {
 				Utils.saveBase64AsFile(
 					canvas.toDataURL("image/png"),
-					"(" +
-						window.graphManager.currentSourceIndex +
-						"-" +
-						window.logEntity.sourceApparitionLocations.length +
-						") - " +
-						window.graphManager.getCurrentTimestamp() +
-						".png"
+					`(${window.graphManager.currentSourceIndex}-${window.logEntity.sourceApparitionLocations.length}) - ${window.graphManager.getCurrentTimestamp()}.png`
 				);
 			});
 		}
@@ -268,7 +256,7 @@ class HandleHolder {
 		Variables.saveOutput = checkbox.checked;
 	}
 
-	static handleExtractOverlay(e: Event) {
+	static handleExtractOverlay() {
 		const currentSourceIndex = window.graphManager.currentSourceIndex;
 		const initialEventId = window.logEntity.sourceApparitionLocations[currentSourceIndex - 1];
 		const lastEventId = window.graphManager.currentEventIndex - 2;
