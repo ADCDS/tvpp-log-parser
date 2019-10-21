@@ -89,7 +89,7 @@ class YenKSP extends TreeFilter {
 					if (rootPath.every(value => path.slice(0, i).includes(value))) {
 						// Remove the links that are part of the previous shortest paths which share the same root path.
 						graph.removeEdge(path[i], path[i + 1]);
-
+						// TODO Fix bug here, path[i + 1] is undefined
 						recoverEdges.push([path[i], path[i + 1]]);
 					}
 				}
@@ -190,7 +190,9 @@ class YenKSP extends TreeFilter {
 		if (this.options.threadNum === 1) {
 			vertices.forEach(node => {
 				console.log(`${i++}/${vertices.length}`);
-				distancesFromSource[node] = YenKSP.calculateValue(newGraphHolder, this.options.source, node, this.options.numberOfPaths, vertices);
+				if (node !== this.options.source) {
+					distancesFromSource[node] = YenKSP.calculateValue(newGraphHolder, this.options.source, node, this.options.numberOfPaths, vertices);
+				}
 			});
 		} else {
 			const chunks = chunkify<string>(vertices, this.options.threadNum, true);

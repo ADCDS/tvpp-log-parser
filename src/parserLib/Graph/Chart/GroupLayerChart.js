@@ -19,6 +19,7 @@ class GroupLayerChart extends Chart {
 		const usedLayout = input.sigma.helperHolder.usedLayout;
 		const logEntity = window.logEntity;
 		const layers = Array.from(new Set(Object.values(layoutSubFilter.distancesFromSource))).sort();
+		const layerDistanceMap = {};
 		const colorMap = {};
 		const bandwidthsTemplate = {};
 
@@ -36,6 +37,7 @@ class GroupLayerChart extends Chart {
 			const objectToInsert = { name: `Layer ${j}`, ...bandwidthsTemplate };
 
 			outputArray.push(objectToInsert);
+			layerDistanceMap[layers[j]] = j;
 		}
 
 		for (const machine of logEntity.machines.values()) {
@@ -44,13 +46,7 @@ class GroupLayerChart extends Chart {
 			const bandwidth = machine.bandwidth;
 			if (bandwidth === undefined) continue;
 
-			let layerIndex;
-			if (distance !== Infinity) {
-				layerIndex = distance;
-			} else {
-				// This is an unconnected node, its layer index is the last one
-				layerIndex = layers.length - 1;
-			}
+			const layerIndex = layerDistanceMap[distance];
 			outputArray[layerIndex][bandwidth]++;
 		}
 
