@@ -9,7 +9,7 @@ import type { YensKSPTask, YensKSPWorkerResult } from "../../../../../types";
 
 function arraysEqual<T>(arr1: Array<T>, arr2: Array<T>): boolean {
 	if (arr1.length !== arr2.length) return false;
-	for (let i = arr1.length; i--; ) {
+	for (let i = arr1.length; i--;) {
 		if (arr1[i] !== arr2[i]) return false;
 	}
 	return true;
@@ -88,9 +88,12 @@ class YenKSP extends TreeFilter {
 				for (const path of A) {
 					if (rootPath.every(value => path.slice(0, i).includes(value))) {
 						// Remove the links that are part of the previous shortest paths which share the same root path.
-						graph.removeEdge(path[i], path[i + 1]);
+
 						// TODO Fix bug here, path[i + 1] is undefined
-						recoverEdges.push([path[i], path[i + 1]]);
+						if (path[i + 1]) {
+							graph.removeEdge(path[i], path[i + 1]);
+							recoverEdges.push([path[i], path[i + 1]]);
+						}
 					}
 				}
 
@@ -186,16 +189,16 @@ class YenKSP extends TreeFilter {
 		const distancesFromSource: { [string]: number } = {};
 		distancesFromSource[this.options.source] = 0;
 
+		// Remove source
+		const verticesMinusSource = vertices.filter(value => value !== this.options.source);
 		let i = 1;
 		if (this.options.threadNum === 1) {
-			vertices.forEach(node => {
+			verticesMinusSource.forEach(node => {
 				console.log(`${i++}/${vertices.length}`);
-				if (node !== this.options.source) {
-					distancesFromSource[node] = YenKSP.calculateValue(newGraphHolder, this.options.source, node, this.options.numberOfPaths, vertices);
-				}
+				distancesFromSource[node] = YenKSP.calculateValue(newGraphHolder, this.options.source, node, this.options.numberOfPaths, vertices);
 			});
 		} else {
-			const chunks = chunkify<string>(vertices, this.options.threadNum, true);
+			const chunks = chunkify<string>(verticesMinusSource, this.options.threadNum, true);
 			await Promise.all(
 				chunks.map(chunk => {
 					return new Promise(resolve => {

@@ -49,7 +49,8 @@ class GroupLayerChart extends Chart {
 			const layerIndex = layerDistanceMap[distance];
 			outputArray[layerIndex][bandwidth]++;
 		}
-
+		//TODO Create a cache to store the results of this entity, it will be used to generate some charts
+		//window.logEntity.layerCountOutput.push()
 		return {
 			data: outputArray,
 			colorMap
