@@ -134,6 +134,15 @@ class Utils {
 		link.setAttribute("download", fileName);
 		link.click();
 	}
+
+	static saveStringAsFile(str: string, fileName: string, type: string){
+		const a = window.document.createElement('a');
+		a.href = window.URL.createObjectURL(new Blob([str], {type: type}));
+		a.download = fileName;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+	}
 }
 
 export default Utils;

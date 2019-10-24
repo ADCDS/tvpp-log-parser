@@ -30,6 +30,8 @@ class Variables {
 	static saveOutput = false;
 
 	static overlayLogLines: Array<string>;
+
+	static outputGroupChartData: {[number]: Array<{ name: string, [string]: number }>} = {};
 }
 
 export default Variables;

@@ -3,6 +3,7 @@ import Chart from "./Chart";
 import ChartManager from "../../../web/js/DOM/ChartManager";
 import type { Sigma } from "../../../types";
 import TreeFilterResult from "../Filter/Results/TreeFilterResult";
+import Variables from "../../../web/js/DOM/Variables";
 
 type OutputChart = {
 	data: Array<{ name: string, [string]: number }>,
@@ -15,7 +16,7 @@ class GroupLayerChart extends Chart {
 	static generateGraphInput(input: { sigma: Sigma, [string]: any }): OutputChart {
 		// Draw graphics for the current graph
 		const layoutSubFilter = ((input.sigma.helperHolder.layoutSubFilter: any): TreeFilterResult);
-
+		const currIndex = window.graphManager.currentSourceIndex;
 		const usedLayout = input.sigma.helperHolder.usedLayout;
 		const logEntity = window.logEntity;
 		const layers = Array.from(new Set(Object.values(layoutSubFilter.distancesFromSource))).sort();
@@ -49,8 +50,9 @@ class GroupLayerChart extends Chart {
 			const layerIndex = layerDistanceMap[distance];
 			outputArray[layerIndex][bandwidth]++;
 		}
-		//TODO Create a cache to store the results of this entity, it will be used to generate some charts
-		//window.logEntity.layerCountOutput.push()
+
+		Variables.outputGroupChartData[currIndex] = outputArray;
+
 		return {
 			data: outputArray,
 			colorMap

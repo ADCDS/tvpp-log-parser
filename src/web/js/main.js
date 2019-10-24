@@ -68,6 +68,7 @@ DOMUtils.getElementById("disableEdges").addEventListener("change", HandleHolder.
 DOMUtils.getElementById("autoNext").addEventListener("click", HandleHolder.handleToggleAutoNext);
 DOMUtils.getElementById("takeSnapshot").addEventListener("click", HandleHolder.handleTakeSnapShot);
 DOMUtils.getElementById("extractOverlay").addEventListener("click", HandleHolder.handleExtractOverlay);
+DOMUtils.getElementById("extractLayerLog").addEventListener("click", HandleHolder.handleExtractLayerLog);
 
 (() => {
 	window.sigmaPrevious = new Sigma({

@@ -83,6 +83,9 @@ class HandleHolder {
 
 		// And triggers it, to update charts options
 		layoutSubFilterSelect.dispatchEvent(new Event("change"));
+
+		// Clean chart output values
+		Variables.outputGroupChartData = {};
 	}
 
 	static handleSelectedEventChange(e: Event): void {
@@ -209,6 +212,10 @@ class HandleHolder {
 		}
 	}
 
+	static handleExtractLayerLog(e: Event): void {
+		Utils.saveStringAsFile(JSON.stringify(Variables.outputGroupChartData), "layer.output.json", "text/json");
+	}
+
 	static handleToggleAutoNext(e: Event): void {
 		const button = e.target;
 
@@ -222,10 +229,10 @@ class HandleHolder {
 				try {
 					await Manager.goToEventAndDraw(window.selectedEvent + 1);
 				} catch (e2) {
+					Utils.saveStringAsFile(JSON.stringify(Variables.outputGroupChartData), "layer.output.json", "text/json");
 					Variables.autoNext = false;
 					console.log(`AutoNext: ${e2}`);
 				}
-
 				if (Variables.autoNext) {
 					setTimeout(autoNextFunction, 1000);
 				}

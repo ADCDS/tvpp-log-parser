@@ -539,13 +539,6 @@ class Manager {
 		}
 	}
 
-	static saveBase64AsFile(base64: string, fileName: string): void {
-		const link = document.createElement("a");
-		link.setAttribute("href", base64);
-		link.setAttribute("download", fileName);
-		link.click();
-	}
-
 	static extractOverlayLog(startLine: number, lastLine: number): void {
 		const evaluatedLines = Variables.overlayLogLines.splice(startLine, lastLine);
 		const link = document.createElement("a");
