@@ -19,6 +19,20 @@ function compileFrontend() {
 	);
 }
 
+function compileGraphsGenFrontend() {
+	return (
+		browserify({ entries: ["./src/charts_gen/main.js"], debug: true })
+			.transform("babelify", { presets: ["@babel/preset-env"], sourceMaps: true })
+			.bundle()
+			// Pass desired output filename to vinyl-source-stream
+			.pipe(source("charts_gen.bundle.js"))
+			.pipe(buffer())
+			// Start piping stream to tasks!
+			.pipe(gulp.dest("./dist/js"))
+	);
+}
+
+
 function compileWorkers() {
 	return (
 		browserify({entries: ["./src/web/worker/yenskst_worker.js"], debug: true, global: true})
@@ -50,12 +64,16 @@ function nodemonStart() {
 	});
 }
 
-function watch() {
+function watchMain() {
 	gulp.watch(["./src/*.js", "./src/web/js/**/*.js", "./src/web/views/index.pug", "./src/parserLib/**/*.js"], gulp.series(compileFrontend));
 }
 
-function watch2() {
+function watchWorker() {
 	gulp.watch(["./src/web/worker/*.js"], gulp.series(compileWorkers));
 }
 
-exports.default = gulp.series(compileFrontend, compileWorkers, gulp.parallel(nodemonStart, watch, watch2));
+function watchChartsGen() {
+	gulp.watch(["./src/*.js", "./src/web/js/**/*.js", "./src/web/views/graphs_gen.pug", "./src/parserLib/**/*.js", "./src/charts_gen/**/*.js"], gulp.series(compileGraphsGenFrontend));
+}
+
+exports.default = gulp.series(compileFrontend, compileWorkers, compileGraphsGenFrontend, gulp.parallel(nodemonStart, watchMain, watchWorker, watchChartsGen));

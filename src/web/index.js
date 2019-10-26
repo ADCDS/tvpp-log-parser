@@ -1,17 +1,21 @@
 // @flow
 const express = require("express");
 
-const app = express();
+const mainApp = express();
 
-app.set("views", "./src/web/views");
-app.set("view engine", "pug");
+mainApp.set("views", "./src/web/views");
+mainApp.set("view engine", "pug");
 
-app.use(express.static("./dist"));
+mainApp.use(express.static("./dist"));
 
-app.get("/", (req, res) => {
-	res.render("index", { title: "Hey", message: "Hello there!" });
+mainApp.get("/", (req, res) => {
+	res.render("index");
 });
 
-app.listen(3000, () => {
+mainApp.get("/charts", (req, res) => {
+	res.render("graphs_gen");
+});
+
+mainApp.listen(3000, () => {
 	console.log("TVPP log parser is running on port 80!");
 });

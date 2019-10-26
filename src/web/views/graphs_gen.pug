@@ -1,0 +1,149 @@
+doctype html
+html(lang='pt')
+	head
+		title TVPP Log View
+		style(type="text/css").
+			label {
+				display: block;
+				font-weight: bold;
+				margin: 5px;
+			}
+
+			#chartsHolder > div {
+				width: 600px;
+				height: 400px;
+			}
+
+			#graphArea {
+				display: flex;
+				padding: 0;
+				margin: 0;
+				display: -webkit-box;
+				display: -moz-box;
+				display: -ms-flexbox;
+				display: -webkit-flex;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			#chartsHolder {
+				width: 610px;
+				height: 800px;
+				margin: 30px 0 0 0;
+			}
+
+			.graph-container {
+				width: 1200px;
+				height: 800px;
+				margin: 30px 0 0 0;
+			}
+
+			#panelHolder {
+				display: flex;
+			}
+
+			#toolbar {
+				margin: 5px;
+			}
+
+			#chartOptions {
+				margin: 5px;
+				height: 430px;
+				width: 300px;
+				overflow: auto;
+			}
+
+			#options {
+				margin: 5px;
+				height: 430px;
+				width: 300px;
+				overflow: auto;
+			}
+
+			#infoView {
+				margin: 5px;
+				height: 430px;
+				overflow: auto;
+				text-align: right;
+			}
+
+			#controller {
+				margin: 5px;
+				height: 400px;
+				overflow: auto;
+				text-align: right;
+			}
+
+			#filterType {
+				width: 300px;
+				height: 100px;
+			}
+
+			#layoutType {
+				width: 300px;
+				height: 100px;
+			}
+
+			#machineList {
+				text-align: initial;
+				height: 300px;
+				overflow-y: auto;
+			}
+
+			div {
+				border: 1px solid black;
+				padding: 5px;
+			}
+
+			/* Style the tab */
+			.tab {
+				overflow: hidden;
+				border: 1px solid #ccc;
+				background-color: #f1f1f1;
+			}
+
+			/* Style the buttons inside the tab */
+			.tab button {
+				background-color: inherit;
+				float: left;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				padding: 14px 16px;
+				transition: 0.3s;
+				font-size: 17px;
+			}
+
+			/* Change background color of buttons on hover */
+			.tab button:hover {
+				background-color: #ddd;
+			}
+
+			/* Create an active/current tablink class */
+			.tab button.active {
+				background-color: #ccc;
+			}
+
+			table, th, td {
+				border: 1px solid black;
+			}
+
+			tr.active {
+				background-color: #00ff0254;
+			}
+
+body
+	h1 TVPP Log viewer
+	div#panelHolder
+		div#toolbar
+			label(for='logFile') Overlay Log File
+			input#logFile(type='file')
+
+		div#options
+			input#generateGLCButton(type='button', value='Generate Group Layer Charts')
+
+div#graphContainer
+
+script(src='/js/charts_gen.bundle.js')
+
