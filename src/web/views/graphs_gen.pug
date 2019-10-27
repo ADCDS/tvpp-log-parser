@@ -133,6 +133,30 @@ html(lang='pt')
 				background-color: #00ff0254;
 			}
 
+			body {
+				font: 10px sans-serif;
+			}
+
+			.axis path,
+			.axis line {
+				fill: none;
+				stroke: #000;
+				shape-rendering: crispEdges;
+			}
+
+			.line {
+				fill: none;
+				stroke: steelblue;
+				stroke-width: 2px;
+			}
+
+			#chart {
+				width: 100%;
+				height: 100%;
+				position: absolute;
+			}
+
+
 body
 	h1 TVPP Log viewer
 	div#panelHolder
@@ -144,6 +168,15 @@ body
 			input#generateGLCButton(type='button', value='Generate Group Layer Charts')
 
 div#graphContainer
+	svg#glChart_Layer_0
+	svg#glChart_Layer_1
+	svg#glChart_Layer_2
+	svg#glChart_Layer_3
+	svg#glChart_Layer_4
+	svg#glChart_Layer_5
+	svg#glChart_Layer_6
+	svg#glChart_Layer_7
+	svg#glChart_Layer_8
 
 script(src='/js/charts_gen.bundle.js')
 

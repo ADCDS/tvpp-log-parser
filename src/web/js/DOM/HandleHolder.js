@@ -8,6 +8,7 @@ import DOMUtils from "./Utils";
 import Manager from "./Manager";
 import Variables from "./Variables";
 import ChartManager from "./ChartManager";
+import type { GLChartOutputType } from "../../../types";
 
 class HandleHolder {
 	static async handleNextButtonClick() {
@@ -86,6 +87,7 @@ class HandleHolder {
 
 		// Clean chart output values
 		Variables.outputGroupChartData = {};
+		Variables.layersFound = new Set<string>();
 	}
 
 	static handleSelectedEventChange(e: Event): void {
@@ -213,8 +215,10 @@ class HandleHolder {
 	}
 
 	static handleExtractLayerLog(e: Event): void {
-		Utils.saveStringAsFile(JSON.stringify(Variables.outputGroupChartData), "layer.output.json", "text/json");
+		Manager.downloadLayerLog();
 	}
+
+
 
 	static handleToggleAutoNext(e: Event): void {
 		const button = e.target;
@@ -229,7 +233,7 @@ class HandleHolder {
 				try {
 					await Manager.goToEventAndDraw(window.selectedEvent + 1);
 				} catch (e2) {
-					Utils.saveStringAsFile(JSON.stringify(Variables.outputGroupChartData), "layer.output.json", "text/json");
+					Manager.downloadLayerLog();
 					Variables.autoNext = false;
 					console.log(`AutoNext: ${e2}`);
 				}

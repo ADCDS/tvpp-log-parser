@@ -9,7 +9,7 @@ import Node from "../../../parserLib/Graph/Visualizer/Node";
 import DOMUtils from "./Utils";
 import Variables from "./Variables";
 import SigmaInjection from "../SigmaInjection";
-import type { ChartDefType, FilterLayoutOptions, Sigma } from "../../../types";
+import type { ChartDefType, FilterLayoutOptions, GLChartOutputType, Sigma } from "../../../types";
 import HandleHolder from "./HandleHolder";
 
 type OptionValueTypes = Class<String> | Class<Number> | Class<Boolean>;
@@ -546,6 +546,16 @@ class Manager {
 		link.setAttribute("download", `${startLine}-${lastLine}.txt`);
 		link.click();
 		// console.log(evaluatedLines);
+	}
+
+	static downloadLayerLog() {
+		const output: GLChartOutputType = {
+			layers: Array.from(Variables.layersFound),
+			colorMap: Variables.colorMap,
+			data: Variables.outputGroupChartData
+		};
+
+		Utils.saveStringAsFile(JSON.stringify(output), "layer.output.json", "text/json");
 	}
 }
 

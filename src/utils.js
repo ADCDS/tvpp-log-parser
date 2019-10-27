@@ -143,6 +143,37 @@ class Utils {
 		a.click();
 		document.body.removeChild(a);
 	}
+
+	static createHandler(onLoadCb: (...any) => any): Event => void {
+		return evt => {
+			const { target } = evt;
+			if (target instanceof HTMLInputElement) {
+				const { files } = target; // FileList object
+
+				console.log("Reading file...");
+				const reader = new FileReader();
+				reader.onload = evt2 => {
+					onLoadCb(evt2, files[0].name);
+				};
+
+				reader.readAsBinaryString(files[0]);
+			}
+		};
+	}
+
+	static async readFileFromInput(input: HTMLInputElement): string {
+		return new Promise(resolve => {
+			const { files } = input; // FileList object
+
+			console.log("Reading file...");
+			const reader = new FileReader();
+			reader.onload = evt2 => {
+				resolve(evt2.currentTarget.result);
+			};
+
+			reader.readAsBinaryString(files[0]);
+		})
+	}
 }
 
 export default Utils;

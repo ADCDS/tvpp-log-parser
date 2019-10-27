@@ -6,7 +6,12 @@ import TreeFilterResult from "../Filter/Results/TreeFilterResult";
 import Variables from "../../../web/js/DOM/Variables";
 
 type OutputChart = {
-	data: Array<{ name: string, [string]: number }>,
+	data: {
+		metadata: {
+			timestamp: number
+		},
+		layerArray: Array<{ name: {name: string }, [string]: number }>
+	},
 	colorMap: { [number]: string }
 };
 
@@ -17,6 +22,7 @@ class GroupLayerChart extends Chart {
 		// Draw graphics for the current graph
 		const layoutSubFilter = ((input.sigma.helperHolder.layoutSubFilter: any): TreeFilterResult);
 		const currIndex = window.graphManager.currentSourceIndex;
+		const currTimestamp = window.graphManager.getCurrentTimestamp();
 		const usedLayout = input.sigma.helperHolder.usedLayout;
 		const logEntity = window.logEntity;
 		const layers = Array.from(new Set(Object.values(layoutSubFilter.distancesFromSource))).sort();
@@ -30,15 +36,29 @@ class GroupLayerChart extends Chart {
 			colorMap[bandwidth] = usedLayout.options.colorMap[i];
 		}
 
-		const outputArray: Array<{ name: string, [string]: number }> = [];
+		const output: {
+			metadata: {
+				timestamp: number
+			},
+			layerArray: Array<{
+				metadata: {
+					name: string,
+					lastLayer: boolean
+				},
+				[string]: number
+			}>
+		} = {metadata: {timestamp: currTimestamp}, layerArray: []};
+		const outputArray = output.layerArray;
 
 		// Populate output array
 
 		for (let j = 0; j < layers.length; j++) {
-			const objectToInsert = { name: `Layer ${j}`, ...bandwidthsTemplate };
+			const layerName = `Layer ${j}`;
+			const objectToInsert = { metadata: {name: layerName, lastLayer: j === (layers.length - 1)}, ...bandwidthsTemplate };
 
 			outputArray.push(objectToInsert);
 			layerDistanceMap[layers[j]] = j;
+			Variables.layersFound.add(layerName);
 		}
 
 		for (const machine of logEntity.machines.values()) {
@@ -51,10 +71,11 @@ class GroupLayerChart extends Chart {
 			outputArray[layerIndex][bandwidth]++;
 		}
 
-		Variables.outputGroupChartData[currIndex] = outputArray;
+		Variables.outputGroupChartData[currIndex] = output;
+		Variables.colorMap = colorMap;
 
 		return {
-			data: outputArray,
+			data: output,
 			colorMap
 		};
 	}

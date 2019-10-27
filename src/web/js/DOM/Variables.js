@@ -31,7 +31,12 @@ class Variables {
 
 	static overlayLogLines: Array<string>;
 
-	static outputGroupChartData: {[number]: Array<{ name: string, [string]: number }>} = {};
+	// GLChart Variables
+	static layersFound: Set<string> = new Set<string>();
+
+	static outputGroupChartData: { [number]: { metatada: { timestamp: number }, layerArray: Array<{ metadata: { name: string }, [string]: number }> } } = {};
+
+	static colorMap: { [number]: string } = {};
 }
 
 export default Variables;

@@ -43,10 +43,17 @@ class ChartManager {
 		element: HTMLElement,
 		chartName: string,
 		input: {
-			data: Array<{
-				name: string,
-				[string]: number
-			}>,
+			data: {
+				metadata: {
+					timestamp: number
+				},
+				layerArray: Array<{
+					metadata: {
+						name: string
+					},
+					[string]: number
+				}>
+			},
 			colorMap: {
 				[number]: string
 			}
@@ -64,8 +71,10 @@ class ChartManager {
 			.attr("height", height + margin.top + margin.bottom);
 		const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
-		const keys = Object.keys(input.data[0])
-			.filter(value => value !== "name")
+
+		const inputData = input.data.layerArray;
+		const keys = Object.keys(inputData[0])
+			.filter(value => value !== "metadata")
 			.reverse();
 
 		// The scale spacing the groups:
@@ -80,7 +89,7 @@ class ChartManager {
 		const y = d3.scaleLinear().rangeRound([height, 0]);
 
 		let highestYValue = 0;
-		for (const layer of input.data) {
+		for (const layer of inputData) {
 			// eslint-disable-next-line flowtype-errors/show-errors
 			const max = Math.max(...Object.values(layer).filter(value => !Number.isNaN(Number(value))));
 			if (max > highestYValue) {
@@ -89,8 +98,8 @@ class ChartManager {
 		}
 
 		x0.domain(
-			input.data.map((d: { name: * }) => {
-				return d.name;
+			inputData.map((d: { metadata: {name: string } }) => {
+				return d.metadata.name;
 			})
 		);
 		x1.domain(keys).rangeRound([0, x0.bandwidth()]);
@@ -98,12 +107,12 @@ class ChartManager {
 
 		g.append("g")
 			.selectAll("g")
-			.data(input.data)
+			.data(inputData)
 			.enter()
 			.append("g")
 			.attr("class", "bar-group")
-			.attr("transform", (d: { name: * }) => {
-				return `translate(${x0(d.name)},0)`;
+			.attr("transform", (d: { metadata: {name: string } }) => {
+				return `translate(${x0(d.metadata.name)},0)`;
 			})
 			.selectAll("rect")
 			.data(d => {
@@ -147,12 +156,12 @@ class ChartManager {
 
 		g.append("g")
 			.selectAll(".bar-group")
-			.data(input.data)
+			.data(inputData)
 			.enter()
 			.append("g")
 			.attr("class", "bar-group")
-			.attr("transform", (d: { name: * }) => {
-				return `translate(${x0(d.name)},0)`;
+			.attr("transform", (d: { metadata: {name: string } }) => {
+				return `translate(${x0(d.metadata.name)},0)`;
 			})
 			.selectAll("text.bar")
 			.data(d => {

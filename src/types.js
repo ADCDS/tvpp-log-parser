@@ -14,3 +14,7 @@ export type Sigma = { helperHolder: SigmaInjection, [string]: any };
 export type FilterLayoutOptions = { filter: { [string]: string | number | boolean }, [string]: string | number | boolean };
 export type YensKSPTask = { newGraphHolder: GraphHolder, source: string, sinks: Array<string>, k: 20, vertices: Array<string> };
 export type YensKSPWorkerResult = Array<[string, number]>;
+
+
+// Chart output types
+export type GLChartOutputType = { layers: Array<string>, colorMap: { [number]: string }, data: { [string]: { metadata: { timestamp: number, lastLayer: boolean }, layerArray: Array<{ metadata: { name: string }, [string]: number }> } } };

@@ -8,6 +8,7 @@ import AlgorithmR1 from "../../parserLib/Graph/Visualizer/Layout/Tree/AlgorithmR
 import HandleHolder from "./DOM/HandleHolder";
 import Manager from "./DOM/Manager";
 import DOMUtils from "./DOM/Utils";
+import Utils from "../../utils";
 
 const Sigma = require("sigma");
 
@@ -25,25 +26,8 @@ window.LayoutTypeOptions = {};
 window.selectedEvent = 0;
 window.selectedTimestamp = 0;
 
-function createHandler(onLoadCb: (...any) => any): Event => void {
-	return evt => {
-		const { target } = evt;
-		if (target instanceof HTMLInputElement) {
-			const { files } = target; // FileList object
-
-			console.log("Reading file...");
-			const reader = new FileReader();
-			reader.onload = evt2 => {
-				onLoadCb(evt2, files[0].name);
-			};
-
-			reader.readAsBinaryString(files[0]);
-		}
-	};
-}
-
-DOMUtils.getGenericElementById<HTMLInputElement>("logOverlayFile").addEventListener("change", createHandler(Manager.parseOverlayLog), false);
-DOMUtils.getGenericElementById<HTMLInputElement>("logPerformanceFile").addEventListener("change", createHandler(Manager.parsePerformanceLog), false);
+DOMUtils.getGenericElementById<HTMLInputElement>("logOverlayFile").addEventListener("change", Utils.createHandler(Manager.parseOverlayLog), false);
+DOMUtils.getGenericElementById<HTMLInputElement>("logPerformanceFile").addEventListener("change", Utils.createHandler(Manager.parsePerformanceLog), false);
 DOMUtils.getGenericElementById<HTMLInputElement>("filterType").addEventListener("change", HandleHolder.handleMainFilterChange);
 DOMUtils.getGenericElementById<HTMLInputElement>("layoutType").addEventListener("change", HandleHolder.handleLayoutChange);
 DOMUtils.getGenericElementById<HTMLInputElement>("selectedEventNumber").addEventListener("change", HandleHolder.handleSelectedEventChange);
