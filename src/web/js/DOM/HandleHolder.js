@@ -189,10 +189,11 @@ class HandleHolder {
 		if (Variables.saveOutput) {
 			window.scrollTo(0, 0);
 			const element = DOMUtils.getElementById("graphArea");
+			const fileName = `(${window.graphManager.currentSourceIndex}-${window.logEntity.sourceApparitionLocations.length}) - ${window.graphManager.getCurrentTimestamp()}.png`;
 			html2canvas(element).then(canvas => {
 				Utils.saveBase64AsFile(
 					canvas.toDataURL("image/png"),
-					`(${window.graphManager.currentSourceIndex}-${window.logEntity.sourceApparitionLocations.length}) - ${window.graphManager.getCurrentTimestamp()}.png`
+					fileName
 				);
 			});
 		}
@@ -205,10 +206,11 @@ class HandleHolder {
 		if (Variables.saveOutput) {
 			window.scrollTo(0, 0);
 			const element = DOMUtils.getElementById("graphArea");
+			const fileName = `(${window.graphManager.currentSourceIndex}-${window.logEntity.sourceApparitionLocations.length}) - ${window.graphManager.getCurrentTimestamp()}.png`;
 			html2canvas(element).then(canvas => {
 				Utils.saveBase64AsFile(
 					canvas.toDataURL("image/png"),
-					`(${window.graphManager.currentSourceIndex}-${window.logEntity.sourceApparitionLocations.length}) - ${window.graphManager.getCurrentTimestamp()}.png`
+					fileName
 				);
 			});
 		}
