@@ -1,10 +1,9 @@
-//@flow
+// @flow
 
+import * as d3 from "d3";
 import Utils from "../../utils";
 import DOMUtils from "../../web/js/DOM/Utils";
 import type { GLChartOutputType } from "../../types";
-import * as d3 from "d3";
-
 
 type GLChartPrepDataType = Array<{ timestamp: number, bandwidth: number, nodeCount: number }>;
 
@@ -13,7 +12,10 @@ class GLCharts {
 		console.log("GLChart input", input);
 		const bandwidths = Object.keys(input.colorMap).map(Number);
 		let layerIndex = 0;
-		let initialTimestamp = input.data["1"].metadata.timestamp;
+		const initialTimestamp = input.data["1"].metadata.timestamp;
+
+		// Just to make possible to spot gaps in timestamp reports
+		const timestampsSet = new Set();
 		let lastTimestamp = 0;
 
 		console.log(bandwidths);
@@ -32,8 +34,9 @@ class GLCharts {
 			for (const eventIndex in input.data) {
 				const event = input.data[eventIndex];
 
-
 				const eventTimestamp = event.metadata.timestamp;
+				timestampsSet.add(eventTimestamp - initialTimestamp);
+
 				const targetLayer = event.layerArray[layerIndex];
 
 				if (!targetLayer) {
@@ -42,8 +45,7 @@ class GLCharts {
 				}
 
 				// Discard last layer (unconnected nodes)
-				if(targetLayer.metadata.lastLayer)
-					continue;
+				if (targetLayer.metadata.lastLayer) continue;
 
 				// Collect the number of nodes of each type in this layer
 				for (const bandwidthStr of bandwidths) {
@@ -52,11 +54,11 @@ class GLCharts {
 					// Push datapoint
 					const timestamp = eventTimestamp - initialTimestamp;
 
-					objHolder[bandwidthStr].push({ timestamp: timestamp, nodeCount: bandwidthNodeCount });
+					objHolder[bandwidthStr].push({ timestamp, nodeCount: bandwidthNodeCount });
 					if (bandwidthNodeCount > highestNodeCount) {
 						highestNodeCount = bandwidthNodeCount;
 					}
-					if(timestamp > lastTimestamp){
+					if (timestamp > lastTimestamp) {
 						lastTimestamp = timestamp;
 					}
 				}
@@ -69,17 +71,26 @@ class GLCharts {
 
 			layerIndex++;
 		}
+
+		console.log(timestampsSet);
 	}
 
-	static generateChartForLayer(layer: string, bandwidths: Array<number>, colorMap: { [number]: string }, highestNodeCount: number, lastTimestamp: number, data: GLChartPrepDataType) {
+	static generateChartForLayer(
+		layer: string,
+		bandwidths: Array<number>,
+		colorMap: { [number]: string },
+		highestNodeCount: number,
+		lastTimestamp: number,
+		data: GLChartPrepDataType
+	) {
 		console.log(layer, data);
 
-		const chartName = "glChart_" + (layer.replace(" ", "_"));
+		const chartName = `glChart_${layer.replace(" ", "_")}`;
+		document.getElementById(chartName).innerHTML = "";
 
-
-		const margin = { top: 10, right: 30, bottom: 30, left: 60 },
-			width = 1600 - margin.left - margin.right,
-			height = 1000 - margin.top - margin.bottom;
+		const margin = { top: 10, right: 30, bottom: 30, left: 60 };
+		const width = 1600 - margin.left - margin.right;
+		const height = 1000 - margin.top - margin.bottom;
 
 		// Define scales
 		const xScale = d3.scaleLinear().range([0, width]);
@@ -94,19 +105,19 @@ class GLCharts {
 			.line()
 			.curve(d3.curveLinear)
 			.x(function(d) {
-				return xScale(d["timestamp"]);
+				return xScale(d.timestamp);
 			})
 			.y(function(d) {
-				return yScale(d["nodeCount"]);
+				return yScale(d.nodeCount);
 			});
 
 		// Define svg canvas
 		const svg = d3
-			.select("#" + chartName)
+			.select(`#${chartName}`)
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom)
 			.append("g")
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			.attr("transform", `translate(${margin.left},${margin.top})`);
 
 		// Set the domain of the axes
 		xScale.domain([0, lastTimestamp]);
@@ -116,7 +127,7 @@ class GLCharts {
 		// Place the axes on the chart
 		svg.append("g")
 			.attr("class", "x axis")
-			.attr("transform", "translate(0," + height + ")")
+			.attr("transform", `translate(0,${height})`)
 			.call(xAxis);
 
 		svg.append("g")
@@ -148,19 +159,27 @@ class GLCharts {
 			});
 
 		svg
-		// First we need to enter in a group
+			// First we need to enter in a group
 			.selectAll("myDots")
 			.data(data)
 			.enter()
-			.append('g')
-			.style("fill", function(d){ return colorMap[d.bandwidth] })
+			.append("g")
+			.style("fill", function(d) {
+				return colorMap[d.bandwidth];
+			})
 			// Second we need to enter in the 'values' part of this group
 			.selectAll("myPoints")
-			.data(function(d){ return d.datapoints })
+			.data(function(d) {
+				return d.datapoints;
+			})
 			.enter()
 			.append("circle")
-			.attr("cx", function(d) { return xScale(d["timestamp"]) } )
-			.attr("cy", function(d) { return yScale(d["nodeCount"]) } )
+			.attr("cx", function(d) {
+				return xScale(d.timestamp);
+			})
+			.attr("cy", function(d) {
+				return yScale(d.nodeCount);
+			})
 			.attr("r", 5)
 			.attr("stroke", "white");
 
@@ -169,24 +188,18 @@ class GLCharts {
 		console.log(data);
 		// console.log(concentrations.map(function()))
 
-
 		// Define responsive behavior
 		function resize() {
-			var width =
-				parseInt(d3.select("#" + chartName).style("width")) - margin.left - margin.right,
-				height =
-					parseInt(d3.select("#" + chartName).style("height")) -
-					margin.top -
-					margin.bottom;
+			const width = parseInt(d3.select(`#${chartName}`).style("width")) - margin.left - margin.right;
+			const height = parseInt(d3.select(`#${chartName}`).style("height")) - margin.top - margin.bottom;
 
 			// Update the range of the scale with new width/height
 			xScale.range([0, width]);
 			yScale.range([height, 0]);
 
 			// Update the axis and text with the new scale
-			svg
-				.select(".x.axis")
-				.attr("transform", "translate(0," + height + ")")
+			svg.select(".x.axis")
+				.attr("transform", `translate(0,${height})`)
 				.call(xAxis);
 
 			svg.select(".y.axis").call(yAxis);
