@@ -8,7 +8,7 @@ import DOMUtils from "./Utils";
 import Manager from "./Manager";
 import Variables from "./Variables";
 import ChartManager from "./ChartManager";
-import type { GLChartOutputType } from "../../../types";
+import type { GLChartOutputType, PartnerOutputLog } from "../../../types";
 
 class HandleHolder {
 	static async handleNextButtonClick() {
@@ -18,6 +18,7 @@ class HandleHolder {
 	static async handlePrevButtonClick() {
 		return Manager.goToEventAndDraw(window.selectedEvent - 1);
 	}
+
 	static handleSigmaClick(e: any): void {
 		Manager.changeSelectedNode(e.data.node);
 		// DOMManager.displayAllToRelations(e.data.node, e.target);
@@ -189,12 +190,11 @@ class HandleHolder {
 		if (Variables.saveOutput) {
 			window.scrollTo(0, 0);
 			const element = DOMUtils.getElementById("graphArea");
-			const fileName = `(${window.graphManager.currentSourceIndex}-${window.logEntity.sourceApparitionLocations.length}) - ${window.graphManager.getCurrentTimestamp()}.png`;
+			const fileName = `(${window.graphManager.currentSourceIndex}-${
+				window.logEntity.sourceApparitionLocations.length
+			}) - ${window.graphManager.getCurrentTimestamp()}.png`;
 			html2canvas(element).then(canvas => {
-				Utils.saveBase64AsFile(
-					canvas.toDataURL("image/png"),
-					fileName
-				);
+				Utils.saveBase64AsFile(canvas.toDataURL("image/png"), fileName);
 			});
 		}
 	}
@@ -206,12 +206,11 @@ class HandleHolder {
 		if (Variables.saveOutput) {
 			window.scrollTo(0, 0);
 			const element = DOMUtils.getElementById("graphArea");
-			const fileName = `(${window.graphManager.currentSourceIndex}-${window.logEntity.sourceApparitionLocations.length}) - ${window.graphManager.getCurrentTimestamp()}.png`;
+			const fileName = `(${window.graphManager.currentSourceIndex}-${
+				window.logEntity.sourceApparitionLocations.length
+			}) - ${window.graphManager.getCurrentTimestamp()}.png`;
 			html2canvas(element).then(canvas => {
-				Utils.saveBase64AsFile(
-					canvas.toDataURL("image/png"),
-					fileName
-				);
+				Utils.saveBase64AsFile(canvas.toDataURL("image/png"), fileName);
 			});
 		}
 	}
@@ -219,8 +218,6 @@ class HandleHolder {
 	static handleExtractLayerLog(e: Event): void {
 		Manager.downloadLayerLog();
 	}
-
-
 
 	static handleToggleAutoNext(e: Event): void {
 		const button = e.target;
@@ -275,6 +272,80 @@ class HandleHolder {
 		const lastEventId = window.graphManager.currentEventIndex - 2;
 		// console.log(initialEventId, lastEventId);
 		Manager.extractOverlayLog(initialEventId, lastEventId);
+	}
+
+	static handleGeneratePartnerLog(): PartnerOutputLog {
+		const graphManager = window.graphManager;
+		const machinesMap = window.logEntity.machines;
+		const colorArray = ["#ff0000", "#0000ff", "#64ff00", "#fff400", "#ff7b00"];
+		const colorMap: {[string]: string} = {};
+
+		for (let i = 0; i < logEntity.bandwidths.length; i++) {
+			const bandwidth = logEntity.bandwidths[i];
+			colorMap[bandwidth] = colorArray[i];
+		}
+
+		// Generate initial holder
+		const output: PartnerOutputLog = {
+			bandwidths: window.logEntity.bandwidths,
+			colorMap: colorMap,
+			data: {}
+		};
+
+		// Iterate through all events.
+		try {
+			while(true) {
+				output["data"][graphManager.currentSourceIndex] = {
+					metadata: {
+						timestamp: graphManager.getCurrentTimestamp()
+					},
+					bandwidths: {}
+				};
+
+				for (const bandwidth of window.logEntity.bandwidths) {
+					output["data"][graphManager.currentSourceIndex]["bandwidths"][bandwidth] = {};
+					output["data"][graphManager.currentSourceIndex]["bandwidths"][bandwidth]["incoming"] = {};
+					output["data"][graphManager.currentSourceIndex]["bandwidths"][bandwidth]["outgoing"] = {};
+
+					for (const bandwidth2 of window.logEntity.bandwidths) {
+						output["data"][graphManager.currentSourceIndex]["bandwidths"][bandwidth]["incoming"][bandwidth2] = 0;
+						output["data"][graphManager.currentSourceIndex]["bandwidths"][bandwidth]["outgoing"][bandwidth2] = 0;
+					}
+
+				}
+
+				const graphHolder = graphManager.graphHolder;
+				// For each node, analyse its partners
+
+				for (const machine of machinesMap.values()) {
+					// Check its incoming partners
+					const incoming = graphHolder.getIncomingEdgesOn(machine.address);
+					//console.log("incoming", incoming);
+					for (const incomingMachineAddress of incoming) {
+						const incomingMachine = machinesMap.get(incomingMachineAddress);
+						if (incomingMachine) {
+							//console.log(output[graphManager.currentSourceIndex]["bandwidths"][machine.bandwidth]["incoming"][incomingMachine.bandwidth]);
+							output["data"][graphManager.currentSourceIndex]["bandwidths"][machine.bandwidth]["incoming"][incomingMachine.bandwidth]++;
+						}
+					}
+
+					const outgoing = graphHolder.getOutgoingEdges(machine.address);
+					//console.log("outgoing", outgoing);
+					for (const outgoingMachineAddress of outgoing) {
+						const outgoingMachine = machinesMap.get(outgoingMachineAddress);
+						if (outgoingMachine) {
+							//console.log(output[graphManager.currentSourceIndex]["bandwidths"][machine.bandwidth]["outgoing"][outgoingMachine.bandwidth]);
+							output["data"][graphManager.currentSourceIndex]["bandwidths"][machine.bandwidth]["outgoing"][outgoingMachine.bandwidth]++;
+						}
+					}
+				}
+				graphManager.goToNextServerApparition();
+			}
+		}catch (e) {
+			console.log(e);
+		}
+
+		Utils.saveStringAsFile(JSON.stringify(output, null, 2), "partner.log.json");
 	}
 }
 

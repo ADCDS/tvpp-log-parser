@@ -9,36 +9,6 @@ html(lang='pt')
 				margin: 5px;
 			}
 
-			#chartsHolder > div {
-				width: 600px;
-				height: 400px;
-			}
-
-			#graphArea {
-				display: flex;
-				padding: 0;
-				margin: 0;
-				display: -webkit-box;
-				display: -moz-box;
-				display: -ms-flexbox;
-				display: -webkit-flex;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
-
-			#chartsHolder {
-				width: 610px;
-				height: 800px;
-				margin: 30px 0 0 0;
-			}
-
-			.graph-container {
-				width: 1200px;
-				height: 800px;
-				margin: 30px 0 0 0;
-			}
-
 			#panelHolder {
 				display: flex;
 			}
@@ -47,91 +17,11 @@ html(lang='pt')
 				margin: 5px;
 			}
 
-			#chartOptions {
-				margin: 5px;
-				height: 430px;
-				width: 300px;
-				overflow: auto;
-			}
-
-			#options {
-				margin: 5px;
-				height: 430px;
-				width: 300px;
-				overflow: auto;
-			}
-
-			#infoView {
-				margin: 5px;
-				height: 430px;
-				overflow: auto;
-				text-align: right;
-			}
-
-			#controller {
-				margin: 5px;
-				height: 400px;
-				overflow: auto;
-				text-align: right;
-			}
-
-			#filterType {
-				width: 300px;
-				height: 100px;
-			}
-
-			#layoutType {
-				width: 300px;
-				height: 100px;
-			}
-
-			#machineList {
-				text-align: initial;
-				height: 300px;
-				overflow-y: auto;
-			}
-
 			div {
 				border: 1px solid black;
 				padding: 5px;
 			}
 
-			/* Style the tab */
-			.tab {
-				overflow: hidden;
-				border: 1px solid #ccc;
-				background-color: #f1f1f1;
-			}
-
-			/* Style the buttons inside the tab */
-			.tab button {
-				background-color: inherit;
-				float: left;
-				border: none;
-				outline: none;
-				cursor: pointer;
-				padding: 14px 16px;
-				transition: 0.3s;
-				font-size: 17px;
-			}
-
-			/* Change background color of buttons on hover */
-			.tab button:hover {
-				background-color: #ddd;
-			}
-
-			/* Create an active/current tablink class */
-			.tab button.active {
-				background-color: #ccc;
-			}
-
-			table, th, td {
-				border: 1px solid black;
-			}
-
-			tr.active {
-				background-color: #00ff0254;
-			}
 
 			body {
 				font: 10px sans-serif;
@@ -166,35 +56,11 @@ body
 
 		div#options
 			input#generateGLCButton(type='button', value='Generate Group Layer Charts')
+			br
+			input#generatePartnerChart(type='button', value='Generate Partner Chart')
 
-div#graphContainer
-	div
-		p Layer 0
-		svg#glChart_Layer_0
-	div
-		p Layer 1
-		svg#glChart_Layer_1
-	div
-		p Layer 2
-		svg#glChart_Layer_2
-	div
-		p Layer 3
-		svg#glChart_Layer_3
-	div
-		p Layer 4
-		svg#glChart_Layer_4
-	div
-		p Layer 5
-		svg#glChart_Layer_5
-	div
-		p Layer 6
-		svg#glChart_Layer_6
-	div
-		p Layer 7
-		svg#glChart_Layer_7
-	div
-		p Layer 8
-		svg#glChart_Layer_8
+div#chartContainer
+
 
 script(src='/js/charts_gen.bundle.js')
 

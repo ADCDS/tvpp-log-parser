@@ -17,4 +17,30 @@ export type YensKSPWorkerResult = Array<[string, number]>;
 
 
 // Chart output types
-export type GLChartOutputType = { layers: Array<string>, colorMap: { [number]: string }, data: { [string]: { metadata: { timestamp: number, lastLayer: boolean }, layerArray: Array<{ metadata: { name: string }, [string]: number }> } } };
+export type GLChartOutputType = {
+	layers: Array<string>,
+	colorMap: { [number]: string },
+	data: {
+		[string]: {
+			metadata: { timestamp: number, lastLayer: boolean },
+			layerArray: Array<{ metadata: { name: string }, [string]: number }>
+		}
+	}
+};
+export type PartnerOutputLog = {
+	bandwidths: Array<Number>,
+	colorMap: { [number]: string },
+	data: {
+		[number]: {
+			metadata: {
+				timestamp: number
+			},
+			bandwidths: {
+				[number]: {
+					incoming: { [number]: { [number]: number } },
+					outgoing: { [number]: { [number]: number } },
+				}
+			}
+		}
+	}
+};

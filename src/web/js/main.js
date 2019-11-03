@@ -33,6 +33,7 @@ DOMUtils.getGenericElementById<HTMLInputElement>("layoutType").addEventListener(
 DOMUtils.getGenericElementById<HTMLInputElement>("selectedEventNumber").addEventListener("change", HandleHolder.handleSelectedEventChange);
 DOMUtils.getGenericElementById<HTMLInputElement>("selectedTimestamp").addEventListener("change", HandleHolder.handleTimestampChange);
 DOMUtils.getGenericElementById<HTMLInputElement>("saveOutput").addEventListener("change", HandleHolder.handleSaveOutputChange);
+DOMUtils.getGenericElementById<HTMLInputElement>("generatePartnerLog").addEventListener("click", HandleHolder.handleGeneratePartnerLog);
 
 Array.from(document.getElementsByClassName("tablinks")).forEach(el => {
 	el.addEventListener("click", HandleHolder.handleStateGraphChange);

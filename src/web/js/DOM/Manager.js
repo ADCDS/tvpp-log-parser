@@ -157,7 +157,9 @@ class Manager {
 				const element = DOMUtils.getElementById(`machClassification_${value.address}`);
 				element.innerHTML = value.bandwidthClassification;
 			} catch (e) {
-				console.log(`Machine ${value.address} appears on Perfomance Log but doesn't appear mainly at Overlay Log`);
+				console.log(`Machine ${value.address} appears on Perfomance Log but doesn't appear mainly at Overlay Log, removing it from the map`);
+				// Removing it from the machines map
+				window.logEntity.machines.delete(value.address);
 			}
 		}
 	}

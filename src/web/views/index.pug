@@ -1,245 +1,247 @@
 doctype html
 html(lang='pt')
-    head
-        title TVPP Log View
-        style(type="text/css").
-            label {
-                display: block;
-                font-weight: bold;
-                margin: 5px;
-            }
+	head
+		title TVPP Log View
+		style(type="text/css").
+			label {
+				display: block;
+				font-weight: bold;
+				margin: 5px;
+			}
 
-            #chartsHolder > div {
-                width: 600px;
-                height: 400px;
-            }
+			#chartsHolder > div {
+				width: 600px;
+				height: 400px;
+			}
 
-            #graphArea {
-                display: flex;
-                padding: 0;
-                margin: 0;
-                display: -webkit-box;
-                display: -moz-box;
-                display: -ms-flexbox;
-                display: -webkit-flex;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
+			#graphArea {
+				display: flex;
+				padding: 0;
+				margin: 0;
+				display: -webkit-box;
+				display: -moz-box;
+				display: -ms-flexbox;
+				display: -webkit-flex;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
 
-            #chartsHolder {
-                width: 610px;
-                height: 800px;
-                margin: 30px 0 0 0;
-            }
+			#chartsHolder {
+				width: 610px;
+				height: 800px;
+				margin: 30px 0 0 0;
+			}
 
-            .graph-container {
-                width: 1200px;
-                height: 800px;
-                margin: 30px 0 0 0;
-            }
+			.graph-container {
+				width: 1200px;
+				height: 800px;
+				margin: 30px 0 0 0;
+			}
 
-            #panelHolder {
-                display: flex;
-            }
+			#panelHolder {
+				display: flex;
+			}
 
-            #toolbar {
-                margin: 5px;
-            }
+			#toolbar {
+				margin: 5px;
+			}
 
-            #chartOptions {
-                margin: 5px;
-                height: 430px;
-                width: 300px;
-                overflow: auto;
-            }
+			#chartOptions {
+				margin: 5px;
+				height: 430px;
+				width: 300px;
+				overflow: auto;
+			}
 
-            #options {
-                margin: 5px;
-                height: 430px;
-                width: 300px;
-                overflow: auto;
-            }
+			#options {
+				margin: 5px;
+				height: 430px;
+				width: 300px;
+				overflow: auto;
+			}
 
-            #infoView {
-                margin: 5px;
-                height: 430px;
-                overflow: auto;
-                text-align: right;
-            }
+			#infoView {
+				margin: 5px;
+				height: 430px;
+				overflow: auto;
+				text-align: right;
+			}
 
-            #controller {
-                margin: 5px;
-                height: 400px;
-                overflow: auto;
-                text-align: right;
-            }
+			#controller {
+				margin: 5px;
+				height: 400px;
+				overflow: auto;
+				text-align: right;
+			}
 
-            #filterType {
-                width: 300px;
-                height: 100px;
-            }
+			#filterType {
+				width: 300px;
+				height: 100px;
+			}
 
-            #layoutType {
-                width: 300px;
-                height: 100px;
-            }
+			#layoutType {
+				width: 300px;
+				height: 100px;
+			}
 
-            #machineList {
-                text-align: initial;
-                height: 300px;
-                overflow-y: auto;
-            }
+			#machineList {
+				text-align: initial;
+				height: 300px;
+				overflow-y: auto;
+			}
 
-            div {
-                border: 1px solid black;
-                padding: 5px;
-            }
+			div {
+				border: 1px solid black;
+				padding: 5px;
+			}
 
-            /* Style the tab */
-            .tab {
-                overflow: hidden;
-                border: 1px solid #ccc;
-                background-color: #f1f1f1;
-            }
+			/* Style the tab */
+			.tab {
+				overflow: hidden;
+				border: 1px solid #ccc;
+				background-color: #f1f1f1;
+			}
 
-            /* Style the buttons inside the tab */
-            .tab button {
-                background-color: inherit;
-                float: left;
-                border: none;
-                outline: none;
-                cursor: pointer;
-                padding: 14px 16px;
-                transition: 0.3s;
-                font-size: 17px;
-            }
+			/* Style the buttons inside the tab */
+			.tab button {
+				background-color: inherit;
+				float: left;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				padding: 14px 16px;
+				transition: 0.3s;
+				font-size: 17px;
+			}
 
-            /* Change background color of buttons on hover */
-            .tab button:hover {
-                background-color: #ddd;
-            }
+			/* Change background color of buttons on hover */
+			.tab button:hover {
+				background-color: #ddd;
+			}
 
-            /* Create an active/current tablink class */
-            .tab button.active {
-                background-color: #ccc;
-            }
+			/* Create an active/current tablink class */
+			.tab button.active {
+				background-color: #ccc;
+			}
 
-            table, th, td {
-                border: 1px solid black;
-            }
+			table, th, td {
+				border: 1px solid black;
+			}
 
-            tr.active {
-                background-color: #00ff0254;
-            }
+			tr.active {
+				background-color: #00ff0254;
+			}
 
 body
-    h1 TVPP Log viewer
-    div#panelHolder
-        div#toolbar
-            label(for='logOverlayFile') Overlay Log File
-            input#logOverlayFile(type='file')
-            label(for='logPerformanceFile') Performance Log File
-            input#logPerformanceFile(type='file')
-            label(for='FilterType') Edge Filter Type
-                br
-                select#filterType(name='FilterType' size='3' required)
-            label(for='layoutType') Layout Type
-                br
-                select#layoutType(name='topologyType' size='3' required)
+	h1 TVPP Log viewer
+	div#panelHolder
+		div#toolbar
+			label(for='logOverlayFile') Overlay Log File
+			input#logOverlayFile(type='file')
+			label(for='logPerformanceFile') Performance Log File
+			input#logPerformanceFile(type='file')
+			label(for='FilterType') Edge Filter Type
+				br
+				select#filterType(name='FilterType' size='3' required)
+			label(for='layoutType') Layout Type
+				br
+				select#layoutType(name='topologyType' size='3' required)
 
-        div#options
-            div#filterHolder
-                b Edge Filter Options
-                div#filterOptions
-            br
-            div#layoutHolder
-                b Layout Options
-                div#layoutOptions
+		div#options
+			div#filterHolder
+				b Edge Filter Options
+				div#filterOptions
+			br
+			div#layoutHolder
+				b Layout Options
+				div#layoutOptions
 
-        div#chartOptions
-            b Available Charts
-            ul#chartList
+		div#chartOptions
+			b Available Charts
+			ul#chartList
 
 
-        div#infoView
-            label(for='numberOfNodes') Total nodes:
-                input(readonly=true)#numberOfNodes
-            label(for='numberOfEvents') Total events:
-                input(readonly=true)#numberOfEvents
-            div
-                label(for='previousEvent') Last event:
-                    input(readonly=true, value=0)#previousEvent
-                label(for='previousEventTime') Last evt time:
-                    input(readonly=true, value=0)#previousEventTime
-                label(for='previousEventElapsedTime') Last evt elapsed time:
-                    input(readonly=true, value=0)#previousEventElapsedTime
-            div
-                label(for='currentEvent') Current Event:
-                    input(readonly=true, value=0)#currentEvent
-                label(for='currentEventTime') Current evt time:
-                    input(readonly=true, value=0)#currentEventTime
-                label(for='currentEventElapsedTime') Current evt elapsed time:
-                    input(readonly=true, value=0)#currentEventElapsedTime
+		div#infoView
+			label(for='numberOfNodes') Total nodes:
+				input(readonly=true)#numberOfNodes
+			label(for='numberOfEvents') Total events:
+				input(readonly=true)#numberOfEvents
+			div
+				label(for='previousEvent') Last event:
+					input(readonly=true, value=0)#previousEvent
+				label(for='previousEventTime') Last evt time:
+					input(readonly=true, value=0)#previousEventTime
+				label(for='previousEventElapsedTime') Last evt elapsed time:
+					input(readonly=true, value=0)#previousEventElapsedTime
+			div
+				label(for='currentEvent') Current Event:
+					input(readonly=true, value=0)#currentEvent
+				label(for='currentEventTime') Current evt time:
+					input(readonly=true, value=0)#currentEventTime
+				label(for='currentEventElapsedTime') Current evt elapsed time:
+					input(readonly=true, value=0)#currentEventElapsedTime
 
-            div#machineList
-                b Machine List
-                table
-                    thead
-                        tr
-                            td ID
-                            td Address
-                            td Type
-                            td Actions
-                    tbody#machineListTable
+			div#machineList
+				b Machine List
+				table
+					thead
+						tr
+							td ID
+							td Address
+							td Type
+							td Actions
+					tbody#machineListTable
 
-        div#controller
-            div
-                div
-                    label(for='selectedEventNumber') Go to event:
-                        input#selectedEventNumber(type='number')
-                    input#drawEventNumber(type='button', value='Go!')
+		div#controller
+			div
+				div
+					label(for='selectedEventNumber') Go to event:
+						input#selectedEventNumber(type='number')
+					input#drawEventNumber(type='button', value='Go!')
 
-                div
-                    label(for='selectedTimestamp') Go to timestamp:
-                        input#selectedTimestamp(type='number')
-                    input#drawTimestamp(type='button', value='Go!')
+				div
+					label(for='selectedTimestamp') Go to timestamp:
+						input#selectedTimestamp(type='number')
+					input#drawTimestamp(type='button', value='Go!')
 
-                input#prevEvent(type='button', value='< Prev')
-                input#nextEvent(type='button', value='Next >')
-                div
-                    input#autoNext(type='button', value='AutoNext >')
-            div
-                //label(for='preserveCurrentLayout') Preservar Layout:
-                //input#preserveCurrentLayout(type='Checkbox', checked=false)
-                label(for='disableEdges') Disable Edges:
-                input#disableEdges(type='Checkbox')
+				input#prevEvent(type='button', value='< Prev')
+				input#nextEvent(type='button', value='Next >')
+				div
+					input#autoNext(type='button', value='AutoNext >')
+			div
+				//label(for='preserveCurrentLayout') Preservar Layout:
+				//input#preserveCurrentLayout(type='Checkbox', checked=false)
+				label(for='disableEdges') Disable Edges:
+				input#disableEdges(type='Checkbox')
 
-            div
-                label(for='saveOutput') Save Output:
-                    input#saveOutput(type='Checkbox')
-            div
-                input#extractLayerLog(type='button', value='Extract Layer Log')
-                input#extractOverlay(type='button', value='Extract Overlay')
-                input#takeSnapshot(type='button', value='Take Snapshot')
+			div
+				label(for='saveOutput') Save Output:
+					input#saveOutput(type='Checkbox')
+			div
+				input#extractLayerLog(type='button', value='Extract Layer Log')
+				input#extractOverlay(type='button', value='Extract Overlay')
+				input#takeSnapshot(type='button', value='Take Snapshot')
+			div
+				input#generatePartnerLog(type='button', value='Generate partner log')
 
 
 div#graphContainer
-    div#graphController.tab
-        button(data-graph='containerPrevious', data-sigma='sigmaPrevious').tablinks
-            span Previous State
-            b#previousStateEventId (NaN)
-        button(data-graph='containerComparision', data-sigma='sigmaComparision').tablinks
-            span Comparision State
-            b#comparisionStateEventId (NaN)
-        button#btnCurrentState(data-graph='containerCurrent', data-sigma='sigmaCurrent').tablinks
-            span Current State
-            b#currentStateEventId (NaN)
+	div#graphController.tab
+		button(data-graph='containerPrevious', data-sigma='sigmaPrevious').tablinks
+			span Previous State
+			b#previousStateEventId (NaN)
+		button(data-graph='containerComparision', data-sigma='sigmaComparision').tablinks
+			span Comparision State
+			b#comparisionStateEventId (NaN)
+		button#btnCurrentState(data-graph='containerCurrent', data-sigma='sigmaCurrent').tablinks
+			span Current State
+			b#currentStateEventId (NaN)
 
-    div#graphArea
-        div#containerPrevious.graph-container
-        div#containerComparision.graph-container
-        div#containerCurrent.graph-container
-        div#chartsHolder
+	div#graphArea
+		div#containerPrevious.graph-container
+		div#containerComparision.graph-container
+		div#containerCurrent.graph-container
+		div#chartsHolder
 script(src='/js/bundle.js')
 
