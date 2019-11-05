@@ -33,7 +33,16 @@ class Layout {
 		 */
 		const defaultOptions = {
 			filter: null,
-			colorMap: ["#ff0000", "#0000ff", "#64ff00", "#fff400", "#ff7b00"]
+			colorMap: [
+				"#ff0000",
+				"#0000ff",
+				"#64ff00",
+				"#fff400",
+				"#ff7b00",
+				"#ff0051",
+				"#ff00dc",
+				"#e100ff",
+			]
 		};
 
 		this.options = Object.assign(defaultOptions, options);

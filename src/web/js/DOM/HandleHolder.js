@@ -277,7 +277,17 @@ class HandleHolder {
 	static handleGeneratePartnerLog(): PartnerOutputLog {
 		const graphManager = window.graphManager;
 		const machinesMap = window.logEntity.machines;
-		const colorArray = ["#ff0000", "#0000ff", "#64ff00", "#fff400", "#ff7b00"];
+		const colorArray = [
+			"#ff0000",
+			"#0000ff",
+			"#64ff00",
+			"#fff400",
+			"#ff7b00",
+			"#ff0051",
+			"#ff00dc",
+			"#e100ff",
+		];
+
 		const colorMap: {[string]: string} = {};
 
 		for (let i = 0; i < logEntity.bandwidths.length; i++) {
