@@ -34,6 +34,17 @@ class Machine {
 		const perf = this.findPerformanceLogByTimestamp(timestamp);
 		return `sizePeerOut_${perf.sizePeerOut}_sizePeerOutFREE_${perf.sizePeerOutFREE}`;
 	}
+
+	isMediaSynchronizedAt(timestamp: number) : boolean {
+		const perf = this.findPerformanceLogByTimestamp(timestamp);
+		if ((perf.pkGen === 0) && (perf.pkSent === 0) && (perf.pkRecv === 0) && (perf.pkOver === 0) && (perf.pkMissed === 0) && (perf.pkExpected === 0))
+			return false;
+
+		if(perf.media1 === -1 && perf.media2 === 65535)
+			return false;
+
+		return true;
+	}
 }
 
 export default Machine;
