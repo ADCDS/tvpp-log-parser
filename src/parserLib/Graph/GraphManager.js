@@ -103,7 +103,16 @@ class GraphManager {
 		// Outgoing edges
 		overlayEntry.partnersOut.forEach(targetMachine => {
 			if (this.graphHolder.hasNode(targetMachine)) {
+				// Check if target machine's media is synchronized
+				const targetMachineObject = logEntity.machines.get(targetMachine);
+				if (targetMachineObject === undefined || !targetMachineObject.isMediaSynchronizedAt(this.getCurrentTimestamp())){
+					console.log(targetMachine + " media is not synchronized, discarding it from graph");
+					return;
+				}
 				this.graphHolder.addEdge(currentMachine, targetMachine);
+
+
+
 			} else if (this.logEntity.options.forceAddGhostNodes) {
 				// One of the machines is mentioned by another, but it doesn't have a single log of its own
 				console.log(`Log ID: ${this.currentEventIndex}: Node ${targetMachine} doesn't exists. Forcefully adding it...`);
