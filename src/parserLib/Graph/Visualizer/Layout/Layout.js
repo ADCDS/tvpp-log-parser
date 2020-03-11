@@ -34,12 +34,12 @@ class Layout {
 		const defaultOptions = {
 			filter: null,
 			colorMap: [
-				"#ff0000",
-				"#0000ff",
-				"#64ff00",
-				"#fff400",
-				"#ff7b00",
-				"#ff0051",
+				"#000000",
+				"#0014ff",
+				"#00ff00",
+				"#ff0008",
+				"#ff00e8",
+				"#52abff",
 				"#ff00dc",
 				"#e100ff",
 			]
@@ -62,12 +62,35 @@ class Layout {
 		}
 	}
 
+	getColorFor(sizePeerOut:number , sizePeerOutFREE:number) : string {
+		if(sizePeerOut == 0 && sizePeerOutFREE == 0){ // Free rider
+			return this.options.colorMap[0];
+		}
+
+		if(sizePeerOut == 20 && sizePeerOutFREE == 0){ // Server
+			return this.options.colorMap[4];
+		}
+		if(sizePeerOut == 46  && sizePeerOutFREE == 0){ // Hot
+			return this.options.colorMap[3];
+		}
+		if(sizePeerOut == 18  && sizePeerOutFREE == 22){ // Warm
+			return this.options.colorMap[2];
+		}
+		if(sizePeerOut == 1  && sizePeerOutFREE == 38){ // Cold
+			return this.options.colorMap[1];
+		}
+		console.log("Unknown peer: sizePeerOut: " + sizePeerOut + ", sizePeerOutFREE " + sizePeerOutFREE);
+		return "#e100ff";
+	}
+
 	updateNodeColors(): void {
+		const currentTimestamp = window.logEntity.overlayEntryList[window.graphManager.currentEventIndex].timestamp;
 		for (const [machineKey, machine] of this.machines.entries()) {
+			const currPerf = machine.findPerformanceLogByTimestamp(currentTimestamp);
 			if (Object.prototype.hasOwnProperty.call(machine, "bandwidthClassification")) {
 				const node = this.nodeHolder.get(machineKey);
 				if (node) {
-					node.color = this.options.colorMap[machine.bandwidthClassification];
+					node.color = this.getColorFor(currPerf.sizePeerOut, currPerf.sizePeerOutFREE);
 				}
 			} else {
 				throw new Error(`Node ${machineKey} exists on overlay log, but it doesnt exists in performance log`);

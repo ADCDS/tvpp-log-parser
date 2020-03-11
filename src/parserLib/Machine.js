@@ -25,6 +25,15 @@ class Machine {
 	addPerformanceStatus(status: PerformanceState): void {
 		this.performanceStatus.push(status);
 	}
+
+	findPerformanceLogByTimestamp(timestamp: number): PerformanceState {
+		return this.performanceStatus.reduce((prev, curr) => (Math.abs(curr.bootTime - timestamp) < Math.abs(prev.bootTime - timestamp) ? curr : prev));
+	}
+
+	getPeerClassificationStringAt(timestamp: number): string {
+		const perf = this.findPerformanceLogByTimestamp(timestamp);
+		return `sizePeerOut_${perf.sizePeerOut}_sizePeerOutFREE_${perf.sizePeerOutFREE}`;
+	}
 }
 
 export default Machine;

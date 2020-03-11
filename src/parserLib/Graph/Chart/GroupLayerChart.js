@@ -30,8 +30,8 @@ class GroupLayerChart extends Chart {
 		const colorMap = {};
 		const bandwidthsTemplate = {};
 
-		for (let i = 0; i < logEntity.bandwidths.length; i++) {
-			const bandwidth = logEntity.bandwidths[i];
+		for (let i = 0; i < logEntity.bandwidthClassifications.length; i++) {
+			const bandwidth = logEntity.bandwidthClassifications[i];
 			bandwidthsTemplate[bandwidth] = 0;
 			colorMap[bandwidth] = usedLayout.options.colorMap[i];
 		}
@@ -64,8 +64,9 @@ class GroupLayerChart extends Chart {
 		for (const machine of logEntity.machines.values()) {
 			// In which layer are this machine at?
 			const distance = layoutSubFilter.distancesFromSource[machine.address];
-			const bandwidth = machine.bandwidth;
-			if (bandwidth === undefined) continue;
+			const currentTimestamp = window.logEntity.overlayEntryList[window.graphManager.currentEventIndex].timestamp;
+			const bandwidth = machine.getPeerClassificationStringAt(currentTimestamp);
+			// if (bandwidth === undefined) continue;
 
 			const layerIndex = layerDistanceMap[distance];
 			outputArray[layerIndex][bandwidth]++;

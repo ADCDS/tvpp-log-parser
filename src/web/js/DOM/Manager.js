@@ -427,6 +427,7 @@ class Manager {
 		const subFilterResult = await subFilterObj.applyFilter(graphHolder);
 
 		const layoutObj = new LayoutClass(subFilterResult, graphManager.getMachines(), layoutOptions);
+		layoutObj.updateNodeColors();
 		layoutObj.updatePositions();
 		window.sigmaCurrent.helperHolder.edgesHolder = layoutObj.edgesOverride;
 		window.sigmaCurrent.helperHolder.layoutSubFilter = subFilterResult;

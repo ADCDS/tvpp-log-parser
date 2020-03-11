@@ -97,7 +97,7 @@ class LogEntryPerformance {
 	}
 
 	toState(): PerformanceState {
-		return new PerformanceState(this.bandwidth);
+		return new PerformanceState(this.bootTime, this.bandwidth, this.sizePeerOut, this.sizePeerOutFREE);
 	}
 }
 

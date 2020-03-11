@@ -14,11 +14,19 @@ class TVPPLog {
 	overlayEntryList: Array<LogEntryOverlay>;
 	performanceEntryList: Array<LogEntryPerformance>;
 
+	initialTimestamp: number;
 	eventTimestampMap: Map<number, number>;
 
 	sourceMachineKey: string;
 	sourceApparitionLocations: Array<number>;
 	bandwidths: Array<number>;
+	bandwidthClassifications: Array<String> = [
+		"sizePeerOut_0_sizePeerOutFREE_0",
+		"sizePeerOut_1_sizePeerOutFREE_38",
+		"sizePeerOut_18_sizePeerOutFREE_22",
+		"sizePeerOut_46_sizePeerOutFREE_0",
+		"sizePeerOut_20_sizePeerOutFREE_0"
+	];
 
 	constructor(options: ?{ [string]: any }) {
 		const defaultOptions = {
@@ -36,12 +44,12 @@ class TVPPLog {
 
 	addOverlayEntries(entries: Array<LogEntryOverlay>) {
 		this.sourceMachineKey = entries[0].machineId;
-		const initialTimestamp = entries[0].timestamp;
+		this.initialTimestamp = entries[0].timestamp;
 
 		let iterNum = 0;
 		entries.forEach(logEntry => {
 			this.overlayEntryList.push(logEntry);
-			this.eventTimestampMap.set(logEntry.timestamp - initialTimestamp, iterNum);
+			this.eventTimestampMap.set(logEntry.timestamp - this.initialTimestamp, iterNum);
 
 			const currMachineName = logEntry.machineId;
 

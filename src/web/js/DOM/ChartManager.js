@@ -55,7 +55,7 @@ class ChartManager {
 				}>
 			},
 			colorMap: {
-				[number]: string
+				[string]: string
 			}
 		}
 	) {
@@ -134,7 +134,7 @@ class ChartManager {
 				return height - y(d.value);
 			})
 			.attr("fill", (d: { key: string }) => {
-				return input.colorMap[Number(d.key)];
+				return input.colorMap[d.key];
 			});
 
 		g.append("g")
@@ -204,11 +204,11 @@ class ChartManager {
 			.attr("x", width - 17)
 			.attr("width", 15)
 			.attr("height", 15)
-			.attr("fill", (d: number) => {
-				return input.colorMap[Number(d)];
+			.attr("fill", (d: string) => {
+				return input.colorMap[d];
 			})
-			.attr("stroke", (d: number) => {
-				return input.colorMap[Number(d)];
+			.attr("stroke", (d: string) => {
+				return input.colorMap[d];
 			})
 			.attr("stroke-width", 2);
 
