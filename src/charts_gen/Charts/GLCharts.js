@@ -8,7 +8,7 @@ import type { GLChartOutputType } from "../../types";
 class GLCharts {
 	static generateGraphics(input: GLChartOutputType) {
 		console.log("GLChart input", input);
-		const bandwidths = Object.keys(input.colorMap).map(Number);
+		const bandwidths = Object.keys(input.colorMap);
 		let layerIndex = 0;
 		const initialTimestamp = input.data["1"].metadata.timestamp;
 
