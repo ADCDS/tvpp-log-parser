@@ -1,77 +1,204 @@
 // @flow
 
 import * as d3 from "d3";
-import Utils from "../../utils";
 import DOMUtils from "../../web/js/DOM/Utils";
-import type { GLChartOutputType } from "../../types";
+import type {GLChartOutputType} from "../../types";
 
 class GLCharts {
-	static generateGraphics(input: GLChartOutputType) {
-		console.log("GLChart input", input);
-		const bandwidths = Object.keys(input.colorMap);
-		let layerIndex = 0;
-		const initialTimestamp = input.data["1"].metadata.timestamp;
+	static generateGraphics(inputArray: Array<GLChartOutputType>) {
+		console.log("GLChart input", inputArray);
 
-		// Just to make possible to spot gaps in timestamp reports
-		const timestampsSet = new Set();
-		let lastTimestamp = 0;
+		const layerChartDataObj: { [string]: any } = {};
+		let inputCnt = 0;
 
-		console.log(bandwidths);
-		DOMUtils.getElementById('chartContainer').innerHTML = "";
+		for (const input of inputArray) {
+			const inputId = inputCnt++;
 
-		// We are going to generate a chart for each layer, X is the time, Y is the number of nodes for each type
-		for (const layer of input.layers) {
-			let highestNodeCount = 0;
+			const bandwidths = Object.keys(input.colorMap);
+			let layerIndex = 0;
+			const initialTimestamp = input.data["1"].metadata.timestamp;
 
-			const preparedData: Array<{ bandwidth: number, datapoints: Array<{ timestamp: number, nodeCount: number }> }> = [];
-			const objHolder: { [number]: Array<{ timestamp: number, nodeCount: number }> } = {};
-			bandwidths.map(value => {
-				objHolder[value] = [];
-			});
+			// Just to make possible to spot gaps in timestamp reports
+			const timestampsSet = new Set();
+			let lastTimestamp = 0;
 
-			// Iterate through all events
-			for (const eventIndex in input.data) {
-				const event = input.data[eventIndex];
+			console.log(bandwidths);
+			DOMUtils.getElementById('chartContainer').innerHTML = "";
 
-				const eventTimestamp = event.metadata.timestamp;
-				timestampsSet.add(eventTimestamp - initialTimestamp);
+			// We are going to generate a chart for each layer, X is the time, Y is the number of nodes for each type
+			for (let layer of input.layers) {
+				let highestNodeCount = 0;
 
-				const targetLayer = event.layerArray[layerIndex];
+				const preparedData: Array<{ bandwidth: number, datapoints: Array<{ timestamp: number, nodeCount: number }> }> = [];
+				const objHolder: { [number]: Array<{ timestamp: number, nodeCount: number }> } = {};
+				const bandwidthsTmp = bandwidths.slice();
+				bandwidthsTmp.map(value => {
+					objHolder[value] = [];
+				});
 
-				if (!targetLayer) {
-					// Current event doesn't have the layer we are searching for
-					continue;
+				// Iterate through all events
+				for (const eventIndex in input.data) {
+					const event = input.data[eventIndex];
+
+					const eventTimestamp = event.metadata.timestamp;
+					timestampsSet.add(eventTimestamp - initialTimestamp);
+
+					const targetLayer = event.layerArray[layerIndex];
+
+					if (!targetLayer) {
+						console.log("Current event doesn't have the layer we are searching for. Event: " + eventIndex + ", Layer: " + layer + ", Layer Index: " + layerIndex);
+						// Current event doesn't have the layer we are searching for
+						continue;
+					}
+
+					// Discard last layer (unconnected nodes)
+					if (targetLayer.metadata.lastLayer){
+						continue;
+					}
+
+					// Collect the number of nodes of each type in this layer
+					for (const bandwidthStr of bandwidthsTmp) {
+						const bandwidthNodeCount = targetLayer[bandwidthStr];
+
+						// Push datapoint
+						const timestamp = eventTimestamp - initialTimestamp;
+
+						objHolder[bandwidthStr].push({timestamp: timestamp, nodeCount: bandwidthNodeCount});
+						if (bandwidthNodeCount > highestNodeCount) {
+							highestNodeCount = bandwidthNodeCount;
+						}
+						if (timestamp > lastTimestamp) {
+							lastTimestamp = timestamp;
+						}
+					}
+				}
+				for (const bandwidthStr of bandwidthsTmp) {
+					preparedData.push({bandwidth: bandwidthStr, datapoints: objHolder[bandwidthStr]});
 				}
 
-				// Discard last layer (unconnected nodes)
-				if (targetLayer.metadata.lastLayer) continue;
+				if (!layerChartDataObj.hasOwnProperty(inputId)) {
+					layerChartDataObj[inputId] = {};
+				}
+				layerChartDataObj[inputId][layer] = {
+					bandwidthsTmp: bandwidthsTmp,
+					highestNodeCount: highestNodeCount,
+					lastTimestamp: lastTimestamp,
+					preparedData: preparedData
+				};
 
-				// Collect the number of nodes of each type in this layer
-				for (const bandwidthStr of bandwidths) {
-					const bandwidthNodeCount = targetLayer[bandwidthStr];
+				layerIndex++;
+			}
 
-					// Push datapoint
-					const timestamp = eventTimestamp - initialTimestamp;
+			// Generate unconnected nodes layer (last layer)
+			{
+				layerIndex = 0;
+				let highestNodeCount = 0;
 
-					objHolder[bandwidthStr].push({ timestamp: timestamp, nodeCount: bandwidthNodeCount });
-					if (bandwidthNodeCount > highestNodeCount) {
-						highestNodeCount = bandwidthNodeCount;
-					}
-					if (timestamp > lastTimestamp) {
-						lastTimestamp = timestamp;
+				const preparedData: Array<{ bandwidth: number, datapoints: Array<{ timestamp: number, nodeCount: number }> }> = [];
+				const objHolder: { [number]: Array<{ timestamp: number, nodeCount: number }> } = {};
+				const bandwidthsTmp = bandwidths.slice();
+				bandwidthsTmp.map(value => {
+					objHolder[value] = [];
+				});
+
+
+				// Iterate through all events
+				for (const eventIndex in input.data) {
+					const event = input.data[eventIndex];
+
+					const eventTimestamp = event.metadata.timestamp;
+					timestampsSet.add(eventTimestamp - initialTimestamp);
+
+					const targetLayer = event.layerArray[event.layerArray.length - 1];
+
+					// Collect the number of nodes of each type in this layer
+					for (const bandwidthStr of bandwidthsTmp) {
+						const bandwidthNodeCount = targetLayer[bandwidthStr];
+
+						// Push datapoint
+						const timestamp = eventTimestamp - initialTimestamp;
+
+						objHolder[bandwidthStr].push({ timestamp: timestamp, nodeCount: bandwidthNodeCount });
+						if (bandwidthNodeCount > highestNodeCount) {
+							highestNodeCount = bandwidthNodeCount;
+						}
+						if (timestamp > lastTimestamp) {
+							lastTimestamp = timestamp;
+						}
 					}
 				}
-			}
-			for (const bandwidthStr of bandwidths) {
-				preparedData.push({ bandwidth: bandwidthStr, datapoints: objHolder[bandwidthStr] });
+				for (const bandwidthStr of bandwidthsTmp) {
+					preparedData.push({ bandwidth: bandwidthStr, datapoints: objHolder[bandwidthStr] });
+				}
+
+				if (!layerChartDataObj.hasOwnProperty(inputId)) {
+					layerChartDataObj[inputId] = {};
+				}
+				layerChartDataObj[inputId]["Unconnected nodes"] = {
+					bandwidthsTmp: bandwidthsTmp,
+					highestNodeCount: highestNodeCount,
+					lastTimestamp: lastTimestamp,
+					preparedData: preparedData
+				};
 			}
 
-			GLCharts.generateChartForLayer(layer, bandwidths, input.colorMap, highestNodeCount, lastTimestamp, preparedData);
-
-			layerIndex++;
+			console.log(timestampsSet);
 		}
 
-		console.log(timestampsSet);
+		console.log(layerChartDataObj);
+		// Lets take the average results
+		const layerHolder = {};
+		const inputLength = Object.keys(layerChartDataObj).length;
+		for (const [inputId, layerChartObj] of Object.entries(layerChartDataObj)) {
+			for (const [layer, layerChartData] of Object.entries(layerChartObj)) {
+				if (!layerHolder.hasOwnProperty(layer)) layerHolder[layer] = [];
+				layerHolder[layer].push(layerChartData);
+				console.log(layer, layerChartData);
+				//GLCharts.generateChartForLayer(layer, layerChartData.bandwidthsTmp, input[0].colorMap, layerChartData.highestNodeCount, layerChartData.lastTimestamp, layerChartData.preparedData);
+			}
+		}
+
+		console.log(layerChartDataObj);
+		for (const [layer, layerChartDataArray] of Object.entries(layerHolder)) {
+			console.log("layerHolder", layerHolder);
+			// Get the longest experiment in the set
+			let index = 0;
+			let selectedIndex = 0;
+			let highest = 0;
+
+			// Get the longest experiment as base
+			for(const layerChartData of layerChartDataArray){
+				for (const chartLine of layerChartData.preparedData) {
+					if (chartLine.datapoints.length > highest) {
+						highest = chartLine.datapoints.length;
+						selectedIndex = index;
+					}
+				}
+				index++;
+			}
+			const tmpTotalObject = layerChartDataArray[selectedIndex];
+			layerChartDataArray.splice(selectedIndex, 1);
+			for (const layerChartData of layerChartDataArray) {
+				if(layerChartData.highestNodeCount > tmpTotalObject.highestNodeCount) tmpTotalObject.highestNodeCount = layerChartData.highestNodeCount;
+				let i = 0;
+				for (const chartLine of layerChartData.preparedData) {
+					const {bandwidth, datapoints} = chartLine;
+					let j = 0;
+					for (const {timestamp, nodeCount} of datapoints) {
+						tmpTotalObject.preparedData[i].datapoints[j++].nodeCount += nodeCount;
+					}
+					i++;
+				}
+			}
+
+			for (const chartLine of tmpTotalObject.preparedData) {
+				for (let obj of chartLine.datapoints) {
+					obj.nodeCount /= inputLength;
+				}
+			}
+
+			GLCharts.generateChartForLayer(layer, tmpTotalObject.bandwidthsTmp, inputArray[0].colorMap, tmpTotalObject.highestNodeCount, tmpTotalObject.lastTimestamp, tmpTotalObject.preparedData);
+		}
 	}
 
 	static generateChartForLayer(
@@ -95,7 +222,7 @@ class GLCharts {
 		DOMUtils.getElementById("chartContainer").append(div);
 
 
-		const margin = { top: 10, right: 30, bottom: 30, left: 60 };
+		const margin = {top: 10, right: 30, bottom: 30, left: 60};
 		const width = 1100 - margin.left - margin.right;
 		const height = 700 - margin.top - margin.bottom;
 
@@ -110,11 +237,11 @@ class GLCharts {
 		// Define lines
 		const line = d3
 			.line()
-			.curve(d3.curveLinear)
-			.x(function(d) {
+			.curve(d3.curveBasis)
+			.x(function (d) {
 				return xScale(d.timestamp);
 			})
-			.y(function(d) {
+			.y(function (d) {
 				return yScale(d.nodeCount);
 			});
 
@@ -159,10 +286,10 @@ class GLCharts {
 		aux
 			.append("path")
 			.attr("class", "line")
-			.attr("d", function(d) {
+			.attr("d", function (d) {
 				return line(d.datapoints);
 			})
-			.style("stroke", function(d) {
+			.style("stroke", function (d) {
 				return colorMap[d.bandwidth];
 			});
 	}

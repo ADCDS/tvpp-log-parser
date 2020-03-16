@@ -161,6 +161,22 @@ class Utils {
 		};
 	}
 
+	static async readJsonFile(file: any): string {
+		return new Promise(resolve => {
+			console.log("Reading file... ");
+			const reader = new FileReader();
+			reader.onload = evt2 => {
+				resolve(JSON.parse(evt2.currentTarget.result));
+			};
+
+			reader.readAsBinaryString(file);
+		});
+	}
+
+	static async readJsonFromInput(input: HTMLInputElement) {
+		return Promise.all(Array.from(input.files).map(this.readJsonFile));
+	}
+
 	static async readFileFromInput(input: HTMLInputElement): string {
 		return new Promise(resolve => {
 			const { files } = input; // FileList object
@@ -172,7 +188,7 @@ class Utils {
 			};
 
 			reader.readAsBinaryString(files[0]);
-		})
+		});
 	}
 }
 

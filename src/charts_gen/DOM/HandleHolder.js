@@ -7,10 +7,9 @@ import PartnerCharts from "../Charts/PartnerCharts";
 
 class HandleHolder {
 	static async handleGenerateGroupLayerChartButtonClick(e: Event) {
-		let dataFromFile = await Utils.readFileFromInput(DOMUtils.getGenericElementById<HTMLInputElement>('logFile'));
-		const input = JSON.parse(dataFromFile);
+		const dataFromFile = await Utils.readJsonFromInput(DOMUtils.getGenericElementById<HTMLInputElement>('logFile'));
 
-		GLCharts.generateGraphics(input);
+		GLCharts.generateGraphics(dataFromFile);
 	}
 	static async handleGeneratePartnerChartButtonClick(){
 		let dataFromFile = await Utils.readFileFromInput(DOMUtils.getGenericElementById<HTMLInputElement>('logFile'));
