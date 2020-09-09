@@ -6,7 +6,7 @@
 
 A JS platform that can read [TVPP](https://github.com/eliseumiguel/TVPP-DEV) logs and draw its respective graphs.
 
-![Alt Text](https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif)
+![Graph generation](https://user-images.githubusercontent.com/6514747/92659780-6c754c00-f2cf-11ea-8e4f-de64f686ddb6.gif)
 
 ## Install
 
