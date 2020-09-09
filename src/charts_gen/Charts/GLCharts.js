@@ -3,8 +3,19 @@
 import * as d3 from "d3";
 import DOMUtils from "../../web/js/DOM/Utils";
 import type {GLChartOutputType} from "../../types";
+import Utils from "../../utils";
 
 class GLCharts {
+	static postProcessedData = {};
+	static peerClassificationName: { [string]: string } = {
+		sizePeerOut_0_sizePeerOutFREE_0: "Freerider",
+		sizePeerOut_1_sizePeerOutFREE_38: "Cold",
+		sizePeerOut_18_sizePeerOutFREE_22: "Warm",
+		sizePeerOut_46_sizePeerOutFREE_0: "Hot",
+		sizePeerOut_40_sizePeerOutFREE_0: "Hot2",
+		sizePeerOut_20_sizePeerOutFREE_0: "Server"
+	};
+
 	static generateGraphics(inputArray: Array<GLChartOutputType>) {
 		console.log("GLChart input", inputArray);
 
@@ -52,7 +63,7 @@ class GLCharts {
 					}
 
 					// Discard last layer (unconnected nodes)
-					if (targetLayer.metadata.lastLayer){
+					if (targetLayer.metadata.lastLayer) {
 						continue;
 					}
 
@@ -118,7 +129,7 @@ class GLCharts {
 						// Push datapoint
 						const timestamp = eventTimestamp - initialTimestamp;
 
-						objHolder[bandwidthStr].push({ timestamp: timestamp, nodeCount: bandwidthNodeCount });
+						objHolder[bandwidthStr].push({timestamp: timestamp, nodeCount: bandwidthNodeCount});
 						if (bandwidthNodeCount > highestNodeCount) {
 							highestNodeCount = bandwidthNodeCount;
 						}
@@ -128,7 +139,7 @@ class GLCharts {
 					}
 				}
 				for (const bandwidthStr of bandwidthsTmp) {
-					preparedData.push({ bandwidth: bandwidthStr, datapoints: objHolder[bandwidthStr] });
+					preparedData.push({bandwidth: bandwidthStr, datapoints: objHolder[bandwidthStr]});
 				}
 
 				if (!layerChartDataObj.hasOwnProperty(inputId)) {
@@ -167,7 +178,7 @@ class GLCharts {
 			let highest = 0;
 
 			// Get the longest experiment as base
-			for(const layerChartData of layerChartDataArray){
+			for (const layerChartData of layerChartDataArray) {
 				for (const chartLine of layerChartData.preparedData) {
 					if (chartLine.datapoints.length > highest) {
 						highest = chartLine.datapoints.length;
@@ -179,7 +190,7 @@ class GLCharts {
 			const tmpTotalObject = layerChartDataArray[selectedIndex];
 			layerChartDataArray.splice(selectedIndex, 1);
 			for (const layerChartData of layerChartDataArray) {
-				if(layerChartData.highestNodeCount > tmpTotalObject.highestNodeCount) tmpTotalObject.highestNodeCount = layerChartData.highestNodeCount;
+				if (layerChartData.highestNodeCount > tmpTotalObject.highestNodeCount) tmpTotalObject.highestNodeCount = layerChartData.highestNodeCount;
 				let i = 0;
 				for (const chartLine of layerChartData.preparedData) {
 					const {bandwidth, datapoints} = chartLine;
@@ -198,7 +209,15 @@ class GLCharts {
 			}
 
 			GLCharts.generateChartForLayer(layer, tmpTotalObject.bandwidthsTmp, inputArray[0].colorMap, tmpTotalObject.highestNodeCount, tmpTotalObject.lastTimestamp, tmpTotalObject.preparedData);
+
+			this.postProcessedData[layer] = {};
+
+			// Simplify output
+			for (const bandwidthData of tmpTotalObject.preparedData) {
+				this.postProcessedData[layer][this.peerClassificationName[bandwidthData.bandwidth]] = bandwidthData.datapoints;
+			}
 		}
+		Utils.saveStringAsFile(JSON.stringify(this.postProcessedData), "layer.pp.output.json", "text/json");
 	}
 
 	static generateChartForLayer(
