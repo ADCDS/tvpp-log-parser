@@ -5,14 +5,18 @@ A JS platform that can read [TVPP](https://github.com/eliseumiguel/TVPP-DEV) log
 ![Graph generation](https://user-images.githubusercontent.com/6514747/92659780-6c754c00-f2cf-11ea-8e4f-de64f686ddb6.gif)
 
 ## Install
+Install git & node:
 
-Install node & npm:
+    apt-get install git nodejs
+	
+Clone repo:
 
-    apt-get install nodejs
+    git clone https://github.com/ADCDS/tvpp-log-parser.git
     
-install dependencies:
+Install dependencies:
 
-    npm i tvpp-log-parser
+    cd tvpp-log-parser/
+	npm install
 
 
 ## Usage
