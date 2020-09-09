@@ -28,7 +28,7 @@ Run:
 Will start a webserver on the port 3000
 
 After loading the page at http://localhost:3000, load the overlay log first, and then the performance log.
-Example logs can be found at [logs/](https://github.com/Turox/tvpp-log-parser/tree/master/logs) 
+Example logs can be found at [logs/](https://github.com/ADCDS/tvpp-log-parser/tree/master/logs) 
 
 ## License
 
