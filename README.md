@@ -32,4 +32,4 @@ Example logs can be found at [logs/](https://github.com/ADCDS/tvpp-log-parser/tr
 
 ## License
 
-MIT © [Turox](https://github.com/Turox)
+MIT © [Adriel Santos](https://github.com/ADCDS)
