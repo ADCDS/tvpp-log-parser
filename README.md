@@ -1,4 +1,4 @@
-# tvpp-log-parser
+# TVPP Log Parser
 
 [![Generated with nod](https://img.shields.io/badge/generator-nod-2196F3.svg?style=flat-square)](https://github.com/diegohaz/nod)
 [![NPM version](https://img.shields.io/npm/v/tvpp-log-parser.svg?style=flat-square)](https://npmjs.org/package/tvpp-log-parser)
