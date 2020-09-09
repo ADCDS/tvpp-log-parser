@@ -17,5 +17,5 @@ mainApp.get("/charts", (req, res) => {
 });
 
 mainApp.listen(3000, () => {
-	console.log("TVPP log parser is running on port 80!");
+	console.log("TVPP Log Parser is running on port 3000!");
 });
