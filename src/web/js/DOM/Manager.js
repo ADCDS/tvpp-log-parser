@@ -9,8 +9,9 @@ import Node from "../../../parserLib/Graph/Visualizer/Node";
 import DOMUtils from "./Utils";
 import Variables from "./Variables";
 import SigmaInjection from "../SigmaInjection";
-import type { ChartDefType, FilterLayoutOptions, GLChartOutputType, Sigma } from "../../../types";
+import type {ChartDefType, FilterLayoutOptions, GLChartOutputType, Sigma} from "../../../types";
 import HandleHolder from "./HandleHolder";
+import TreeFilterResult from "../../../parserLib/Graph/Filter/Results/TreeFilterResult";
 
 type OptionValueTypes = Class<String> | Class<Number> | Class<Boolean>;
 
@@ -85,10 +86,11 @@ class Manager {
 	}
 
 	static parseInputValue(configType: OptionValueTypes, element: HTMLInputElement): string | number | boolean {
-		const { value } = element;
+		const {value} = element;
 		if (configType === String) return String(value);
 		if (configType === Number) return Number(value);
 		if (configType === Boolean) return element.checked;
+		if (configType === File) return Utils.readJsonFile(element.files[0]);
 
 		// eslint-disable-next-line flowtype-errors/show-errors
 		if (configType.prototype instanceof Filter || configType === Filter) {
@@ -103,6 +105,7 @@ class Manager {
 		if (configType === String) return "text";
 		if (configType === Number) return "number";
 		if (configType === Boolean) return "checkbox";
+		if (configType === File) return "file";
 
 		throw new Error(`Invalid configType`);
 	}
@@ -116,6 +119,9 @@ class Manager {
 		}
 		if (configType === String || configType === Number) {
 			return `value = '${defaultValue}'`;
+		}
+		if(configType === File){
+			return "";
 		}
 		throw new Error(`Invalid configType`);
 	}
@@ -222,10 +228,10 @@ class Manager {
 	static synchronizeSigma(sigma: { [string]: any, helperHolder: SigmaInjection }): void {
 		const graphHolder = sigma.helperHolder.graphHolder.filtered;
 		const unfilteredGraphHolder = sigma.helperHolder.graphHolder.original;
-		const { nodeHolder } = sigma.helperHolder;
-		const { edgesHolder } = sigma.helperHolder;
-		const { byPassInNodes } = sigma.helperHolder;
-		const { byPassOutNodes } = sigma.helperHolder;
+		const {nodeHolder} = sigma.helperHolder;
+		const {edgesHolder} = sigma.helperHolder;
+		const {byPassInNodes} = sigma.helperHolder;
+		const {byPassOutNodes} = sigma.helperHolder;
 
 		sigma.graph.clear();
 
@@ -239,12 +245,15 @@ class Manager {
 			for (const machineKey of nodeHolder.keys()) {
 				const edgesTo = graphHolder.getOutgoingEdges(machineKey);
 				edgesTo.forEach(machineDest => {
+					// const sourceNodeColor = DOMUtils.hexToRgbA(nodeHolder.get(machineKey).color);
+					// console.log(sourceNodeColor + " snc");
 					const edge: { color?: ?string } = {
 						id: `${machineKey}_>_${machineDest}`,
 						source: machineKey,
 						target: machineDest,
-						size: 2,
-						type: "arrow"
+						size: 1,
+						type: "arrow",
+						color: "black"
 					};
 					const edgesFrom = edgesHolder.get(machineKey);
 					if (edgesFrom) {
@@ -370,7 +379,7 @@ class Manager {
 		}
 		Variables.selectedNode = node;
 		const elementById = DOMUtils.getElementById(`machRow_${node.id}`);
-		elementById.scrollIntoView({ block: "nearest", inline: "start" });
+		elementById.scrollIntoView({block: "nearest", inline: "start"});
 		elementById.classList.add("active");
 	}
 
@@ -384,7 +393,7 @@ class Manager {
 		const LayoutClass = Variables.selectedLayout.class;
 		const LayoutFilterClass = Variables.selectedLayoutFilter.class;
 
-		const { graphManager } = window;
+		const {graphManager} = window;
 
 		const lastEventIndex = graphManager.currentEventIndex;
 		// We should store the last state on 'Previous Graph'
@@ -425,7 +434,6 @@ class Manager {
 		// Apply layout filter
 		const subFilterObj = new LayoutFilterClass(layoutOptions.filter);
 		const subFilterResult = await subFilterObj.applyFilter(graphHolder);
-
 		const layoutObj = new LayoutClass(subFilterResult, graphManager.getMachines(), layoutOptions);
 		layoutObj.updateNodeColors();
 		layoutObj.updatePositions();
@@ -559,6 +567,66 @@ class Manager {
 		};
 
 		Utils.saveStringAsFile(JSON.stringify(output), "layer.output.json", "text/json");
+	}
+
+	static generatePeerChurnAnalysis() {
+		const perfomanceEntries = window.logEntity.performanceEntryList;
+
+		const source = window.logEntity.sourceMachineKey;
+		// For each entry, create a set of known NODES.
+
+		const arrSets = [];
+
+		let i = -1;
+		perfomanceEntries.forEach(perfomanceEntry => {
+			if (perfomanceEntry.machineId === source) {
+				arrSets.push({timestamp: perfomanceEntry.bootTime, set: new Set(), entries: {}});
+				i++;
+			}
+			arrSets[i].set.add(perfomanceEntry.machineId);
+			arrSets[i].entries[perfomanceEntry.machineId] = perfomanceEntry;
+		});
+
+		// console.log(arrSets);
+
+		const outObj = {};
+		for (let j = 1; j < arrSets.length; j++) {
+			const oldSet = Array.from(arrSets[j - 1].set);
+			const currSet = Array.from(arrSets[j].set);
+
+			// https://medium.com/@alvaro.saburido/set-theory-for-arrays-in-es6-eb2f20a61848
+			// Results that are on oldSet but not on currSet
+			let difference = oldSet.filter(x => !currSet.includes(x));
+
+			// difference has the peers that disappeared, check if their media was continuous
+			difference = difference.filter(machineId => {
+				const perf = arrSets[j - 1].entries[machineId];
+				if ((perf.pkGen === 0) && (perf.pkSent === 0) && (perf.pkRecv === 0) && (perf.pkOver === 0) && (perf.pkMissed === 0) && (perf.pkExpected === 0)) {
+					// console.log(`${machineId} media was not continuous`);
+					return false;
+				}
+
+				if (perf.media1 === -1 && perf.media2 === 65535) {
+					// console.log(`${machineId} media was not continuous`);
+					return false;
+				}
+
+				// console.log(`${machineId} media was continuous`);
+				return true;
+			})
+
+			// outStrOut += "[" + (j - 1) + " - " + j + "] -> Peers desaparecidos ["+difference.length+"]: " + difference.join(",") + "\n";
+
+			const difference2 = currSet.filter(x => !oldSet.includes(x));
+			// outStrIn += "[" + (j - 1) + " - " + j + "] -> Peers aparecidos ["+difference2.length+"]: " + difference2.join(",") + "\n";
+			outObj[arrSets[j].timestamp] = {
+				in: difference2,
+				out: difference,
+				in_num: difference2.length,
+				out_num: difference.length
+			};
+		}
+		Utils.saveStringAsFile(JSON.stringify(outObj), "peer_churn.json", "text/json");
 	}
 }
 

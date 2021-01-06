@@ -7,7 +7,7 @@ import Filter from "./parserLib/Graph/Filter/Filter";
 import RingLayeredLayout from "./parserLib/Graph/Visualizer/Layout/Tree/RingLayeredLayout";
 import SpringLayout from "./parserLib/Graph/Visualizer/Layout/SpringLayout";
 import RingLayout from "./parserLib/Graph/Visualizer/Layout/RingLayout";
-import type { ChartDefType, FilterDefType, LayoutDefType } from "./types";
+import type {ChartDefType, FilterDefType, LayoutDefType} from "./types";
 import YenKSP from "./parserLib/Graph/Filter/Tree/Yen/YenKSP";
 import GroupLayerChart from "./parserLib/Graph/Chart/GroupLayerChart";
 import GenericOutputText from "./parserLib/Graph/Chart/GenericOutputText";
@@ -135,7 +135,7 @@ class Utils {
 		link.click();
 	}
 
-	static saveStringAsFile(str: string, fileName: string, type: string){
+	static saveStringAsFile(str: string, fileName: string, type: string) {
 		const a = window.document.createElement('a');
 		a.href = window.URL.createObjectURL(new Blob([str], {type: type}));
 		a.download = fileName;
@@ -146,9 +146,9 @@ class Utils {
 
 	static createHandler(onLoadCb: (...any) => any): Event => void {
 		return evt => {
-			const { target } = evt;
+			const {target} = evt;
 			if (target instanceof HTMLInputElement) {
-				const { files } = target; // FileList object
+				const {files} = target; // FileList object
 
 				console.log("Reading file...");
 				const reader = new FileReader();
@@ -169,6 +169,9 @@ class Utils {
 				resolve(JSON.parse(evt2.currentTarget.result));
 			};
 
+			if (!file)
+				resolve(false);
+
 			reader.readAsBinaryString(file);
 		});
 	}
@@ -179,7 +182,7 @@ class Utils {
 
 	static async readFileFromInput(input: HTMLInputElement): string {
 		return new Promise(resolve => {
-			const { files } = input; // FileList object
+			const {files} = input; // FileList object
 
 			console.log("Reading file...");
 			const reader = new FileReader();

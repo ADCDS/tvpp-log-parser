@@ -41,6 +41,16 @@ class GraphHolder {
 		return !!this.graph[from][to];
 	}
 
+	getEdgeCount(from: string, to: string): boolean {
+		let edge_num = 0;
+		for (const [key, value] of Object.entries(this.graph)) {
+			for (const [key2, value2] of Object.entries(value)) {
+				if(value2===true) edge_num++;
+			}
+		}
+		return edge_num;
+	}
+
 	forceAddEdge(from: string, to: string): void {
 		this.insertNode(from);
 		this.graph[from][to] = true;

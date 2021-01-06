@@ -1,5 +1,5 @@
 // @flow
-import type { FilterDefType, LayoutDefType, Sigma } from "../../../types";
+import type {FilterDefType, LayoutDefType, Sigma} from "../../../types";
 import Node from "../../../parserLib/Graph/Visualizer/Node";
 
 class Variables {
@@ -37,6 +37,8 @@ class Variables {
 	static outputGroupChartData: { [number]: { metatada: { timestamp: number }, layerArray: Array<{ metadata: { name: string }, [string]: number }> } } = {};
 
 	static colorMap: { [number]: string } = {};
+
+	static FilterResult: { string : {} } = {};
 }
 
 export default Variables;

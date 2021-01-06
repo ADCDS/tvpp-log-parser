@@ -8,7 +8,7 @@ import Utils from "../../utils";
 class GLCharts {
 	static postProcessedData = {};
 	static peerClassificationName: { [string]: string } = {
-		sizePeerOut_0_sizePeerOutFREE_0: "Freerider",
+		sizePeerOut_0_sizePeerOutFREE_0: "Free rider",
 		sizePeerOut_1_sizePeerOutFREE_38: "Cold",
 		sizePeerOut_18_sizePeerOutFREE_22: "Warm",
 		sizePeerOut_46_sizePeerOutFREE_0: "Hot",

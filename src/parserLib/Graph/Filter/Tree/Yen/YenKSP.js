@@ -5,7 +5,9 @@ import GraphHolder from "../../../GraphHolder";
 import TreeFilterResult from "../../Results/TreeFilterResult";
 import DijkstraFilter from "../Dijkstra/DijkstraFilter";
 import UserOption from "../../../../UserOption";
+import Utils from "../../../../../utils";
 import type { YensKSPTask, YensKSPWorkerResult } from "../../../../../types";
+import Variables from "../../../../../web/js/DOM/Variables";
 
 function arraysEqual<T>(arr1: Array<T>, arr2: Array<T>): boolean {
 	if (arr1.length !== arr2.length) return false;
@@ -153,7 +155,9 @@ class YenKSP extends TreeFilter {
 		let options = super.getOptions();
 		options = Object.assign(options, {
 			threadNum: new UserOption<Number>("Thread Num", Number, 1),
-			numberOfPaths: new UserOption<Number>("Number of paths", Number, 20)
+			numberOfPaths: new UserOption<Number>("Number of paths", Number, 20),
+			precalculatedPaths: new UserOption<File>("Precalc K-shortest paths", File, null),
+			multipleLayerPeers: new UserOption<Boolean>("Multiple layer peers", Boolean, false)
 		});
 		return options;
 	}
@@ -164,8 +168,8 @@ class YenKSP extends TreeFilter {
 
 		let medianIndex = -1;
 		if (paths.length === 0) {
-			console.log("No route from ", source, " to ", node);
-			return Infinity;
+			// console.log("No route from ", source, " to ", node);
+			return {"median_length": Infinity, "paths": [Infinity]};
 		}
 
 		if (paths.length % 2 === 0) {
@@ -175,27 +179,43 @@ class YenKSP extends TreeFilter {
 			medianIndex += (paths.length + 1) / 2;
 		}
 		// const medianPath = paths[medianIndex];
-		console.log(`${K} shortests paths, ${source} -> ${node}`);
-		paths.forEach(value => {
-			console.log(value);
-		});
+		// console.log(`${K} shortests paths, ${source} -> ${node}`);
+		// paths.forEach(value => {
+		//  	console.log(value);
+		// });
 
-		return paths[medianIndex].length;
+		return {"median_length": paths[medianIndex].length - 1, "paths": paths};
 	}
 
 	async applyFilter(graphHolder: GraphHolder): Promise<TreeFilterResult> {
 		const newGraphHolder = graphHolder.clone();
 		const vertices = Object.keys(newGraphHolder.graph);
 		const distancesFromSource: { [string]: number } = {};
-		distancesFromSource[this.options.source] = 0;
+		if(this.options.multipleLayerPeers) {
+			distancesFromSource[this.options.source] = [0];
+		}else{
+			distancesFromSource[this.options.source] = 0;
+		}
 
+		Variables.KSPCalculatedData = {};
 		// Remove source
 		const verticesMinusSource = vertices.filter(value => value !== this.options.source);
 		let i = 1;
+		let preCalcPaths = await this.options.precalculatedPaths;
+		const currentSourceIndex = window.graphManager.currentSourceIndex;
+		if(preCalcPaths && preCalcPaths[currentSourceIndex]){
+			return Object.assign(new TreeFilterResult(), preCalcPaths[currentSourceIndex]);
+		}
+
 		if (this.options.threadNum === 1) {
 			verticesMinusSource.forEach(node => {
-				console.log(`${i++}/${vertices.length}`);
-				distancesFromSource[node] = YenKSP.calculateValue(newGraphHolder, this.options.source, node, this.options.numberOfPaths, vertices);
+				// console.log(`${i++}/${vertices.length}`);
+				const result = YenKSP.calculateValue(newGraphHolder, this.options.source, node, this.options.numberOfPaths, vertices);
+				if(this.options.multipleLayerPeers){
+					distancesFromSource[node] = result.paths.map(value => value === Infinity ? Infinity : value.length-1);
+				}else {
+					distancesFromSource[node] = result.median_length;
+				}
 			});
 		} else {
 			const chunks = chunkify<string>(verticesMinusSource, this.options.threadNum, true);
@@ -210,26 +230,35 @@ class YenKSP extends TreeFilter {
 							vertices
 						};
 						const myWorker = new Worker("js/yenskst_worker.dist.js");
+						let i = 0;
 						myWorker.onmessage = e => {
 							const result = ((e.data: any): YensKSPWorkerResult);
 							myWorker.terminate();
 							result.forEach(value => {
-								console.log(`${i++}/${vertices.length}`);
-								distancesFromSource[value[0]] = value[1];
+								// console.log(`${i++}/${vertices.length}`);
+								if(this.options.multipleLayerPeers) {
+									const number = value[2].map(value => value === Infinity ? Infinity : value.length-1);
+									distancesFromSource[value[0]] = number;
+								}else {
+									distancesFromSource[value[0]] = value[1];
+								}
 							});
 							resolve(distancesFromSource);
 						};
 						myWorker.postMessage(ykspTask);
-						console.log("Message posted to worker");
+						// console.log("Message posted to worker");
 					});
 				})
 			);
-			console.log("Done map");
+			// console.log("Done map");
 		}
 
 		console.log(distancesFromSource);
+		const treeFilterResult = new TreeFilterResult(newGraphHolder, distancesFromSource, {});
+		treeFilterResult.multiLayerPeers = this.options.multipleLayerPeers;
+		// Variables.FilterResult[currentSourceIndex] = treeFilterResult;
 
-		return new TreeFilterResult(newGraphHolder, distancesFromSource, {});
+		return treeFilterResult;
 	}
 }
 

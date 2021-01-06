@@ -5,6 +5,7 @@ import GraphHolder from "../../GraphHolder";
 class TreeFilterResult extends FilterResult {
 	distancesFromSource: { [string]: number };
 	fathers: { [string]: string };
+	multiLayerPeers: boolean;
 
 	constructor(graphHolder: GraphHolder, distancesFromSource: { [string]: number }, fathers: { [string]: string }) {
 		super(graphHolder);

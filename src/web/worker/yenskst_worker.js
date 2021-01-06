@@ -13,8 +13,8 @@ onmessage = e => {
 
 	const ret = [];
 	nodes.forEach(node => {
-		const calculatedValue = YenKSP.calculateValue(result.newGraphHolder, result.source, node, result.k, result.vertices);
-		ret.push([node, calculatedValue]);
+		const ykspret = YenKSP.calculateValue(result.newGraphHolder, result.source, node, result.k, result.vertices);
+		ret.push([node, ykspret.median_length, ykspret.paths]);
 	});
 
 	// eslint-disable-next-line flowtype-errors/show-errors

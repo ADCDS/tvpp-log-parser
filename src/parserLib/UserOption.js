@@ -29,6 +29,10 @@ class UserOption<T> {
 	isBoolean(): boolean {
 		return this.type === Boolean;
 	}
+
+	isFile(): boolean {
+		return this.type === File;
+	}
 }
 
 export default UserOption;

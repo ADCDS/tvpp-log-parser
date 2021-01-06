@@ -21,14 +21,41 @@ class GroupLayerChart extends Chart {
 	static generateGraphInput(input: { sigma: Sigma, [string]: any }): OutputChart {
 		// Draw graphics for the current graph
 		const layoutSubFilter = ((input.sigma.helperHolder.layoutSubFilter: any): TreeFilterResult);
+
 		const currIndex = window.graphManager.currentSourceIndex;
 		const currTimestamp = window.graphManager.getCurrentTimestamp();
 		const usedLayout = input.sigma.helperHolder.usedLayout;
 		const logEntity = window.logEntity;
-		const layers = Array.from(new Set(Object.values(layoutSubFilter.distancesFromSource))).sort();
+		let layers = null;
+		if(!layoutSubFilter.multiLayerPeers) {
+			layers = Array.from(new Set(Object.values(layoutSubFilter.distancesFromSource))).sort();
+		}else{
+			const arr = Object.values(layoutSubFilter.distancesFromSource);
+			layers = Array.from(new Set([].concat.apply([], arr))).sort();
+		}
 		const layerDistanceMap = {};
 		const colorMap = {};
 		const bandwidthsTemplate = {};
+
+
+		// console.log("Layers:", layers);
+		let hasInfinity = false;
+		if(layers[layers.length - 1] === Infinity){
+			layers.pop();
+			hasInfinity = true;
+		}
+
+		// console.log("hasInfinity", hasInfinity);
+		const layerstmp = [];
+		for (let i = 0; i <= layers[layers.length - 1]; i++) {
+			layerstmp.push(i);
+		}
+		layers = layerstmp;
+		if(hasInfinity)
+			layers.push(Infinity);
+
+		// console.log("Distances:", layoutSubFilter.distancesFromSource);
+		// console.log("Layers 2:", layers);
 
 		for (let i = 0; i < logEntity.bandwidthClassifications.length; i++) {
 			const bandwidth = logEntity.bandwidthClassifications[i];
@@ -61,17 +88,31 @@ class GroupLayerChart extends Chart {
 			Variables.layersFound.add(layerName);
 		}
 
+		// console.log("Output array", outputArray);
+		// console.log("Layer distance", layerDistanceMap);
 		for (const machine of logEntity.machines.values()) {
-			// In which layer are this machine at?
-			const distance = layoutSubFilter.distancesFromSource[machine.address];
 			const currentTimestamp = window.logEntity.overlayEntryList[window.graphManager.currentEventIndex].timestamp;
 			const bandwidth = machine.getPeerClassificationStringAt(currentTimestamp);
-			// if (bandwidth === undefined) continue;
+			if(!layoutSubFilter.multiLayerPeers) {
+				// In which layer is this machine at?
+				const distance = layoutSubFilter.distancesFromSource[machine.address];
+				const layerIndex = layerDistanceMap[distance];
+				outputArray[layerIndex][bandwidth]++;
+			}else{
+				// In which layers is this machine at?
+				const distances = layoutSubFilter.distancesFromSource[machine.address];
+				// console.log(machine.address, "distances:", distances);
+				for (const distance of distances){
+					const layerIndex = layerDistanceMap[distance];
+					// if(!layerIndex)
+						// console.log("dbg", distance, layerIndex, bandwidth);
 
-			const layerIndex = layerDistanceMap[distance];
-			outputArray[layerIndex][bandwidth]++;
+					outputArray[layerIndex][bandwidth]++;
+				}
+			}
 		}
 
+		// console.log(output);
 		Variables.outputGroupChartData[currIndex] = output;
 		Variables.colorMap = colorMap;
 

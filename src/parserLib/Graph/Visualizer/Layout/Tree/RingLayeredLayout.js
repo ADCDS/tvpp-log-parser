@@ -19,6 +19,11 @@ class RingLayeredLayout extends TreeLayout {
 	updatePositions(): void {
 		super.updatePositions();
 
+		if(this.filterResult.multiLayerPeers) {
+			console.log("Not implemented");
+			return;
+		}
+
 		// Distances preprocessor
 		const numberOfNodesAtRing = { "0": 1 };
 		const iterNumRing = { "0": 0 };

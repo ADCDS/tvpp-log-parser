@@ -1,8 +1,9 @@
 // @flow
 import * as d3 from "d3";
 import Variables from "./Variables";
-import type { ChartDefType } from "../../../types";
+import type {ChartDefType} from "../../../types";
 import DOMUtils from "./Utils";
+import GLCharts from "../../../charts_gen/Charts/GLCharts";
 
 class ChartManager {
 	static async drawCharts(charts: Array<ChartDefType>) {
@@ -15,7 +16,7 @@ class ChartManager {
 				chartHolder.id = `chart_${i++}`;
 				chartHolderEl.appendChild(chartHolder);
 				const cbFunc = chart.class.drawFunction;
-				cbFunc(chartHolder, chart.name, chart.class.generateGraphInput({ sigma: Variables.selectedSigma }));
+				cbFunc(chartHolder, chart.name, chart.class.generateGraphInput({sigma: Variables.selectedSigma}));
 			}
 			resolve();
 		});
@@ -25,6 +26,9 @@ class ChartManager {
 		element.innerHTML = "";
 		for (const val of data.values()) {
 			const p = document.createElement("p");
+			if (Object.hasOwnProperty.call(val, "fontSize")) {
+				p.style["font-size"] = val.fontSize;
+			}
 			const small = document.createElement("small");
 			const b = document.createElement("b");
 			b.innerHTML = `${val.name}: `;
@@ -49,7 +53,8 @@ class ChartManager {
 				},
 				layerArray: Array<{
 					metadata: {
-						name: string
+						name: string,
+						lastLayer: boolean
 					},
 					[string]: number
 				}>
@@ -60,7 +65,7 @@ class ChartManager {
 		}
 	) {
 		element.innerHTML = "";
-		const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+		const margin = {top: 20, right: 30, bottom: 30, left: 40};
 		const width = 600 - margin.left - margin.right;
 		const height = 400 - margin.top - margin.bottom;
 
@@ -98,8 +103,8 @@ class ChartManager {
 		}
 
 		x0.domain(
-			inputData.map((d: { metadata: {name: string } }) => {
-				return d.metadata.name;
+			inputData.map((d: { metadata: { name: string, lastLayer: boolean } }) => {
+				return d.metadata.lastLayer ? "Unconnected nodes" : d.metadata.name;
 			})
 		);
 		x1.domain(keys).rangeRound([0, x0.bandwidth()]);
@@ -111,13 +116,13 @@ class ChartManager {
 			.enter()
 			.append("g")
 			.attr("class", "bar-group")
-			.attr("transform", (d: { metadata: {name: string } }) => {
-				return `translate(${x0(d.metadata.name)},0)`;
+			.attr("transform", (d: { metadata: { name: string, lastLayer: boolean } }) => {
+				return `translate(${x0(d.metadata.lastLayer ? "Unconnected nodes" : d.metadata.name)},0)`;
 			})
 			.selectAll("rect")
 			.data(d => {
 				return keys.map((key: string) => {
-					return { key, value: d[key] };
+					return {key, value: d[key]};
 				});
 			})
 			.enter()
@@ -160,13 +165,13 @@ class ChartManager {
 			.enter()
 			.append("g")
 			.attr("class", "bar-group")
-			.attr("transform", (d: { metadata: {name: string } }) => {
-				return `translate(${x0(d.metadata.name)},0)`;
+			.attr("transform", (d: { metadata: { name: string } }) => {
+				return `translate(${x0(d.metadata.lastLayer ? "Unconnected nodes" : d.metadata.name)},0)`;
 			})
 			.selectAll("text.bar")
 			.data(d => {
 				return keys.map((key: string) => {
-					return { key, value: d[key] };
+					return {key, value: d[key]};
 				});
 			})
 			.enter()
@@ -196,7 +201,7 @@ class ChartManager {
 			.enter()
 			.append("g")
 			.attr("transform", (d: {}, i: number) => {
-				return `translate(0,${i * 20})`;
+				return `translate(10,${i * 20})`;
 			});
 
 		legend
@@ -217,8 +222,10 @@ class ChartManager {
 			.attr("x", width - 24)
 			.attr("y", 9.5)
 			.attr("dy", "0.32em")
-			.text((d: {}) => {
-				return d;
+			.text((d: string) => {
+				if (Object.hasOwnProperty.call(GLCharts.peerClassificationName, d)) {
+					return GLCharts.peerClassificationName[d];
+				}
 			});
 	}
 }

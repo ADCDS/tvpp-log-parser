@@ -25,7 +25,7 @@ class TVPPLog {
 		"sizePeerOut_1_sizePeerOutFREE_38",
 		"sizePeerOut_18_sizePeerOutFREE_22",
 		"sizePeerOut_46_sizePeerOutFREE_0",
-		"sizePeerOut_40_sizePeerOutFREE_0",
+		// "sizePeerOut_40_sizePeerOutFREE_0",
 		"sizePeerOut_20_sizePeerOutFREE_0"
 	];
 
@@ -94,6 +94,7 @@ class TVPPLog {
 	addPerformanceEntries(entries: Array<LogEntryPerformance>) {
 		const foundBandwidths = {};
 		entries.forEach(logEntry => {
+			this.performanceEntryList.push(logEntry);
 			const performanceState = logEntry.toState();
 
 			if (!this.hasMachine(logEntry.machineId)) {

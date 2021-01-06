@@ -35,9 +35,10 @@ class SpringLayout extends Layout {
 	}
 
 	calculateForcesOnNode(machineKey: string): { x: number, y: number } {
+		const fixedServer = machineKey === this.options.fixAt00;
 		const nodeHolderElement = this.nodeHolder.get(machineKey);
 		if (!nodeHolderElement) throw new Error(`${machineKey} wansn't found on nodeHolder`);
-		const resultantForce = { x: 0, y: 0 };
+		const resultantForce = {x: 0, y: 0};
 		const edges = this.graphHolder.getEdges(machineKey);
 
 		const adjacentVertices = new Set(
@@ -77,36 +78,39 @@ class SpringLayout extends Layout {
 		// Forces that repel
 		const nonAdjacentVertices = Object.keys(this.filterResult.graphHolder.graph).filter(value => !adjacentVertices.has(value));
 
-		for (const nonAdjacentMachine of nonAdjacentVertices) {
-			const nonAdjacentNodeHolderElement = this.nodeHolder.get(nonAdjacentMachine);
-			if (!nonAdjacentNodeHolderElement) continue;
+		// Fixed node cannot be repelled
+		if(!fixedServer) {
+			for (const nonAdjacentMachine of nonAdjacentVertices) {
+				const nonAdjacentNodeHolderElement = this.nodeHolder.get(nonAdjacentMachine);
+				if (!nonAdjacentNodeHolderElement) continue;
 
-			// eslint-disable-next-line flowtype-errors/show-errors
-			const d = Math.sqrt(Math.pow(nodeHolderElement.x - nonAdjacentNodeHolderElement.x, 2) + Math.pow(nodeHolderElement.y - nonAdjacentNodeHolderElement.y, 2));
-			if (d === 0) continue;
-
-			const force = this.options.c3 / Math.pow(d, 2);
-
-			// get the direction where the force is applied
-			const dir = {
 				// eslint-disable-next-line flowtype-errors/show-errors
-				x: -(nonAdjacentNodeHolderElement.x - nodeHolderElement.x) / d,
-				// eslint-disable-next-line flowtype-errors/show-errors
-				y: -(nonAdjacentNodeHolderElement.y - nodeHolderElement.y) / d
-			};
+				const d = Math.sqrt(Math.pow(nodeHolderElement.x - nonAdjacentNodeHolderElement.x, 2) + Math.pow(nodeHolderElement.y - nonAdjacentNodeHolderElement.y, 2));
+				if (d === 0) continue;
 
-			// apply the force in the normalized vector
-			dir.x *= force;
-			dir.y *= force;
+				const force = this.options.c3 / Math.pow(d, 2);
 
-			resultantForce.x += dir.x;
-			resultantForce.y += dir.y;
+				// get the direction where the force is applied
+				const dir = {
+					// eslint-disable-next-line flowtype-errors/show-errors
+					x: -(nonAdjacentNodeHolderElement.x - nodeHolderElement.x) / d,
+					// eslint-disable-next-line flowtype-errors/show-errors
+					y: -(nonAdjacentNodeHolderElement.y - nodeHolderElement.y) / d
+				};
+
+				// apply the force in the normalized vector
+				dir.x *= force;
+				dir.y *= force;
+
+				resultantForce.x += dir.x;
+				resultantForce.y += dir.y;
+			}
 		}
 
 		resultantForce.x *= this.options.c4;
 		resultantForce.y *= this.options.c4;
 
-		return { x: resultantForce.x, y: resultantForce.y };
+		return {x: resultantForce.x, y: resultantForce.y};
 	}
 
 	updatePositions(): void {
@@ -141,16 +145,12 @@ class SpringLayout extends Layout {
 		const forces = {};
 		while (i++ < this.options.iterNum) {
 			for (const machineKey of this.nodeHolder.keys()) {
-				if (this.options.fixAt00 !== machineKey) {
-					forces[machineKey] = this.calculateForcesOnNode(machineKey);
-				}
+				forces[machineKey] = this.calculateForcesOnNode(machineKey);
 			}
 
 			for (const node of this.nodeHolder.values()) {
-				if (this.options.fixAt00 !== node.id) {
-					node.x += forces[node.id].x;
-					node.y += forces[node.id].y;
-				}
+				node.x += forces[node.id].x;
+				node.y += forces[node.id].y;
 			}
 		}
 	}

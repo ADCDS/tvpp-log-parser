@@ -185,6 +185,7 @@ class HandleHolder {
 
 	static async handleDrawByEvent() {
 		const options = Manager.extractOptions();
+		
 		await Manager.drawGraph(options.filter, options.layout, window.selectedEvent, false);
 		await ChartManager.drawCharts(options.charts);
 		if (Variables.saveOutput) {
@@ -233,6 +234,7 @@ class HandleHolder {
 					await Manager.goToEventAndDraw(window.selectedEvent + 1);
 				} catch (e2) {
 					Manager.downloadLayerLog();
+					Utils.saveStringAsFile(JSON.stringify(Variables.FilterResult), "filter_result.output.json", "text/json");
 					Variables.autoNext = false;
 					console.log(`AutoNext: ${e2}`);
 				}
@@ -264,6 +266,10 @@ class HandleHolder {
 		const checkbox = e.target;
 		if (!(checkbox instanceof HTMLInputElement)) throw new Error("Invalid type");
 		Variables.saveOutput = checkbox.checked;
+	}
+
+	static handlePeerChurnAnalysisRequest(e: Event) {
+		Manager.generatePeerChurnAnalysis();
 	}
 
 	static handleExtractOverlay() {
