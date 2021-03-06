@@ -10,7 +10,7 @@ type OutputChart = {
 		metadata: {
 			timestamp: number
 		},
-		layerArray: Array<{ name: {name: string }, [string]: number }>
+		layerArray: Array<{ name: { name: string }, [string]: number }>
 	},
 	colorMap: { [number]: string }
 };
@@ -27,20 +27,19 @@ class GroupLayerChart extends Chart {
 		const usedLayout = input.sigma.helperHolder.usedLayout;
 		const logEntity = window.logEntity;
 		let layers = null;
-		if(!layoutSubFilter.multiLayerPeers) {
-			layers = Array.from(new Set(Object.values(layoutSubFilter.distancesFromSource))).sort();
-		}else{
+		if (!layoutSubFilter.multiLayerPeers) {
+			layers = Array.from(new Set(Object.values(layoutSubFilter.distancesFromSource))).sort((a, b) => a - b);
+		} else {
 			const arr = Object.values(layoutSubFilter.distancesFromSource);
-			layers = Array.from(new Set([].concat.apply([], arr))).sort();
+			layers = Array.from(new Set([].concat.apply([], arr))).sort((a, b) => a - b);
 		}
 		const layerDistanceMap = {};
 		const colorMap = {};
 		const bandwidthsTemplate = {};
 
-
 		// console.log("Layers:", layers);
 		let hasInfinity = false;
-		if(layers[layers.length - 1] === Infinity){
+		if (layers[layers.length - 1] === Infinity) {
 			layers.pop();
 			hasInfinity = true;
 		}
@@ -51,8 +50,7 @@ class GroupLayerChart extends Chart {
 			layerstmp.push(i);
 		}
 		layers = layerstmp;
-		if(hasInfinity)
-			layers.push(Infinity);
+		if (hasInfinity) layers.push(Infinity);
 
 		// console.log("Distances:", layoutSubFilter.distancesFromSource);
 		// console.log("Layers 2:", layers);
@@ -74,14 +72,14 @@ class GroupLayerChart extends Chart {
 				},
 				[string]: number
 			}>
-		} = {metadata: {timestamp: currTimestamp}, layerArray: []};
+		} = { metadata: { timestamp: currTimestamp }, layerArray: [] };
 		const outputArray = output.layerArray;
 
 		// Populate output array
 
 		for (let j = 0; j < layers.length; j++) {
 			const layerName = `Layer ${j}`;
-			const objectToInsert = { metadata: {name: layerName, lastLayer: j === (layers.length - 1)}, ...bandwidthsTemplate };
+			const objectToInsert = { metadata: { name: layerName, lastLayer: j === layers.length - 1 }, ...bandwidthsTemplate };
 
 			outputArray.push(objectToInsert);
 			layerDistanceMap[layers[j]] = j;
@@ -93,19 +91,19 @@ class GroupLayerChart extends Chart {
 		for (const machine of logEntity.machines.values()) {
 			const currentTimestamp = window.logEntity.overlayEntryList[window.graphManager.currentEventIndex].timestamp;
 			const bandwidth = machine.getPeerClassificationStringAt(currentTimestamp);
-			if(!layoutSubFilter.multiLayerPeers) {
+			if (!layoutSubFilter.multiLayerPeers) {
 				// In which layer is this machine at?
 				const distance = layoutSubFilter.distancesFromSource[machine.address];
 				const layerIndex = layerDistanceMap[distance];
 				outputArray[layerIndex][bandwidth]++;
-			}else{
+			} else {
 				// In which layers is this machine at?
 				const distances = layoutSubFilter.distancesFromSource[machine.address];
 				// console.log(machine.address, "distances:", distances);
-				for (const distance of distances){
+				for (const distance of distances) {
 					const layerIndex = layerDistanceMap[distance];
 					// if(!layerIndex)
-						// console.log("dbg", distance, layerIndex, bandwidth);
+					// console.log("dbg", distance, layerIndex, bandwidth);
 
 					outputArray[layerIndex][bandwidth]++;
 				}
