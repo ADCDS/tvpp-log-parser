@@ -30,6 +30,11 @@ Will start a webserver on the port 3000
 After loading the page at http://localhost:3000, load the overlay log first, and then the performance log.
 Example logs can be found at [logs/](https://github.com/ADCDS/tvpp-log-parser/tree/master/logs) 
 
+## Obs
+
+There is some fancy (kinda multithreaded) implementation of Yen's KSP Algorithm in https://github.com/ADCDS/tvpp-log-parser/blob/master/src/parserLib/Graph/Filter/Tree/Yen/YenKSP.js
+and Dijkstra's Shortest Path Algorithm in https://github.com/ADCDS/tvpp-log-parser/blob/master/src/parserLib/Graph/Filter/Tree/Dijkstra/DijkstraFilter.js
+
 ## License
 
 MIT © [Adriel Santos](https://github.com/ADCDS)
